@@ -5,8 +5,8 @@ const youtube = require('simple-youtube-api');
 const fs = require('fs');
 const { Console } = require('console');
 
-const token = 'NjEwODMwNjYyMzUzNjgyNDY0.XVK-jA.XrOAP-1zgiOwdkg2euZNqDUUS0o';
-const YouTube = new youtube("AIzaSyCk5cemAA5LpoUwpgiN8dDxw_ERge2EedI");
+const token = process.env.DJS_TOKEN;
+const YouTube = new youtube(process.env.YT_TOKEN);
 
 bot.on('ready', () => {
     console.log('This bot is online!')
