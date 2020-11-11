@@ -37,7 +37,7 @@ bot.on('message', message=>{
                     var server = servers[message.guild.id];
 
                     server.playing = true;
-                    server.dispathcher = connection.play(YTDL(server.queue[0].url, {filter: "audioonly"}))
+                    server.dispathcher = connection.play(YTDL(server.queue[0].url, {filter: "audioonly"}));
                     server.connection = connection;
                     server.dispathcher.setVolume(server.volume/100);
 
@@ -51,6 +51,9 @@ bot.on('message', message=>{
                             server.playing = false;
                             connection.disconnect();
                         }
+                    });
+                    server.dispathcher.on("error", function() {
+                        console.log("dispatcher error");
                     });
                 }
 
@@ -102,12 +105,12 @@ bot.on('message', message=>{
                     {
                         message.member.voice.channel.join()
                         .then(function(connection){
-                            say("Start playing", message);
                             play(connection,message);
-                        }).catch(console.log("message send catch"))
+                            say("Start playing", message);
+                        }).catch(err => console.log(err));
                     }
                 })
-                .catch(console.log("Find video catch"));
+                .catch(err => console.log(err));
                 //say("Song not found", message)
             break;
 
