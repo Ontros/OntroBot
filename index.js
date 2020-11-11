@@ -104,10 +104,10 @@ bot.on('message', message=>{
                         .then(function(connection){
                             say("Start playing", message);
                             play(connection,message);
-                        })
+                        }).catch(console.log("message send catch"))
                     }
                 })
-                .catch();
+                .catch(console.log("Find video catch"));
                 //say("Song not found", message)
             break;
 
