@@ -5,6 +5,7 @@ const youtube = require('simple-youtube-api');
 const fs = require('fs');
 const { Console } = require('console');
 
+require('dotenv').config({path: __dirname + '/.env'})
 const token = process.env.DJS_TOKEN;
 const YouTube = new youtube(process.env.YT_TOKEN);
 
