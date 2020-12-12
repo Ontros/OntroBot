@@ -1,7 +1,7 @@
 {
   "name": "ontrobot",
-  "version": "0.0.3",
-  "description": "Muj discord bot",
+  "version": "1.0.0",
+  "description": "Ontrův personální discord bot",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,6 +13,6 @@
     "dotenv": "^8.2.0",
     "opusscript": "0.0.7",
     "simple-youtube-api": "^5.2.1",
-    "ytdl-core": "^4.0.3"
+    "ytdl-core": "^4.1.4"
   }
 }
