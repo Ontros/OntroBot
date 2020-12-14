@@ -1,4 +1,5 @@
 const prefix = '_';
+const serverManager = require('.././server-manager');
 
 const validatePermissions = (permissions) => {
     const validPermissions = [
@@ -41,18 +42,6 @@ const validatePermissions = (permissions) => {
     }
 }
 
-function checkServer(message) 
-{
-    if (!servers[message.guild.id]) servers[message.guild.id] = {
-        queue: [],
-        dispathcher: [],
-        loop: false,
-        connection: [],
-        playing: true,
-        volume: 5,
-        language: "dev"
-    }
-}
 
 module.exports = (bot, commandOptions) => {
     let {
@@ -73,16 +62,21 @@ module.exports = (bot, commandOptions) => {
 
     if (commandOptions.permissions.length) {
         if (typeof commandOptions.permissions === 'string') {
-            permissions = [commandOptions.permissions]
+            commandOptions.permissions = [commandOptions.permissions]
         }
 
-        validatePermissions(permissions)
+        validatePermissions(commandOptions.permissions)
     }
 
         bot.on('message', message => {
             const {member, content, guild} = message
-
-            checkServer(message);
+            try {
+                serverManager(guild.id);
+            }
+            catch (err) {
+                //console.log("DM")
+            }
+            
 
             for (const alias of commands) {
                 if (content.toLowerCase().split(/[ ]+/)[0] === `${prefix}${alias.toLowerCase()}`) {

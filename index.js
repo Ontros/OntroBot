@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const bot = new Discord.Client();
 const { Console } = require('console');
+const serverManager = require('././server-manager');
 
 require('dotenv').config({path: __dirname + '/.env'})
 const token = process.env.DJS_TOKEN;
@@ -33,24 +34,43 @@ bot.on('ready', () => {
     readCommands('commands');
 })
 
+bot.on('voiceStateUpdate', (oldMember, newMember) => {
+    let newUserChannel = newMember.channelID;
+    let oldUserChannel = oldMember.channelID;
+  
+    if (newUserChannel != oldUserChannel) {    
+        if(newUserChannel !== null) {
+            // User Joins a voice channel
+            serverManager(newMember.guild.id);
+            if (newUserChannel == servers[newMember.guild.id].cekarnaChannel) {
+                //Nový čekač
+                servers[newMember.guild.id].cekarnaPings.forEach(element => {
+                    var server = bot.guilds.cache.find(guild => guild.id === newMember.guild.id);
+                    var user = server.members.cache.find(user => user.id === element);
+                    try {
+                        console.log(user.user.username);
+                    }
+                    catch {
+                        return;
+                    }
+                    if (user.voice.channelID) {
+                        //je ve voice channelu
+                        user.user.send("ČEKÁRNA!");
+                    }
+                });
+            }
+        } 
+        else if(newUserChannel === null){
+            // User leaves a voice channel
+        }
+    }
+  })
+
 const PREFIX = '_';
 const OwnerID = '255345748441432064';
 const LanguageList = ["dev", "eng", "czk"];
 global.servers = {};
 bot.setMaxListeners(0);
 
-
-function checkServer(message) 
-{
-    if (!servers[message.guild.id]) servers[message.guild.id] = {
-        queue: [],
-        dispathcher: [],
-        loop: false,
-        connection: [],
-        playing: true,
-        volume: 5,
-        language: "dev"
-    }
-}
 
 bot.login(token);

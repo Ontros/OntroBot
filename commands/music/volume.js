@@ -1,26 +1,26 @@
+const serverManager = require('../.././server-manager');
 module.exports = {
     commands: ['volume', 'vol', 'v'],
     expectedArgs: '<pocet procent>',
-    minArgs: 1,
+    minArgs: 0,
     maxArgs: 1,
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
-    callback: (message, arguments, text) => {
+    callback: (message, args, text) => {
         var server = servers[message.guild.id];
-        if (!server.queue) 
-        {
-            message.reply('Nic nehraje debílku! :angry:')
-        }
-        else if (!args[1])
+        if (!args[0])
         {
             message.reply('Aktuální hlasitost je: '+ server.volume + '%')
         }
         else 
         {
-            server.volume = args[1]
-            server.dispathcher.setVolume(server.volume / 100);
-            message.reply('Hlasitost nastavena na: '+server.volume+ '%')
+            server.volume = args[0]
+            if (!server.queue) {
+                server.dispathcher.setVolume(server.volume / 100);
+            }
+            message.reply('Hlasitost nastavena na: '+server.volume+ '%');
+            serverManager(message.guild.id, true);
         }
     }
 }
