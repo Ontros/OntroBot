@@ -74,7 +74,7 @@ module.exports = (bot, commandOptions) => {
                 serverManager(guild.id);
             }
             catch (err) {
-                //console.log("DM")
+                console.log(err)
             }
             
 
