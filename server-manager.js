@@ -1,11 +1,17 @@
 const fs = require('fs');
 module.exports = (id, change) => {
-    if (change != null && change == true) {
-        updateServerFile(id);
+    try {
+        if (change != null && change == true) {
+            updateServerFile(id);
+        }
+        checkServer(id);
+        if (!servers[id]) {
+            readServer(id);
+        }
     }
-    checkServer(id);
-    if (!servers[id]) {
-        readServer(id);
+    catch {
+        console.log('Error with opening/writing to data -> loading default server!');
+        servers[id] = defaultServer;
     }
 }
 const defaultServer = {

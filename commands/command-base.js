@@ -74,7 +74,8 @@ module.exports = (bot, commandOptions) => {
                 serverManager(guild.id);
             }
             catch (err) {
-                console.log(err)
+                console.log('ERROR WITH LOADING SERVER --> STOPPING COMMAND')
+                return
             }
             
 
