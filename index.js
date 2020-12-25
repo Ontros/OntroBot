@@ -72,5 +72,15 @@ const LanguageList = ["dev", "eng", "czk"];
 global.servers = {};
 bot.setMaxListeners(0);
 
+function login() {
+    try {
+        bot.login(token);
+        return
+    }
+    catch {
+        console.log("Login failed, retrying in 5 seconds");
+        setTimeout(login, 5000);
+    }
+}
 
-bot.login(token);
+login();

@@ -8,13 +8,13 @@ module.exports = {
         {
             message.reply("Velikost tvojeho penysu je: 420 cm");
         }
-        else if (message.author.username.toLowerCase().includes("tyfonek")) 
+        else if (message.author.id === '275639448299896833') 
         {
             message.reply("Velikost tvojeho penysu je: "+(Math.random()*-10).toString() + " cm");
         }
         else
         {
-            message.reply("Velikost tvojeho penysu je: " + (Math.random()*5).toString() + " cm");
+            message.reply("Velikost tvojeho penysu je: " + (Math.random()*20).toString() + " cm");
         }
     }
 }
