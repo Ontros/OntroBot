@@ -4,17 +4,18 @@ module.exports = {
     requiredRoles: [],
     allowedIDs: [],
     callback: (message, arguments, text) => {
-        if (message.author.username.toLowerCase().includes("ontro"))
+        var rand = require('random-seed').create(message.author.id)
+        if (message.author.id === '255345748441432064')
         {
-            message.reply("Velikost tvojeho penysu je: 420 cm");
+            message.reply(lang(message.guild.id, 'PP_SIZE')+": 420 cm");
         }
         else if (message.author.id === '275639448299896833') 
         {
-            message.reply("Velikost tvojeho penysu je: "+(Math.random()*-10).toString() + " cm");
+            message.reply(lang(message.guild.id, 'PP_SIZE')+": "+(-69).toString() + " cm");
         }
         else
         {
-            message.reply("Velikost tvojeho penysu je: " + (Math.random()*20).toString() + " cm");
+            message.reply(lang(message.guild.id, 'PP_SIZE')+": " + (rand(2000)/100).toString() + " cm");
         }
     }
 }

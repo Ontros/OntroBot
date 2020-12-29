@@ -21,7 +21,7 @@ const defaultServer = {
     connection: [],
     playing: true,
     volume: 5,
-    language: "dev",
+    language: "english",
     cekarnaChannel: "",
     cekarnaPings: []
 }

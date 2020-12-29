@@ -10,6 +10,7 @@ module.exports = {
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
+    requireChannelPerms: true,
     callback: (message, args, text) => {
         function play(connection, message){
             var server = servers[message.guild.id];
@@ -58,15 +59,15 @@ module.exports = {
             return song;
         }
 
-        if (!args[0]) {
-            message.channel.send("Nezadal jsi link debílku!");
-            return;
-        }
+        //if (!args[0]) {
+        //    message.channel.send("Nezadal jsi link debílku!");
+        //    return;
+        //}
 
-        if (!message.member.voice.channel) {
-            message.channel.send("Musíš být v kanalizaci, abych mohl přidrandit!");
-            return;
-        }
+        //if (!message.member.voice.channel) {
+        //    message.channel.send("Musíš být v kanalizaci, abych mohl přidrandit!");
+        //    return;
+        //}
 
         var server = servers[message.guild.id];
 
@@ -79,14 +80,14 @@ module.exports = {
             if (server.queue.length > 1) 
             {
                 //songa přidána do queue, už hraje bot
-                message.channel.send("Přidal jsem songu do queue");
+                message.channel.send(lang(message.guild.id, 'QUEUE_ADD'));
             }
             else
             {
                 message.member.voice.channel.join()
                 .then(function(connection){
                     play(connection,message);
-                    message.channel.send("Začínám hrát!");
+                    message.channel.send(lang(message.guild.id, 'PLAY_START'));
                 }).catch(err => console.log(err));
             }
         })

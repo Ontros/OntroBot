@@ -10,7 +10,7 @@ module.exports = {
     callback: (message, args, text) => {
         var server = servers[message.guild.id];
         server.cekarnaChannel = args[0];
-        message.channel.send('Čekárna nastavena na kanál: '+args[0]);
+        message.channel.send(lang(message.guild.id, 'ROOM_SET')+': '+args[0]);
         serverManager(message.guild.id, true);
     }
 }

@@ -6,6 +6,6 @@ module.exports = {
     requiredRoles: [],
     allowedIDs: [],
     callback: (message, arguments, text) => {
-        message.channel.send("Aktuální verze OntroBota je: "+package.version);
+        message.channel.send(lang(message.guild.id, 'CUR_VER')+": "+package.version);
     }
 }

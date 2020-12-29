@@ -53,7 +53,9 @@ module.exports = (bot, commandOptions) => {
         permissions: [],
         requiredRoles: [],
         allowedIDs: [],
+        allowedServer = '',
         callback,
+        requireChannelPerms = false,
     } = commandOptions 
 
     if (typeof commands === 'string') {
@@ -69,7 +71,7 @@ module.exports = (bot, commandOptions) => {
     }
 
         bot.on('message', message => {
-            const {member, content, guild} = message
+            const {member, content, guild, channel} = message
             try {
                 serverManager(guild.id);
             }
@@ -83,14 +85,14 @@ module.exports = (bot, commandOptions) => {
                 if (content.toLowerCase().split(/[ ]+/)[0] === `${prefix}${alias.toLowerCase()}`) {
                     for (const permission of commandOptions.permissions) {
                         if (!member.hasPermission(permission)) {
-                            message.reply(permissionError)
+                            message.reply(lang(message.guild.id, 'CMD_NO_PERM'))
                             return
                         }
                     }
                     for (const requiredRole of commandOptions.requiredRoles) {
                         const role = guild.role.cache.find(role => role.name == requiredRole)
                         if (!role || !member.roles.cache.has(role.id)) {
-                            message.reply('Musíš mít roli ' + requiredRole)
+                            message.reply(lang(message.guild.id, 'ROLE_RQR')[0] + requiredRole+lang(message.guild.id, 'ROLE_RQR')[0])
                             return
                         }
                     }
@@ -103,19 +105,59 @@ module.exports = (bot, commandOptions) => {
                             }
                         }
                         if (!isAllowed) {
-                            message.reply('Nemáš práva plebe lol');
+                            message.reply(lang(message.guild.id, 'CMD_NO_PERM'))
                             return;
                         }
                     }
+
+                    
+                    if (commandOptions.allowedServer != message.guild.id && commandOptions.allowedServer != '') {
+                        //console.log('not allowed server');
+                        //return;
+                    }
+                        
                     const arguments = content.split(/[ ]+/)
                     arguments.shift()
 
                     if (arguments.length < minArgs || (maxArgs != null && arguments.length > maxArgs)) {
-                        message.reply('Nesprávný formát! Použij: '+ prefix+alias+' '+expectedArgs);
+                        message.reply(lang(message.guild.id, 'INC_FORM')+': '+ prefix+alias+' '+expectedArgs);
                         return;
                     }
 
-                    callback(message, arguments, arguments.join(' '), bot);
+                    const botPermissionsIn = guild.me.permissionsIn(channel);
+                    if (!botPermissionsIn.has('SEND_MESSAGES')) {
+                        member.user.send(lang(message.guild.id, 'NO_WRITE_PERM'));
+                        return;
+                    }
+
+                    if (!botPermissionsIn.has('EMBED_LINKS')) {
+                        channel.send(lang(message.guild.id, 'NO_EMBED_PERM'));
+                        return;
+                    }
+
+                    if (commandOptions.requireChannelPerms) {
+                        if (!member.voice.channel) {
+                            message.channel.send(lang(message.guild.id, 'NOT_IN_VC'))
+                            return
+                        }
+                        const permissionsInVoice = guild.me.permissionsIn(member.voice.channel);
+
+                        if (!permissionsInVoice.has('CONNECT')) {
+                            channel.send(lang(message.guild.id, 'NO_JOIN_PERM'));
+                            return;
+                        }
+
+                        if (!permissionsInVoice.has('SPEAK')) {
+                            channel.send(lang(message.guild.id, 'NO_SPEAK_PERM'));
+                            return;
+                        }
+                    }
+                    try {
+                        callback(message, arguments, arguments.join(' '), bot);
+                    }
+                    catch {
+                        message.channel.send(lang(message.guild.id, "UNKWN_ERR"))
+                    }
 
                     return;
                 }

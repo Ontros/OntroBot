@@ -1,0 +1,157 @@
+{
+    "languages": ["english", "dev", "czech"],
+    "translations": {
+      "UNKWN_ERR": {
+        "english": "An Unknown Error Has Occurred",
+        "czech": "Neznámá chyba nastala",
+        "dev": "Chybička se vloudila, sorry chlape"
+      },
+      "CURR_LANG_IS": {
+        "english": "Current language is",
+        "czech": "Aktualní jazyk je"
+      },
+      "LOOP_START": {
+        "english": "Looping started",
+        "czech": "Začínám smyčku",
+        "dev": "Začínám loopingovat"
+      },
+      "LOOP_END": {
+        "english": "Looping stoped",
+        "czech": "Končím smyčku",
+        "dev": "Přestávám loopingovat"
+      },
+      "RESUME": {
+        "english": "Resuming",
+        "czech": "Pokračuji",
+        "dev": "Konec dovolené bruh :pensive:"
+      },
+      "PAUSE": {
+        "english": "Pausing",
+        "czech": "Zastavuji",
+        "dev": "Díky za pauzu bráško :heart:"
+      },
+      "QUEUE_ADD": {
+        "english": "Added song to queue",
+        "czech": "Přidal jsem písničku do queue",
+        "dev": "Přidal jsem songu do queue"
+      },
+      "PLAY_START": {
+        "english": "Started playing",
+        "czech": "Začínám hrát",
+        "dev": "Joininguju se za tebou ať ti není smutno ;)"
+      },
+      "REQ_BY": {
+        "english": "Request by",
+        "czech": "Zažádáno od",
+        "dev": "Request od"
+      },
+      "QUEUE_LIST_REQ_BY": {
+        "english": "Queue list request by",
+        "czech": "Seznam queue zažádán od",
+        "dev": "Queue seznam(ka) zažádána od"
+      },
+      "SKIP": {
+        "english": "Skipped! :play_pause:",
+        "czech": "Úspěšně přeskočeno! :play_pause:",
+        "dev": "Přehopnul jsem songu! :play_pause:"
+      },
+      "STOP": {
+        "english": "Stopped!",
+        "czech": "Úspěšně zastaveno!",
+        "dev": "Přestávám hrát když na tom tak trváš!"
+      },
+      "CURR_VOL": {
+        "english": "Current volume is",
+        "czech": "Aktualní hlasitost je"
+      },
+      "SET_VOL": {
+        "english": "Volume set to",
+        "czech": "Hlasitost nastavena na"
+      },
+      "CMD_NO_PERM": {
+        "english": "You don't have permission to perform this command!",
+        "czech": "Nemáš práva na použití příkazu!",
+        "dev": "Nemáš práva PLEBE!"
+      },
+      "ROLE_RQR": {
+        "english": ["You need to have the "," role!"],
+        "czech": ["Musíš mít "," roli!"]
+      },
+      "INC_FORM": {
+        "english": "Incorrect format! Use",
+        "czech": "Nesprávný formát! Použij",
+        "dev": "Máš to špatně napsaný chlape! Použij"
+      },
+      "NO_WRITE_PERM": {
+        "english": "I don't have permission to write to this channel!",
+        "czech": "Nemůžu psát do kanálu",
+        "dev": "Dej mi práva na psaní plz"
+      },
+      "NO_EMBED_PERM": {
+        "english": "I don't have permission to embed links!",
+        "czech": "Nemůžu embednout linky",
+        "dev": "Dej mi práva na embednutí linků plz"
+      },
+      "NO_JOIN_PERM": {
+        "english": "I don't have permission to join your voice channel!",
+        "czech": "Nemůžu se připojit do zvukového kanálu",
+        "dev": "Dej mi práva na joinutí za váma plz, je mi smutno :("
+      },
+      "NO_SPEAK_PERM": {
+        "english": "I don't have permission to speak!",
+        "czech": "Nemůžu mluvit",
+        "dev": "Dej mi práva na mluvení plz"
+      },
+      "NOT_IN_VC": {
+        "english": "You need to be in a voice channel to perform this command!",
+        "czech": "Musíš být ve zkukovém kanálu!",
+        "dev": "Musíš být ve zkukovém kanálu!"
+      },
+      "LANG_SET": {
+        "english": "Language set to",
+        "czech": "Jazyk nastaven na"
+      },
+      "LANG_UNKWN": {
+        "english": "Unknown language!",
+        "czech": "Neznámý jazyk!",
+        "dev": "Nemluvím tvojí řečí!"
+      },
+      "LANG_LIST_REQ_BY": {
+        "english": "Language list request by",
+        "czech": "Seznam jazyků zažádán od",
+        "dev": "Jazyková seznam(ka) zažádána od"
+      },
+      "AVAILABLE_LANG": {
+        "english": "Available languages",
+        "czech": "Dostupné jazyky"
+      },
+      "PP_SIZE": {
+        "english": "Your penys size is",
+        "czech": "Velikost tvojeho penysu je"
+      },
+      "CUR_VER": {
+        "english": "Current version of OntroBot is",
+        "czech": "Aktuální verze OntroBota je"
+      },
+      "LIST_ADD": {
+        "english": "Added listener",
+        "czech": "Vrátný byl přidán"
+      },
+      "LIST_EXISTS": {
+        "english": "This listener already exists",
+        "czech": "Vrátný již existuje"
+      },
+      "LIST_REM": {
+        "english": "Removed listener",
+        "czech": "Vrátný byl odebrán"
+      },
+      "LIST_NO_EXIST": {
+        "english": "This listener doesn't exist",
+        "czech": "Vrátný neexistuje"
+      },
+      "ROOM_SET": {
+        "english": "Waiting room set to",
+        "czech": "Čekárna nastavena na kanál"
+      }
+    }
+}

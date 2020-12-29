@@ -70,17 +70,7 @@ const PREFIX = '_';
 const OwnerID = '255345748441432064';
 const LanguageList = ["dev", "eng", "czk"];
 global.servers = {};
+global.lang = require('./language.js');
 bot.setMaxListeners(0);
 
-function login() {
-    try {
-        bot.login(token);
-        return
-    }
-    catch {
-        console.log("Login failed, retrying in 5 seconds");
-        setTimeout(login, 5000);
-    }
-}
-
-login();
+bot.login(token);

@@ -11,7 +11,7 @@ module.exports = {
         var server = servers[message.guild.id];
         if (!args[0])
         {
-            message.reply('Aktuální hlasitost je: '+ server.volume + '%')
+            message.channel.send(lang(message.guild.id, 'CURR_VOL') + ': '+ server.volume + '%')
         }
         else 
         {
@@ -19,7 +19,7 @@ module.exports = {
             if (!server.queue) {
                 server.dispathcher.setVolume(server.volume / 100);
             }
-            message.reply('Hlasitost nastavena na: '+server.volume+ '%');
+            message.channel.send(lang(message.guild.id, 'SET_VOL') + ': '+server.volume+ '%');
             serverManager(message.guild.id, true);
         }
     }

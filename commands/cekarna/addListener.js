@@ -11,11 +11,11 @@ module.exports = {
         var server = servers[message.guild.id];
         if (!server.cekarnaPings.includes(args[0])) {
             server.cekarnaPings.push(args[0]);
-            message.channel.send('Vrátný byl přidán: '+args[0]);
+            message.channel.send(lang(message.guild.id, 'LIST_ADD')+': '+args[0]);
             serverManager(message.guild.id, true);
         }
         else {
-            message.channel.send('Vrátný již existuje');
+            message.channel.send(lang(message.guild.id, 'LIST_EXISTS'));
         }
     }
 }
