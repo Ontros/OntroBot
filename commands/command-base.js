@@ -155,7 +155,8 @@ module.exports = (bot, commandOptions) => {
                     try {
                         callback(message, arguments, arguments.join(' '), bot);
                     }
-                    catch {
+                    catch (e){
+                        console.log(e);
                         message.channel.send(lang(message.guild.id, "UNKWN_ERR"))
                     }
 

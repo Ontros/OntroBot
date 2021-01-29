@@ -9,7 +9,8 @@ module.exports = (id, change) => {
             readServer(id);
         }
     }
-    catch {
+    catch (e) {
+        console.log(e);
         console.log('Error with opening/writing to data -> loading default server!');
         servers[id] = defaultServer;
     }
@@ -42,15 +43,26 @@ function checkServer(id)
 function updateServerFile(id) {
     console.log('WRITING!');
     var server = servers[id];
+    var connection = server.connection;
     server.connection = [];
+    var dispathcher = server.dispathcher;
     server.dispathcher = [];
+    var loop = server.loop;
     server.loop = false;
+    var playing = server.playing;
     server.playing = true;
-    fs.writeFileSync('./data/'+id+'.json', JSON.stringify(servers[id]), err => {
+    var queue = server.queue;
+    server.queue = [];
+    fs.writeFileSync('./data/'+id+'.json', JSON.stringify(server), err => {
         if (err) {
             console.log(err);
         }
     });
+    server.connection = connection;
+    server.dispathcher = dispathcher;
+    server.loop = loop;
+    server.playing = playing;
+    server.queue = queue;
 }
 
 function readServer(id) {

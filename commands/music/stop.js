@@ -1,5 +1,5 @@
 module.exports = {
-    commands: ['stop'],
+    commands: ['stop', 'leave'],
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
@@ -11,7 +11,7 @@ module.exports = {
             for (var i = server.queue.length -1; i >= 0; i--) {
                 server.queue.splice(i, 1);
             }
-            server.dispathcher.end();
+            server.dispathcher.destroy();
             //message.member.voice.channel.leave();
             //say("Stop", message);
             message.channel.send(lang(message.guild.id, 'STOP'));
