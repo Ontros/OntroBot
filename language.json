@@ -152,6 +152,30 @@
       "ROOM_SET": {
         "english": "Waiting room set to",
         "czech": "Čekárna nastavena na kanál"
+      },
+      "VOL_NOT_NUM": {
+        "english": "You need to set volume as an number!",
+        "czech": "Hlasitost musí být číslo"
+      },
+      "ARGS_NOT_NUMS": {
+        "english": "Both arguments need to be numbers!",
+        "czech": "Oba argumenty musí výt čísla!"
+      },
+      "NO_TO_SKIP": {
+        "english": "No song to skip!",
+        "czech": "Žádná songa na skipnutí!"
+      },
+      "NO_PLAY": {
+        "english": "Nothing is playing!",
+        "czech": "Nic nehraje!"
+      },
+      "USR_ID_NOT": {
+        "english": "User ID not found!",
+        "czech": "ID uživatele nebylo nalezeno!"
+      },
+      "CHAN_ID_NOT": {
+        "english": "Channel ID not found!",
+        "czech": "ID kanálu nebylo nalezeno!"
       }
     }
 }
