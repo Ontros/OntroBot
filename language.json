@@ -159,7 +159,7 @@
       },
       "ARGS_NOT_NUMS": {
         "english": "Both arguments need to be numbers!",
-        "czech": "Oba argumenty musí výt čísla!"
+        "czech": "Oba argumenty musí být čísla!"
       },
       "NO_TO_SKIP": {
         "english": "No song to skip!",
