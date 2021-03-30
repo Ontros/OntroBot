@@ -54,7 +54,7 @@ bot.on('ready', () => {
             } else if (file != base_file) {
                 //Soubor
                 const option = require(path.join(__dirname, dir, file));
-                commandBase(option);
+                commandBase(option, file);
             }
         }
     }

@@ -24,7 +24,8 @@ const defaultServer = {
     volume: 5,
     language: "english",
     cekarnaChannel: "",
-    cekarnaPings: []
+    cekarnaPings: [],
+    steps: []
 }
 function checkServer(id: number) 
 {
@@ -68,5 +69,8 @@ function updateServerFile(id:number) {
 function readServer(id:number) {
     const server = require('./../data/'+id+'.json');
     console.log('READING!');
+    if (!server.roles) {
+        server.roles = []
+    }
     global.servers[id] = server;
 }

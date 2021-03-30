@@ -43,7 +43,8 @@ const validatePermissions = (permissions: string[]) => {
 }
 
 
-module.exports = (commandOptions : CommandOptions) => {
+module.exports = (commandOptions : CommandOptions, file: any) => {
+    if (!commandOptions.callback) {console.log('error loading: ');console.log(file); return}
     let {
         commands,
         expectedArgs = '',

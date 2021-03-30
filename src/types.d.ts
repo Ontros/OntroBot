@@ -1,3 +1,8 @@
+//import * as dtypes from 'discord.js'
+
+//import { GuildMember } from "discord.js";
+
+/*Guild*/
 type Member = {
     channelID: string;
     guild: Guild;
@@ -5,17 +10,20 @@ type Member = {
     voice: VoiceState;
     user: User;
     hasPermission: (perm: string) => boolean;
-    roles: any;
+    roles: GuildMemberRoleManager;
     permissionsIn: (chan: Channel | VoiceChannel) => Permission;
+    setNickname: (nick: string)=>Promise<Member>;
 };
+
 
 type Guild = {
     id: number;
     members: any;
     role: any;
     me: Member;
-    member: (arg1: String)=>boolean;
+    member: (arg1: String)=>Member;
     channels: Channels;
+    roles: Roles;
 };
 
 type Server = {
@@ -28,6 +36,7 @@ type Server = {
     language: string;
     cekarnaChannel: string;
     cekarnaPings: string[];
+    steps: Step[];
 };
 
 type Channels = {
@@ -108,6 +117,8 @@ type Channel = {
 
 type Role = {
     name: string;
+    id: string;
+    position: number;
 };
 
 type VoiceChannel = {
@@ -144,3 +155,30 @@ type Guilds = {
 type GuildCaches = {
     find: (arg0: (arg1: Guild) => boolean) => Guild;
 };
+/*Serverova role (ne DC)*/
+type Step = {
+    id: string;
+    name: string;
+    emoji: string;
+}
+
+type Roles = {
+    cache: RoleCache;
+    fetch: (id: string | any) => Promise<Role>;
+}
+
+type RoleCache = {
+    get: (id: string) => Role;
+    has: (id: string) => boolean;
+}
+
+type GuildMemberRoleManager = {
+    highest: Role;
+    cache: RoleCache;
+    add: (role: Role) => Promise<Member>;
+    remove: (role: Role) => Promise<Member>;
+}
+
+type GetUser = (message: Message, arg0: string) => Promise<Member | null>;
+
+type GetCur_role = (roles: Step[], user: Member) => {curStep: (Role | null); roleIndex: number}

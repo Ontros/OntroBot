@@ -176,6 +176,22 @@
       "CHAN_ID_NOT": {
         "english": "Channel ID not found!",
         "czech": "ID kanálu nebylo nalezeno!"
+      },
+      "ROLE_ID_NOT": {
+        "english": "Role ID not found!",
+        "czech": "ID role nebylo nalezeno!"
+      },
+      "NO_SPACE_FOR_UPGRADE": {
+        "english": "This member can´t be upgraded further!",
+        "czech": "Tenhle uživatel nemůže být vylepšen více!"
+      },
+      "NO_SPACE_FOR_DOWNGRADE": {
+        "english": "This member can´t be downgraded further!",
+        "czech": "Tenhle uživatel nemůže být zhoršen více!"
+      },
+      "STEPS_NOT": {
+        "english": "Steps not found!",
+        "czech": "Úrovně nenalezeny!"
       }
     }
 }
