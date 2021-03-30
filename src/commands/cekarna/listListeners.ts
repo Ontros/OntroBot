@@ -7,15 +7,14 @@ module.exports = {
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
-    callback: (message: Message, args: string[], text: string) => {
-        global.servers[message.guild.id].cekarnaPings.forEach(element => {
-            var user = bot.users.cache.find(user => user.id === element)
+    callback: async (message: Message, args: string[], text: string) => {
+        global.servers[message.guild.id].cekarnaPings.forEach(async element => {
+            const user = await global.getUser(message, element); if (!user) {message.channel.send(global.lang(message.guild.id, 'USR_ID_NOT'));return;}
             try {
-                message.channel.send(user.username);
+                message.channel.send(user.user.username);
             }
             catch {
                 message.channel.send(element)
-                return;
             }
         })
     }

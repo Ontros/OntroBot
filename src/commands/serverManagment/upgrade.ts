@@ -8,8 +8,7 @@ module.exports = {
         //TODO: check if enabled
         
         //Make sure ID is valid and get user:
-        const getUser: GetUser = require('./../../getUser')
-        const user = await getUser(message, args[0]); if (!user) {message.channel.send(global.lang(message.guild.id, 'USR_ID_NOT'));return;}
+        const user = await global.getUser(message, args[0]); if (!user) {message.channel.send(global.lang(message.guild.id, 'USR_ID_NOT'));return;}
     
         //Get server steps:
         const Steps = global.servers[message.guild.id].steps 

@@ -7,16 +7,13 @@ module.exports = {
     permissions: ["ADMINISTRATOR"],
     requiredRoles: [],
     allowedIDs: [],
-    callback: (message: Message, args: string[], text: string) => {
+    callback: async (message: Message, args: string[], text: string) => {
         const {lang} = global
         var server = global.servers[message.guild.id];
-        if (!message.guild.member(args[0])) {
-            message.channel.send(lang(message.guild.id, 'USR_ID_NOT'));
-            return
-        }
-        if (!server.cekarnaPings.includes(args[0])) {
-            server.cekarnaPings.push(args[0]);
-            message.channel.send(lang(message.guild.id, 'LIST_ADD')+': '+args[0]);
+        const user = await global.getUser(message, args[0]); if (!user) {message.channel.send(global.lang(message.guild.id, 'USR_ID_NOT'));return;}
+        if (!server.cekarnaPings.includes(user.id)) {
+            server.cekarnaPings.push(user.id);
+            message.channel.send(lang(message.guild.id, 'LIST_ADD')+': '+user.displayName);
             serverManager(message.guild.id, true);
         }
         else {

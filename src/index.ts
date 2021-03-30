@@ -12,6 +12,7 @@ declare namespace NodeJS {
       lang: any;
       YouTube: any;
       Discord: any;
+      getUser: GetUser;
     }
 }
 
@@ -27,6 +28,7 @@ global.langJ = require('./../language.json');
 global.Package = require('./../package.json');;
 global.servers = [];
 global.lang = require('./language.js');
+global.getUser = require('./utils/getUser')
 
 const {fs, bot, path, serverManager} = global
 

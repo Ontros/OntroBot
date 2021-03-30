@@ -13,6 +13,7 @@ type Member = {
     roles: GuildMemberRoleManager;
     permissionsIn: (chan: Channel | VoiceChannel) => Permission;
     setNickname: (nick: string)=>Promise<Member>;
+    displayName: string;
 };
 
 
