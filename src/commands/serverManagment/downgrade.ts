@@ -1,3 +1,6 @@
+import { Message } from "discord.js";
+import { GetCur_role } from "../../types";
+
 module.exports = {
     commands: ['downgrade', 'd'],
     expectedArgs: '<id|mention>',
@@ -6,6 +9,8 @@ module.exports = {
     maxArgs: 1,
     callback: async (message: Message, args: string[], text: string) => {
         //TODO: check if enabled
+
+        if(!message.guild) {return}
 
         //Make sure ID is valid and get user:
         const user = await global.getUser(message, args[0]); if (!user) {message.channel.send(global.lang(message.guild.id, 'USR_ID_NOT'));return;}

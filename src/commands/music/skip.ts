@@ -1,3 +1,5 @@
+import { Message } from "discord.js";
+
 module.exports = {
     commands: ['skip', 's'],
     permissions: [],
@@ -5,6 +7,7 @@ module.exports = {
     allowedIDs: [],
     requireChannelPerms: true,
     callback: (message: Message, args: string[], text: string) => {
+        if (!message.guild) {return}
         var server = global.servers[message.guild.id];
         const {lang} = global;
         if (server.queue.length < 2) {

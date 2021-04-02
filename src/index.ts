@@ -1,20 +1,27 @@
-declare namespace NodeJS {
-    interface Global {
-      bot: Bot;
-      YTDL: any;
-      YOUTUBE: any;
-      fs: any;
-      path: any;
-      serverManager: any;
-      langJ: any;
-      Package: any;
-      servers: Server[];
-      lang: any;
-      YouTube: any;
-      Discord: any;
-      getUser: GetUser;
-    }
+import { Client, Guild, GuildMember, VoiceState } from "discord.js";
+import { GetUser, Server, Global, ServerManager, Lang } from "./types";
+
+type Servers = {
+    [index: string]: Server;
 }
+
+declare global {namespace NodeJS {
+    interface Global {
+        bot: Client;
+        YTDL: any;
+        YOUTUBE: any;
+        fs: any;
+        path: any;
+        serverManager: ServerManager;
+        langJ: any;
+        Package: any;
+        servers: Servers;
+        lang: Lang;
+        YouTube: any;
+        Discord: any;
+        getUser: GetUser;
+    }
+}}
 
 global.Discord = require('discord.js');
 global.YTDL = require('ytdl-core');
@@ -26,7 +33,7 @@ const { Console } = require('console');
 global.serverManager = require('././server-manager');
 global.langJ = require('./../language.json');
 global.Package = require('./../package.json');;
-global.servers = [];
+global.servers = {};
 global.lang = require('./language.js');
 global.getUser = require('./utils/getUser')
 
@@ -41,7 +48,9 @@ global.YouTube = new youtube(process.env.YT_TOKEN);
 bot.on('ready', () => {
     console.log('This bot is online!')
     if (process.env.STATUS) {
-        bot.user.setActivity(process.env.STATUS)
+        if (bot.user) {
+            bot.user.setActivity(process.env.STATUS)
+        }
     }
     const base_file = 'command-base.js'
     const commandBase = require(`./commands/${base_file}`)
@@ -65,20 +74,22 @@ bot.on('ready', () => {
 })
 
 
-bot.on('voiceStateUpdate', (oldMember: Member, newMember: Member) => {
-    let newUserChannel: string = newMember.channelID;
-    let oldUserChannel: string = oldMember.channelID;
+bot.on('voiceStateUpdate', async (oldMember: VoiceState, newMember: VoiceState) => {
+    let newUserChannel = newMember.channelID;
+    let oldUserChannel = oldMember.channelID;
   
     if (newUserChannel != oldUserChannel) {    
         if(newUserChannel !== null) {
             // User Joins a voice channel
             serverManager(newMember.guild.id);
+            newMember.guild.id
             var server: Server = global.servers[newMember.guild.id];
             if (newUserChannel == server.cekarnaChannel) {
                 //Nový čekač
-                server.cekarnaPings.forEach(element => {
-                    var server: Guild = bot.guilds.cache.find((guild: Guild) => guild.id === newMember.guild.id);
-                    var user: Member = server.members.cache.find((user: Member) => user.id === element);
+                server.cekarnaPings.forEach(async element => {
+                    var server = bot.guilds.cache.find((guild: Guild) => guild.id === newMember.guild.id);
+                    if(!server) {console.log('VoiceStateUpdate error');return}
+                    var user = await server.members.fetch(element)
                     try {
                         console.log(user.user.username);
                     }

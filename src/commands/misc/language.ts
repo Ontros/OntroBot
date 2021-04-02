@@ -1,3 +1,4 @@
+import { Message } from "discord.js";
 
 //const Discord = require('discord.js');
 module.exports = {
@@ -9,8 +10,8 @@ module.exports = {
     requiredRoles: [],
     allowedIDs: [],
     callback: (message: Message, args: string[], text: string) => {
-        const {langJ, lang, Discord} = global
-
+        const {langJ, lang, Discord, bot} = global
+        if (!message.guild || !bot.user) {return}
         if (args[0]) 
         {
             if (args[0].toLowerCase() != "list")

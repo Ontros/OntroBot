@@ -1,3 +1,5 @@
+import { Message } from "discord.js";
+
 module.exports = {
     commands: ['help'],
     callback: (message: Message, args: string[], text: string) => {

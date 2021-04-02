@@ -1,7 +1,10 @@
+import { Message } from "discord.js";
+
 module.exports = {
     commands: ['loop', 'l'],
     requireChannelPerms: true,
     callback: (message: Message, args: string[], text: string) => {
+        if (!message.guild) {return}
         var server = global.servers[message.guild.id];
         const {lang} = global;
         if (!server.loop) {

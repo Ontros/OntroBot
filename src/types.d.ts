@@ -1,8 +1,10 @@
-//import * as dtypes from 'discord.js'
+import * as Discord from "discord.js";
+
+/*//import * as dtypes from 'discord.js'
 
 //import { GuildMember } from "discord.js";
 
-/*Guild*/
+/*Guild
 type Member = {
     channelID: string;
     guild: Guild;
@@ -156,7 +158,7 @@ type Guilds = {
 type GuildCaches = {
     find: (arg0: (arg1: Guild) => boolean) => Guild;
 };
-/*Serverova role (ne DC)*/
+/*Serverova role (ne DC)
 type Step = {
     id: string;
     name: string;
@@ -182,4 +184,65 @@ type GuildMemberRoleManager = {
 
 type GetUser = (message: Message, arg0: string) => Promise<Member | null>;
 
+type GetCur_role = (roles: Step[], user: Member) => {curStep: (Role | null); roleIndex: number}*/
+type CommandOptions = {
+    commands: string | string[];
+    expectedArgs: string;
+    permissionError: string;
+    minArgs: number;
+    maxArgs: number;
+    permissions: Discord.PermissionString[];
+    requiredRoles: Discord.RoleResolvable[];
+    allowedIDs: string[];
+    allowedServer: string;
+    callback: Function;
+    requireChannelPerms: boolean;
+};
+
+type Server = {
+    queue: Song[];
+    dispathcher?: Dispatcher;
+    loop: boolean;
+    connection?: VoiceConnection;
+    playing: boolean;
+    volume: number;
+    language: string;
+    cekarnaChannel: string;
+    cekarnaPings: string[];
+    steps: Step[];
+};
+
+type GetUser = (message: Message, arg0: string) => Promise<Member | null>;
 type GetCur_role = (roles: Step[], user: Member) => {curStep: (Role | null); roleIndex: number}
+
+interface Global  {
+    bot: Client;
+    YTDL: any;
+    YOUTUBE: any;
+    fs: any;
+    path: any;
+    serverManager: any;
+    langJ: any;
+    Package: any;
+    servers: Server[];
+    lang: any;
+    YouTube: any;
+    Discord: any;
+    getUser: GetUser;
+}
+
+type Step = {
+    id: string;
+    name: string;
+    emoji: string;
+}
+
+type Song = {
+    title: string;
+    id: string;
+    url: string;
+    requestedBy: string;
+};
+
+type ServerManager = (id: string, change?: boolean) => void
+type Lang = (id: string, textId: string) => string

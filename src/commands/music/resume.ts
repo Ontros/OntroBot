@@ -1,3 +1,5 @@
+import { Message } from "discord.js";
+
 module.exports = {
     commands: ['resume'],
     permissions: [],
@@ -5,6 +7,7 @@ module.exports = {
     requireChannelPerms: true,
     allowedIDs: [],
     callback: (message: Message, args: string[], text: string) => {
+        if (!message.guild) {return}
         var server = global.servers[message.guild.id];
         const {lang} = global;
         //console.log(message.guild.voice.connection);

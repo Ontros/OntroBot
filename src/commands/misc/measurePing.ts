@@ -1,3 +1,5 @@
+import { Message } from "discord.js";
+
 module.exports = {
     commands: ['measurePing'],
     permissions: [],

@@ -1,5 +1,5 @@
 //const fs = require('fs');
-module.exports = (id: number, change: boolean) => {
+module.exports = (id: string, change: boolean) => {
     try {
         if (change != null && change == true) {
             updateServerFile(id);
@@ -27,12 +27,12 @@ const defaultServer = {
     cekarnaPings: [],
     steps: []
 }
-function checkServer(id: number) 
+function checkServer(id: string) 
 {
     //Existuje soubor?
-    if (!fs.existsSync('./data/'+id+'.json')) {
+    if (!global.fs.existsSync('./data/'+id+'.json')) {
         //Vytvoř ho
-        fs.writeFileSync('./data/'+id+'.json', JSON.stringify(defaultServer), (err: Error) => {
+        global.fs.writeFileSync('./data/'+id+'.json', JSON.stringify(defaultServer), (err: Error) => {
             if (err) {
                 console.log(err);
             }
@@ -41,7 +41,7 @@ function checkServer(id: number)
     }
 }
 
-function updateServerFile(id:number) {
+function updateServerFile(id:string) {
     console.log('WRITING!');
     var server = global.servers[id];
     var connection = server.connection;
@@ -54,7 +54,7 @@ function updateServerFile(id:number) {
     server.playing = true;
     var queue = server.queue;
     server.queue = [];
-    fs.writeFileSync('./data/'+id+'.json', JSON.stringify(server), (err: Error) => {
+    global.fs.writeFileSync('./data/'+id+'.json', JSON.stringify(server), (err: Error) => {
         if (err) {
             console.log(err);
         }
@@ -66,7 +66,7 @@ function updateServerFile(id:number) {
     server.queue = queue;
 }
 
-function readServer(id:number) {
+function readServer(id:string) {
     const server = require('./../data/'+id+'.json');
     console.log('READING!');
     if (!server.roles) {

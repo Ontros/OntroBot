@@ -1,3 +1,5 @@
+import { Message } from "discord.js";
+
 module.exports = {
     commands: ['penys', 'pp'],
     permissions: [],
@@ -5,6 +7,7 @@ module.exports = {
     allowedIDs: [],
     callback: (message: Message, args: string[], text: string) => {
         var rand = require('random-seed').create(message.author.id)
+        if (!message.guild) {return}
         const {lang} = global;
         if (message.author.id === '255345748441432064')
         {

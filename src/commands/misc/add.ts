@@ -1,3 +1,5 @@
+import { Message } from "discord.js";
+
 module.exports = {
     commands: ['add', 'addition'],
     expectedArgs: '<num1> <num2>',

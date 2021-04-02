@@ -1,4 +1,4 @@
-import { isNull } from "util";
+import { Message } from "discord.js";
 
 //const serverManager = require('../.././server-manager');
 module.exports = {
@@ -10,6 +10,7 @@ module.exports = {
     requiredRoles: [],
     allowedIDs: [],
     callback: (message: Message, args: string[], text: string) => {
+        if (!message.guild) {return}
         var server = global.servers[message.guild.id];
         const {lang} = global;
         if (!args[0])
@@ -28,7 +29,7 @@ module.exports = {
                 server.dispathcher.setVolume(server.volume / 100);
             }
             message.channel.send(lang(message.guild.id, 'SET_VOL') + ': '+server.volume+ '%');
-            serverManager(message.guild.id, true);
+            global.serverManager(message.guild.id, true);
         }
     }
 }

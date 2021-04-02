@@ -1,3 +1,6 @@
+import { Message, Role } from "discord.js";
+import { CommandOptions } from "../types";
+
 const prefix = '_';
 //const serverManager = require('.././server-manager');
 
@@ -43,7 +46,7 @@ const validatePermissions = (permissions: string[]) => {
 }
 
 
-module.exports = (commandOptions : CommandOptions, file: any) => {
+module.exports = async (commandOptions : CommandOptions, file: any) => {
     if (!commandOptions.callback) {console.log('error loading: ');console.log(file); return}
     let {
         commands,
@@ -71,35 +74,39 @@ module.exports = (commandOptions : CommandOptions, file: any) => {
         validatePermissions(commandOptions.permissions)
     }
 
-        bot.on('message', (message: Message) => {
+        global.bot.on('message', async(message: Message) => {
             const {member, content, guild, channel} = message
             const {lang} = global;
-            if (!guild) {
+            if (!guild || !message.guild) {
                 //console.log("DM");
                 return;
             }
             try {
                 //console.log(guild.id);
-                serverManager(guild.id);  
+                global.serverManager(message.guild.id);  
             }
             catch (err) {
                 console.log('ERROR WITH LOADING SERVER --> STOPPING COMMAND ' +err)
                 return
             }
             
+            if(!member || !guild.me) {
+                message.channel.send(lang(guild.id, 'USR_ID_NOT'))
+                return;
+            }
 
             for (const alias of commands) {
                 if (content.toLowerCase().split(/[ ]+/)[0] === `${prefix}${alias.toLowerCase()}`) {
                     for (const permission of commandOptions.permissions) {
                         if (!member.hasPermission(permission)) {
-                            message.reply(lang(message.guild.id, 'CMD_NO_PERM'))
+                            message.reply(lang(guild.id, 'CMD_NO_PERM'))
                             return
                         }
                     }
                     for (const requiredRole of commandOptions.requiredRoles) {
-                        const role = guild.role.cache.find((role:Role) => role.name == requiredRole)
+                        const role = (await guild.roles.fetch()).cache.find((role:Role) => role.name == requiredRole);
                         if (!role || !member.roles.cache.has(role.id)) {
-                            message.reply(lang(message.guild.id, 'ROLE_RQR')[0] + requiredRole+lang(message.guild.id, 'ROLE_RQR')[0])
+                            message.reply(lang(guild.id, 'ROLE_RQR')[0] + requiredRole+lang(guild.id, 'ROLE_RQR')[0])
                             return
                         }
                     }
@@ -112,13 +119,13 @@ module.exports = (commandOptions : CommandOptions, file: any) => {
                             }
                         }
                         if (!isAllowed) {
-                            message.reply(lang(message.guild.id, 'CMD_NO_PERM'))
+                            message.reply(lang(guild.id, 'CMD_NO_PERM'))
                             return;
                         }
                     }
 
                     
-                    if (commandOptions.allowedServer != message.guild.id.toString() && commandOptions.allowedServer != '') {
+                    if (commandOptions.allowedServer != guild.id.toString() && commandOptions.allowedServer != '') {
                         //console.log('not allowed server');
                         //return;
                     }
@@ -127,44 +134,44 @@ module.exports = (commandOptions : CommandOptions, file: any) => {
                     Arguments.shift()
 
                     if (Arguments.length < minArgs || (maxArgs != null && Arguments.length > maxArgs)) {
-                        message.reply(lang(message.guild.id, 'INC_FORM')+': '+ prefix+alias+' '+expectedArgs);
+                        message.reply(lang(guild.id, 'INC_FORM')+': '+ prefix+alias+' '+expectedArgs);
                         return;
                     }
 
                     const botPermissionsIn = guild.me.permissionsIn(channel);
                     if (!botPermissionsIn.has('SEND_MESSAGES')) {
-                        member.user.send(lang(message.guild.id, 'NO_WRITE_PERM'));
+                        member.user.send(lang(guild.id, 'NO_WRITE_PERM'));
                         return;
                     }
 
                     if (!botPermissionsIn.has('EMBED_LINKS')) {
-                        channel.send(lang(message.guild.id, 'NO_EMBED_PERM'));
+                        channel.send(lang(guild.id, 'NO_EMBED_PERM'));
                         return;
                     }
 
                     if (commandOptions.requireChannelPerms) {
                         if (!member.voice.channel) {
-                            message.channel.send(lang(message.guild.id, 'NOT_IN_VC'))
+                            message.channel.send(lang(guild.id, 'NOT_IN_VC'))
                             return
                         }
                         const permissionsInVoice = guild.me.permissionsIn(member.voice.channel);
 
                         if (!permissionsInVoice.has('CONNECT')) {
-                            channel.send(lang(message.guild.id, 'NO_JOIN_PERM'));
+                            channel.send(lang(guild.id, 'NO_JOIN_PERM'));
                             return;
                         }
 
                         if (!permissionsInVoice.has('SPEAK')) {
-                            channel.send(lang(message.guild.id, 'NO_SPEAK_PERM'));
+                            channel.send(lang(guild.id, 'NO_SPEAK_PERM'));
                             return;
                         }
                     }
                     try {
-                        callback(message, Arguments, Arguments.join(' '), bot);
+                        callback(message, Arguments, Arguments.join(' '));
                     }
                     catch (e){
                         console.log(e);
-                        message.channel.send(lang(message.guild.id, "UNKWN_ERR"))
+                        message.channel.send(lang(guild.id, "UNKWN_ERR"))
                     }
 
                     return;

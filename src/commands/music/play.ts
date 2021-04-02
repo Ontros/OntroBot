@@ -2,6 +2,9 @@
 //const youtube = require('simple-youtube-api');
 //const YouTube = new youtube(process.env.YT_TOKEN);
 
+import { Message, VoiceConnection } from "discord.js";
+import { Song } from "../../types";
+
 module.exports = {
     commands: ['play', 'p'],
     expectedArgs: '<url>',
@@ -13,6 +16,7 @@ module.exports = {
     requireChannelPerms: true,
     callback: (message: Message, args: string[], text: string) => {
         function play(connection: VoiceConnection, message: Message){
+            if (!message.guild) {return}
             var server = global.servers[message.guild.id];
             const {YTDL} = global;
             server.playing = true;
@@ -59,22 +63,13 @@ module.exports = {
             //console.log(args[0]);
             return song;
         }
-
-        //if (!args[0]) {
-        //    message.channel.send("Nezadal jsi link debílku!");
-        //    return;
-        //}
-
-        //if (!message.member.voice.channel) {
-        //    message.channel.send("Musíš být v kanalizaci, abych mohl přidrandit!");
-        //    return;
-        //}
-
+        if (!message.guild) {return}
         var server = global.servers[message.guild.id];
         const {lang} = global;
         //nalezeni videa
         FindVideo(message.content.substring(5), message)
         .then(song =>{
+            if (!message.guild) {return}
             global.servers[message.guild.id].queue.push(song);
             //if(!message.guild.voiceStates.connection) message.member.voice.channel.join().then(function(connection){
 
@@ -85,8 +80,13 @@ module.exports = {
             }
             else
             {
+                if (!message.member?.voice.channel) {
+                    message.channel.send(lang(message.guild.id, 'NOT_IN_VC'));
+                    return;
+                }
                 message.member.voice.channel.join()
                 .then(function(connection: VoiceConnection){
+                    if (!message.guild) {return}
                     play(connection,message);
                     message.channel.send(lang(message.guild.id, 'PLAY_START'));
                 }).catch((err:Error) => console.log(err));

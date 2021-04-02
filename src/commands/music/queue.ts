@@ -1,14 +1,18 @@
 //const Discord = require('discord.js');
 
+import { Message } from "discord.js";
+
 module.exports = {
     commands: ['queue'],
     permissions: [],
     requireChannelPerms: true,
     requiredRoles: [],
     allowedIDs: [],
-    callback: (message: Message, args: string[], text: string, bot: Bot) => {
+    callback: (message: Message, args: string[], text: string) => {
+        const {lang, Discord, bot} = global;
+        if(!bot.user || !message.guild) {return}
         var server = global.servers[message.guild.id];
-        const {lang, Discord} = global;
+        
         //if (!server.queue) 
         //{
         //    message.channel.send('Nic nehraje debílku! :angry:');
@@ -19,6 +23,7 @@ module.exports = {
 	        .setTitle('Queue')
 	        .setThumbnail(bot.user.avatarURL());
         server.queue.forEach(song => {
+            if(!message.guild) {return}
             exampleEmbed.addField(i + '. [' + song.title + '](' + song.url + ')', lang(message.guild.id, 'REQ_BY')+': '+song.requestedBy);
             i++;
         });
