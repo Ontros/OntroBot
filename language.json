@@ -192,6 +192,14 @@
       "STEPS_NOT": {
         "english": "Steps not found!",
         "czech": "Úrovně nenalezeny!"
+      },
+      "COIN_HEADS": {
+        "english": "Coin landed on heads!",
+        "czech": "Výsledek hodu mince je: OREL!"
+      },
+      "COIN_TAILS": {
+        "english": "Coin landed on tails!",
+        "czech": "Výsledek hodu mince je: PANNA!"
       }
     }
 }
