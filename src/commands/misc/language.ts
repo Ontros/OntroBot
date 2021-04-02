@@ -1,4 +1,5 @@
 import { Message } from "discord.js";
+import { Languages } from "../../types";
 
 //const Discord = require('discord.js');
 module.exports = {
@@ -16,10 +17,16 @@ module.exports = {
         {
             if (args[0].toLowerCase() != "list")
             {
-                if (langJ.languages.includes(args[0])) {
+                //if (langJ.languages.includes(args[0])) {
+                var isValidLang = false;
+                var arg: (Languages|null) = null
+                langJ.languages.forEach(element => {
+                    if (element === args[0].toLowerCase()) {arg = element}
+                })
+                if (arg) {
                 //if ($.inArray(args[0], langJ.languages)) {
-                    global.servers[message.guild.id].language = args[0];
-                    message.channel.send(lang(message.guild.id, 'LANG_SET')+': '+args[0]);
+                    global.servers[message.guild.id].language = arg;
+                    message.channel.send(lang(message.guild.id, 'LANG_SET')+': '+arg);
                 }
                 else {
                     message.reply(lang(message.guild.id, 'LANG_UNKWN'))

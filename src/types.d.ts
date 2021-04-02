@@ -206,12 +206,13 @@ type Server = {
     connection?: VoiceConnection;
     playing: boolean;
     volume: number;
-    language: string;
+    language: Languages;
     cekarnaChannel: string;
     cekarnaPings: string[];
     steps: Step[];
 };
 
+type Languages = "english" | "dev" | "czech";
 type GetUser = (message: Message, arg0: string) => Promise<Member | null>;
 type GetCur_role = (roles: Step[], user: Member) => {curStep: (Role | null); roleIndex: number}
 
@@ -246,3 +247,18 @@ type Song = {
 
 type ServerManager = (id: string, change?: boolean) => void
 type Lang = (id: string, textId: string) => string
+
+type LangJ = {
+    languages: ["english", "dev", "czech"];
+    [index: string]: Translations
+}
+
+type Translations = {
+    [index: string]: Translation;
+}
+
+type Translation = {
+    english: string;
+    czech: string;
+    dev?: string;
+}

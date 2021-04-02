@@ -1,5 +1,5 @@
 import { Client, Guild, GuildMember, VoiceState } from "discord.js";
-import { GetUser, Server, Global, ServerManager, Lang } from "./types";
+import { GetUser, Server, Global, ServerManager, Lang, LangJ } from "./types";
 
 type Servers = {
     [index: string]: Server;
@@ -13,7 +13,7 @@ declare global {namespace NodeJS {
         fs: any;
         path: any;
         serverManager: ServerManager;
-        langJ: any;
+        langJ: LangJ;
         Package: any;
         servers: Servers;
         lang: Lang;

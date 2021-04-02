@@ -6,9 +6,9 @@ module.exports = (id: string, textId: string) => {
         throw new Error(`Unknown text ID "${textId}"`)
     }
 
-    if (server.language == 'dev' && !langJ.translations[textId][server.language.toLowerCase()]) {
+    if (server.language == 'dev' && !langJ.translations[textId]['dev']) {
         return langJ.translations[textId]["czech"]
     }
 
-    return langJ.translations[textId][server.language.toLowerCase()]
+    return langJ.translations[textId][server.language]
 }
