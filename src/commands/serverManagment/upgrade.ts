@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, Role } from "discord.js";
 import { GetCur_role } from "../../types";
 
 module.exports = {

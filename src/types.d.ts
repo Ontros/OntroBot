@@ -213,8 +213,8 @@ type Server = {
 };
 
 type Languages = "english" | "dev" | "czech";
-type GetUser = (message: Message, arg0: string) => Promise<Member | null>;
-type GetCur_role = (roles: Step[], user: Member) => {curStep: (Role | null); roleIndex: number}
+type GetUser = (message: Message, arg0: string) => Promise<Discord.GuildMember | null>;
+type GetCur_role = (roles: Step[], user: Member) => {curStep: (Discord.Role | null); roleIndex: number}
 
 interface Global  {
     bot: Client;
@@ -261,4 +261,26 @@ type Translation = {
     english: string;
     czech: string;
     dev?: string;
+}
+
+type Commands = { //used in server
+    [index: string]: Category
+}
+
+type commands = { //used in category
+    [index: string]: Command
+}
+
+type Category = {
+    name: string
+    description: string
+    commands: commands
+}
+
+type Command = {
+    name: string
+    aliases: string
+    args: string
+    descriptionShort: string
+    descriptionLong: string
 }

@@ -1,3 +1,5 @@
+import { Server } from "./types";
+
 //const fs = require('fs');
 module.exports = (id: string, change: boolean) => {
     try {
@@ -15,7 +17,7 @@ module.exports = (id: string, change: boolean) => {
         global.servers[id] = defaultServer;
     }
 }
-const defaultServer = {
+const defaultServer: Server = {
     queue: [],
     dispathcher: undefined,
     loop: false,
