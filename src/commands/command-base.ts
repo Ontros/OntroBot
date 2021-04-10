@@ -74,6 +74,38 @@ module.exports = async (commandOptions : CommandOptions, file: any) => {
         validatePermissions(commandOptions.permissions)
     }
 
+    //Get aliases:
+    var aliases
+    if (typeof commands === 'string') {
+        aliases = commands
+    }
+    else {
+        aliases = commands.join(', ')
+    }
+
+    //create command (for help):
+    const paths: string[] = file.split("\\")
+    const name = paths[paths.length-1].split('.')[0]
+    const catName = paths[paths.length-2] //category name
+
+    if (!global.commands[catName]) {
+        console.error('MISSING CATEGORY: '+catName)
+    }
+
+    const category = global.commands[catName]
+
+    if (!category.commands[name]) {
+        console.error('MISSING COMMAND: '+name)
+    }
+
+    /*category.commands[name] = {
+        name,
+        aliases,
+        args: expectedArgs,
+        descriptionShort: "placeholder",
+        descriptionLong: "placeholder"
+    }*/
+
         global.bot.on('message', async(message: Message) => {
             const {member, content, guild, channel} = message
             const {lang} = global;
