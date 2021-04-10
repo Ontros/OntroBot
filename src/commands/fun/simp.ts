@@ -7,6 +7,6 @@ module.exports = {
     allowedIDs: [],
     allowedServer: ['699609602685272074'],
     callback: (message: Message, args: string[], text: string) => {
-        message.channel.send("KUBA!");
+        message.reply("Ne ty!");
     }
 }
