@@ -1,5 +1,5 @@
-import { Client, Guild, GuildMember, Intents, VoiceState } from "discord.js";
-import { GetUser, Server, Global, ServerManager, Lang, LangJ, Commands } from "./types";
+import { Client, Guild, GuildMember, VoiceState } from "discord.js";
+import { GetUser, Server, Global, ServerManager, Lang, LangJ } from "./types";
 
 type Servers = {
     [index: string]: Server;
@@ -20,7 +20,6 @@ declare global {namespace NodeJS {
         YouTube: any;
         Discord: any;
         getUser: GetUser;
-        commands: Commands;
     }
 }}
 
@@ -29,8 +28,7 @@ global.YTDL = require('ytdl-core');
 const youtube = require('simple-youtube-api');
 global.fs = require('fs');
 global.path = require('path');
-let intents = new Intents(Intents.ALL);
-global.bot = new global.Discord.Client({ ws: {intents: intents} });
+global.bot = new global.Discord.Client();
 const { Console } = require('console');
 global.serverManager = require('././server-manager');
 global.langJ = require('./../language.json');
@@ -38,7 +36,6 @@ global.Package = require('./../package.json');;
 global.servers = {};
 global.lang = require('./language.js');
 global.getUser = require('./utils/getUser')
-global.commands = require('./../commands.json')
 
 const {fs, bot, path, serverManager} = global
 
@@ -61,7 +58,6 @@ bot.on('ready', () => {
     const readCommands = (dir: String) => {
         const files = fs.readdirSync(path.join(__dirname, dir));
         for (const file of files) {
-            const loc = path.join(__dirname, dir, file);
             const stat = fs.lstatSync(path.join(__dirname, dir, file));
             if (stat.isDirectory()) {
                 //Složka
@@ -69,7 +65,7 @@ bot.on('ready', () => {
             } else if (file != base_file) {
                 //Soubor
                 const option = require(path.join(__dirname, dir, file));
-                commandBase(option, loc);
+                commandBase(option, file);
             }
         }
     }
