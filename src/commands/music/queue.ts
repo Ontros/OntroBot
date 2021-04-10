@@ -28,7 +28,7 @@ module.exports = {
             i++;
         });
                         
-        exampleEmbed.setImage(bot.user.avatarURL())
+        exampleEmbed//.setImage(bot.user.avatarURL())
 	        .setTimestamp()
 	        .setFooter(lang(message.guild.id, 'QUEUE_LIST_REQ_BY')+': '+message.author.username, message.author.avatarURL());
         message.channel.send(exampleEmbed);
