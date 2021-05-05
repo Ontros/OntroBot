@@ -46,7 +46,7 @@ const validatePermissions = (permissions: string[]) => {
 }
 
 
-module.exports = async (commandOptions : CommandOptions, file: any) => {
+module.exports = async (commandOptions : CommandOptions, file: string) => {
     if (!commandOptions.callback) {console.log('error loading: ');console.log(file); return}
     let {
         commands,
@@ -84,19 +84,28 @@ module.exports = async (commandOptions : CommandOptions, file: any) => {
     }
 
     //create command (for help):
-    const paths: string[] = file.split("\\")
+    var paths: string[] = []
+    if (file.includes("\\")) {
+        //Windows
+        paths = file.split("\\")
+    }
+    else {
+        //Linux
+        paths = file.split("/")
+    }
+    
     const name = paths[paths.length-1].split('.')[0]
     const catName = paths[paths.length-2] //category name
 
-    if (!global.commands[catName]) {
-        console.error('MISSING CATEGORY: '+catName)
-    }
+    //if (!global.commands[catName]) {
+    //    console.error('MISSING CATEGORY: ' + catName)
+    //}
 
-    const category = global.commands[catName]
+    //const category = global.commands[catName]
 
-    if (!category.commands[name]) {
-        console.error('MISSING COMMAND: '+name)
-    }
+    //if (!category.commands[name]) {
+    //    console.error('MISSING COMMAND: ' + name)
+    //}
 
     /*category.commands[name] = {
         name,

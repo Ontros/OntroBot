@@ -8,9 +8,9 @@ module.exports = async (message: Message,input: string) => {
         return null
     }
     if (!message.guild) {return}
-    var user = await message.guild.members.fetch({user: input, cache: false}).catch(() => {if(message.guild){message.channel.send(global.lang(message.guild.id, 'UNKWN_ERR'))};return null;});
-    if (!user) {
+    var role = await message.guild.roles.fetch(input).catch(() => {if(message.guild){message.channel.send(global.lang(message.guild.id, 'UNKWN_ERR'))};return null;});
+    if (!role) {
         return null;
     }
-    return user
+    return role 
 }

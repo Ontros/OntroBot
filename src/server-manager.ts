@@ -27,7 +27,10 @@ const defaultServer: Server = {
     language: "english",
     cekarnaChannel: "",
     cekarnaPings: [],
-    steps: []
+    steps: [],
+    config: {
+        rules: {channelID: null, roleID: null}
+    }
 }
 function checkServer(id: string) 
 {
@@ -39,7 +42,7 @@ function checkServer(id: string)
                 console.log(err);
             }
         });
-        console.log('WRITING!');
+        console.log('WRITING NEW!');
     }
 }
 
@@ -73,6 +76,10 @@ function readServer(id:string) {
     console.log('READING!');
     if (!server.roles) {
         server.roles = []
+    }
+    if (!server.config) {
+        console.log(`defualt config + ${id}`)
+        server.config = defaultServer.config;
     }
     global.servers[id] = server;
 }

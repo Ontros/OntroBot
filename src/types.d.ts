@@ -203,21 +203,30 @@ type Server = {
     queue: Song[];
     dispathcher?: Dispatcher;
     loop: boolean;
-    connection?: VoiceConnection;
+    connection?: Discord.VoiceConnection;
     playing: boolean;
     volume: number;
     language: Languages;
     cekarnaChannel: string;
     cekarnaPings: string[];
     steps: Step[];
+    config: Config
 };
 
 type Languages = "english" | "dev" | "czech";
-type GetUser = (message: Message, arg0: string) => Promise<Discord.GuildMember | null>;
+type GetUser = (message: Discord.Message, arg0: string) => Promise<Discord.GuildMember | null>;
 type GetCur_role = (roles: Step[], user: Member) => {curStep: (Discord.Role | null); roleIndex: number}
+type Config = {
+    rules: Rules
+}
+
+type Rules = {
+    channelID: (Discord.Snowflake|null)
+    roleID: (Discord.Snowflake|null)
+}
 
 interface Global  {
-    bot: Client;
+    bot: Discord.Client;
     YTDL: any;
     YOUTUBE: any;
     fs: any;
@@ -283,4 +292,31 @@ type Command = {
     args: string
     descriptionShort: string
     descriptionLong: string
+}
+
+type ReactionFormOption = {
+    callback: (FormCallback | null) 
+    title: string
+}
+
+type FormCallback = (userMessage: Discord.Message, botMessage: (Discord.Message), reaction: Discord.MessageReaction) => void
+type GetTextChannel = (message: Discord.Message,input: string) => (Discord.TextChannel |null)
+type GetVoiceChannel = (message: Discord.Message,input: string) => (Discord.VoiceChannel |null)
+
+type GetRole = (message: Discord.Message,input: string) => Promise<Discord.Role |null>
+
+type ReactionForm = (userMessage: Discord.Message, botMessage: (Discord.Message | null), title: string, question: string, callbacks: ReactionFormOption[]) => Promise<ReactionFormOutput>;
+type CreateEmbed = (message: Discord.Message, title: string, description: (string|null), fields: (Discord.EmbedField[]), imageURL?: (string|null)) => Discord.MessageEmbed;
+type TextInput = (userMessage: User.Message, botMessage: (Discord.Message), title: string, question: string, filter: ((input: string)=>Promise<boolean>) | null) => Promise<TextInputOutput>
+type TextInputOutput = {
+    text: string;
+    botMessage: Discord.Message;
+    inputMessage: Discord.Message;
+}
+
+type ReactionFormOutput = {
+    id: number;
+    userMessage: Discord.Message;
+    botMessage: Discord.Message;
+    formOption: ReactionFormOption;
 }

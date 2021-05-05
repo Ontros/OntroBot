@@ -1,5 +1,5 @@
-import { Client, Guild, GuildMember, Intents, VoiceState } from "discord.js";
-import { GetUser, Server, Global, ServerManager, Lang, LangJ, Commands } from "./types";
+import { Client, Guild, Intents, Message, MessageReaction, PartialUser, User, VoiceState } from "discord.js";
+import { Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ReactionForm, Server, ServerManager, TextInput } from "./types";
 
 type Servers = {
     [index: string]: Server;
@@ -21,6 +21,12 @@ declare global {namespace NodeJS {
         Discord: any;
         getUser: GetUser;
         commands: Commands;
+        reactionForm: ReactionForm;
+        createEmbed: CreateEmbed;
+        textInput: TextInput;
+        getTextChannel: GetTextChannel;
+        getRole: GetRole;
+        getVoiceChannel: GetVoiceChannel;
     }
 }}
 
@@ -39,6 +45,12 @@ global.servers = {};
 global.lang = require('./language.js');
 global.getUser = require('./utils/getUser')
 global.commands = require('./../commands.json')
+global.reactionForm = require('./utils/reactionForm')
+global.createEmbed = require('./utils/createEmbed')
+global.textInput = require('./utils/textInput')
+global.getTextChannel = require('./utils/getTextChannel')
+global.getVoiceChannel = require('./utils/getVoiceChannel')
+global.getRole = require('./utils/getRole')
 
 const {fs, bot, path, serverManager} = global
 
@@ -49,7 +61,7 @@ global.YouTube = new youtube(process.env.YT_TOKEN);
 
 
 bot.on('ready', () => {
-    console.log('This bot is online!')
+    
     if (process.env.STATUS) {
         if (bot.user) {
             bot.user.setActivity(process.env.STATUS)
@@ -75,7 +87,25 @@ bot.on('ready', () => {
     }
 
     readCommands('commands');
+    console.log('This bot is online!')
 })
+
+bot.on('raw', packet => {
+  if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
+  const channel = bot.channels.cache.get(packet.d.channel_id);
+  if (!channel) {console.log('No channel found (index.tx)'); return}
+  if (!channel.isText()) {return}
+  if (channel.messages.cache.has(packet.d.message_id)) return;
+  channel.messages.fetch(packet.d.message_id).then((message: Message) => {
+    const emoji = packet.d.emoji.id ? `${packet.d.emoji.name}:${packet.d.emoji.id}` : packet.d.emoji.name;
+    const reaction = message.reactions.cache.get(emoji);
+    if (!reaction) {console.log('Reaction not found (index.ts)');return}
+    const user = bot.users.cache.get(packet.d.user_id)
+    if (!user) {console.log('User not found (index.ts)');return}
+    if (packet.t === 'MESSAGE_REACTION_ADD') { bot.emit('messageReactionAdd', reaction, user); }
+    if (packet.t === 'MESSAGE_REACTION_REMOVE') { bot.emit('messageReactionRemove', reaction, user); }
+  });
+});
 
 
 bot.on('voiceStateUpdate', async (oldMember: VoiceState, newMember: VoiceState) => {
@@ -95,7 +125,7 @@ bot.on('voiceStateUpdate', async (oldMember: VoiceState, newMember: VoiceState) 
                     if(!server) {console.log('VoiceStateUpdate error');return}
                     var user = await server.members.fetch(element)
                     try {
-                        console.log(user.user.username);
+                        var name = user.user.username;
                     }
                     catch {
                         return;
@@ -111,8 +141,21 @@ bot.on('voiceStateUpdate', async (oldMember: VoiceState, newMember: VoiceState) 
             // User leaves a voice channel
         }
     }
-  })
+})
 
+bot.on("messageReactionAdd", async (reaction: MessageReaction, user: (User|PartialUser)) => {
+    if (user.bot) {return}
+    if (user.partial) {user = await user.fetch()}
+    if (!reaction.message.guild) {return;}
+    global.serverManager(reaction.message.guild.id)
+    var server = global.servers[reaction.message.guild.id]
+    if (!server.config.rules.channelID) {return}
+    if (!server.config.rules.roleID) {return}
+    if (server.config.rules.channelID !== reaction.message.channel.id) {return}
+    const member = reaction.message.guild.member(user)
+    if (!member) {console.log('reaction no member (index.ts)'); return}
+    member.roles.add(server.config.rules.roleID)
+})
 const PREFIX = '_';
 const OwnerID = '255345748441432064';
 const LanguageList = ["dev", "eng", "czk"];

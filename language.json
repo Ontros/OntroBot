@@ -475,6 +475,14 @@
       "_HELP_CATEGORY_NAME": {
         "english": "To show details about a category type '_help <category name>'",
         "czech": "Pro zobrazní podrobnsotí kategorie použijte: '_help <název kategorie>'"
+      },
+      "INPUT_ERR": {
+        "english": "Something is wrong with your input. Try again",
+        "czech": "Něco je špatně s tvojím vstupem. Zkus to znova"
+      },
+      "INPUT_ERR_HALT": {
+        "english": "Something is wrong with your input.",
+        "czech": "Něco je špatně s tvojím vstupem."
       }
     }
 }

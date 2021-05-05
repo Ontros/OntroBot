@@ -1,4 +1,4 @@
-import { EmbedFieldData, Message, MessageEmbed } from "discord.js";
+import { Message, MessageEmbed } from "discord.js";
 
 module.exports = {
     commands: ['help'],
