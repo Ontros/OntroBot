@@ -16,7 +16,7 @@
         "dev": "Začínám loopingovat"
       },
       "LOOP_END": {
-        "english": "Looping stoped",
+        "english": "Looping stopped",
         "czech": "Končím smyčku",
         "dev": "Přestávám loopingovat"
       },
