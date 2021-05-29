@@ -483,6 +483,10 @@
       "INPUT_ERR_HALT": {
         "english": "Something is wrong with your input.",
         "czech": "Něco je špatně s tvojím vstupem."
+      },
+      "RANDNUM_IS": {
+        "english": "Your random number is: ",
+        "czech": "Vaše náhodné číslo je: "
       }
     }
 }

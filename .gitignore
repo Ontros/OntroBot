@@ -4,3 +4,6 @@ say.js
 data/*
 dist/*
 .vs
+ticTacToe.ts
+ticTacToe.js
+.vscode
