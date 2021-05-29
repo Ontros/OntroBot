@@ -5,21 +5,35 @@ module.exports = {
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
-    callback: (message: Message, args: string[], text: string) => {
-        var rand = require('random-seed').create(message.author.id)
+    callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) {return}
         const {lang} = global;
-        if (message.author.id === '255345748441432064')
-        {
-            message.reply(lang(message.guild.id, 'PP_SIZE')+": 420 cm");
+        //Get player
+        var requestedPlayer = message.author
+        if  (args[0]) {
+            var user = await global.getUser(message,args[0])
+            if (!user) {
+                message.channel.send(lang(message.guild.id, 'INPUT_ERR_HALT'));return
+            }
+            requestedPlayer = user.user
         }
-        else if (message.author.id === '275639448299896833') 
+        var rand = require('random-seed').create(requestedPlayer.id)
+        var penysSize = 'ERROR'
+        if (requestedPlayer.id === '255345748441432064')
         {
-            message.reply(lang(message.guild.id, 'PP_SIZE')+": "+(-69).toString() + " cm");
+            //message.channel.send(+lang(message.guild.id, 'PP_SIZE')+": 420 cm");
+            penysSize = '420'
+        }
+        else if (requestedPlayer.id === '275639448299896833') 
+        {
+            //message.reply(lang(message.guild.id, 'PP_SIZE')+": "+(-69).toString() + " cm");
+            penysSize = '-69'
         }
         else
         {
-            message.reply(lang(message.guild.id, 'PP_SIZE')+": " + (rand(2000)/100).toString() + " cm");
+            //message.reply();
+            penysSize = (rand(2000)/100).toString()
         }
+        message.channel.send(`<@!${requestedPlayer.id}>, ${lang(message.guild.id, 'PP_SIZE')+": " + penysSize + " cm"}`)
     }
 }
