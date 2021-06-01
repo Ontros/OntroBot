@@ -9,7 +9,7 @@ module.exports = {
     commands: ['play', 'p'],
     expectedArgs: '<url>',
     minArgs: 1,
-    maxArgs: 1,
+    maxArgs: null,
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
@@ -45,11 +45,11 @@ module.exports = {
             const {YouTube} = global;
             try 
             {
-                var video = await YouTube.getVideo(args[0]);
+                var video = await YouTube.getVideo(url);
             }
             catch 
             {
-                var videos = await YouTube.searchVideos(args[0], 1);
+                var videos = await YouTube.searchVideos(url, 1);
                 var video = await YouTube.getVideoByID(videos[0].id);
             }
 
@@ -67,7 +67,7 @@ module.exports = {
         var server = global.servers[message.guild.id];
         const {lang} = global;
         //nalezeni videa
-        FindVideo(message.content.substring(5), message)
+        FindVideo(text, message)
         .then(song =>{
             if (!message.guild) {return}
             global.servers[message.guild.id].queue.push(song);
@@ -82,6 +82,7 @@ module.exports = {
             {
                 if (!message.member?.voice.channel) {
                     message.channel.send(lang(message.guild.id, 'NOT_IN_VC'));
+                    global.bot.channels.fetch
                     return;
                 }
                 message.member.voice.channel.join()
