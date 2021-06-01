@@ -9,7 +9,8 @@
   "author": "Ontro",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^12.5.1",
+    "discord-buttons": "^2.4.1",
+    "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
     "opusscript": "0.0.7",
     "random-seed": "^0.3.0",

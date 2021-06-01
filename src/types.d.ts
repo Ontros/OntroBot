@@ -299,12 +299,17 @@ type ReactionFormOption = {
     title: string
 }
 
+type ButtonOption = {
+    title: string
+}
+
 type FormCallback = (userMessage: Discord.Message, botMessage: (Discord.Message), reaction: Discord.MessageReaction) => void
 type GetTextChannel = (message: Discord.Message,input: string) => (Discord.TextChannel |null)
 type GetVoiceChannel = (message: Discord.Message,input: string) => (Discord.VoiceChannel |null)
 
 type GetRole = (message: Discord.Message,input: string) => Promise<Discord.Role |null>
 
+type ButtonForm = (userMessage: Discord.Message, botMessage: (Discord.Message | null), title: string, question: string, buttonOptions: ButtonOption[]) => Promise<(ButtonFormOutput)>;
 type ReactionForm = (userMessage: Discord.Message, botMessage: (Discord.Message | null), title: string, question: string, callbacks: ReactionFormOption[]) => Promise<ReactionFormOutput>;
 type CreateEmbed = (message: Discord.Message, title: string, description: (string|null), fields: (Discord.EmbedField[]), imageURL?: (string|null)) => Discord.MessageEmbed;
 type TextInput = (userMessage: User.Message, botMessage: (Discord.Message), title: string, question: string, filter: ((input: string)=>Promise<boolean>) | null) => Promise<TextInputOutput>
@@ -319,4 +324,10 @@ type ReactionFormOutput = {
     userMessage: Discord.Message;
     botMessage: Discord.Message;
     formOption: ReactionFormOption;
+}
+
+type ButtonOutput = {
+    id: number;
+    userMessage: Discord.Message;
+    botMessage: Discord.Message;
 }

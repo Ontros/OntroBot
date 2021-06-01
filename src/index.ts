@@ -1,5 +1,5 @@
 import { Client, Guild, Intents, Message, MessageReaction, PartialUser, User, VoiceState } from "discord.js";
-import { Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ReactionForm, Server, ServerManager, TextInput } from "./types";
+import { ButtonForm, Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ReactionForm, Server, ServerManager, TextInput } from "./types";
 
 type Servers = {
     [index: string]: Server;
@@ -27,6 +27,8 @@ declare global {namespace NodeJS {
         getTextChannel: GetTextChannel;
         getRole: GetRole;
         getVoiceChannel: GetVoiceChannel;
+        disbut: any;
+        buttonForm: ButtonForm;
     }
 }}
 
@@ -51,6 +53,8 @@ global.textInput = require('./utils/textInput')
 global.getTextChannel = require('./utils/getTextChannel')
 global.getVoiceChannel = require('./utils/getVoiceChannel')
 global.getRole = require('./utils/getRole')
+global.disbut = require('discord-buttons')(global.bot)
+global.buttonForm = require('./utils/buttonForm')
 
 const {fs, bot, path, serverManager} = global
 
