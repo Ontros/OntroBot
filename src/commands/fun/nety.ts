@@ -8,15 +8,13 @@ module.exports = {
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
-    callback: (message: Message, args: string[], text: string) => {
+    callback: async (message: Message, args: string[], text: string) => {
         //var server = servers[message.guild.id];
-        if (!text)
-        {
+        if (!text) {
             message.channel.send("NE TY!")
         }
-        else 
-        {
-            message.channel.send(text+", ne ty!")
+        else {
+            message.channel.send(text + ", ne ty!")
         }
         message.delete();
     }

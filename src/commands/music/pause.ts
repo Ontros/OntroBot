@@ -6,10 +6,10 @@ module.exports = {
     requireChannelPerms: true,
     requiredRoles: [],
     allowedIDs: [],
-    callback: (message: Message, args: string[], text: string) => {
-        if (!message.guild) {return}
+    callback: async (message: Message, args: string[], text: string) => {
+        if (!message.guild) { return }
         var server = global.servers[message.guild.id];
-        const {lang} = global;
+        const { lang } = global;
         //console.log(message.guild.voice.connection);
         //if (message.guild.voice.connection){
         if (server.dispathcher == undefined) {
@@ -20,7 +20,7 @@ module.exports = {
         message.channel.send(lang(message.guild.id, 'PAUSE'));
         //}
         //else {
-            //say("Error", message);
+        //say("Error", message);
         //}
-    }, 
+    },
 }

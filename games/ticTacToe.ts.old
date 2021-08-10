@@ -1,6 +1,3 @@
-import { kMaxLength } from "buffer";
-import { SSL_OP_NO_TLSv1_1 } from "constants";
-import { randomInt } from "crypto";
 import { CollectorFilter, Message, Snowflake, User } from "discord.js";
 
 const {performance} = require('perf_hooks')
@@ -18,7 +15,7 @@ module.exports = {
     callback: async (message: Message, args: string[], text: string): Promise<undefined> => {
         if (!message.guild) {return}
         var xSize: number = 3
-        var ySize: number = 3
+        var ySize: number = 3 
         var winLenght: number = 3;
         //emptyBoard = new Array(xSize).fill(new Array(ySize).fill(0))
         for (var x = 0; x<xSize; x++) {
@@ -53,19 +50,24 @@ module.exports = {
         const players: Player[] = [{bID: 0, id: message.id}, {bID: 1, id: null}]
         var curPlayer = 2; //0
 
-        var b = [[2,0,0],
-                 [0,2,0],
-                 [0,0,2]]
+        var b = [[2,1,2],
+                 [1,0,2],
+                 [2,1,1]]
 
-        console.log(checkWin(b,xSize,ySize, winLenght))
+        console.log(analizeBoard(b,xSize,ySize,3,0))
+        //return
+
+        //console.log(checkWin(b,xSize,ySize, winLenght))
 
         //console.log(length(b,2,0,-1,-1,xSize,ySize))
         //return
         var start = performance.now()
+        //board[5][5] = 1
+        board[0][0] = 1
         while (true) {
             
             //if (players[curPlayer].id) {
-            if (curPlayer === 1) {
+            if (curPlayer === 0) {
                 //player
                 console.log('mini')
                 
@@ -89,14 +91,15 @@ module.exports = {
                 console.log(result)
                 board[result.x][result.y] = curPlayer
                 console.log(getBoard(board, xSize, ySize)+'\n')
-                console.log(checkWin(board,xSize,ySize,winLenght))
+                console.log(cacheLenght)
+                //console.log(checkWin(board,xSize,ySize,winLenght))
                 ////console.log(`celkem ${performance.now()-start} analiza ${analizeTime}`)
                 //console.log(cache)
                 //return
             }
             var analiza = analizeBoard(board, xSize,ySize,winLenght,0)
             if (analiza.longestLenght.length >= winLenght || !analiza.itsFree) {
-                console.log('cenok')
+                console.log(`cenok ${analiza.longestLenght.player} ${analiza.longestLenght.xy}`)
                 return
             }
             curPlayer = other(curPlayer)
@@ -107,6 +110,8 @@ type Player = {
     bID: number
     id: (Snowflake|null)
 }
+
+var cacheLenght = 0
 
 /*function vzdalenost(board: number[][], curPlayer: number, x: number, y: number, factorX: number, factorY: number, xSize: number, ySize:number) {
     var vzdalenost = ''
@@ -183,6 +188,18 @@ type Caches = {
     [index: string]: Cache
 }
 const cache: Caches = {}
+function availableAmount(board: number[][], xSize:number,ySize:number) {
+    var amount = 0
+    for (var x = 0; x < board.length; x++) {
+    for (var y = 0; y < board[0].length; y++) {
+
+        if (isAvailable(board,xSize,ySize,x,y)) {
+            amount++
+        }
+
+    }}
+    return amount
+}
 
 function select(board: number[][], curPlayer:number, winLenght: number, xSize: number, ySize: number) {
     var selecion = {
@@ -190,19 +207,23 @@ function select(board: number[][], curPlayer:number, winLenght: number, xSize: n
         score: curPlayer === 1? -Infinity:Infinity
         //score: -Infinity
     }
-    if (curPlayer===1) {console.log('max')}
-    if (curPlayer===2) {console.log('min')}
+    const startScore = selecion.score
+    //if (curPlayer===1) {console.log('max')}
+    //if (curPlayer===2) {console.log('min')}
     for (var x = 0; x < board.length; x++) {
     for (var y = 0; y < board[0].length; y++) {
-        if (board[x][y]===0) {
+        if (isAvailable(board, xSize,ySize,x,y)) {
             var newBoard = passByValue(board, xSize, ySize) 
             //x = 2
             //y = 1
             newBoard[x][y] = curPlayer
-            var score = minimax(newBoard,1, other(curPlayer), winLenght,xSize,ySize/*,Infinity,-Infinity*/)// *  curPlayer === 1?1:-1
+            var alpha = -Infinity
+            var score = minimax(newBoard,1, other(curPlayer), winLenght,xSize,ySize,alpha,Infinity/*,Infinity,-Infinity*/)// *  curPlayer === 1?1:-1
+            //alpha = Math.max(alpha,score)
             //var score = minimax(passByValue(board,xSize,ySize),xSize,ySize,x,y,curPlayer)
             console.log(`${score} on ${x} ${y}`)
             //console.log(getBoard(newBoard,xSize,ySize))
+            if (score === null) {console.log(`NULLL ${x} ${y}`);return {score: null, x: -1, y:-1}}
             if (curPlayer === 1) {
             //    if (true) {
                 if (score>=selecion.score) {
@@ -226,9 +247,65 @@ function select(board: number[][], curPlayer:number, winLenght: number, xSize: n
     return selecion
 }
 
+function isAvailable(board: number[][],xSize:number,ySize:number,x:number,y:number) {
+    if (board[x][y] !== 0) {
+        return false
+    }
+    if (x - 1 >= 0) {
+        if(board[x-1][y]!==0) {
+            return true
+        }
+        if (y - 1 >= 0) {
+            if(board[x][y-1]!==0) {
+                return true
+            }
+            if (board[x - 1][y - 1] !== 0) {
+                return true
+            }
+        }
+        if (y + 1 < ySize) {
+            if(board[x][y+1]!==0) {
+                return true
+            }
+            if (board[x - 1][y + 1] !== 0) {
+                return true
+            }
+        }
+    }
+    if (x + 1 < xSize) {
+        if(board[x+1][y]!==0) {
+            return true
+        }
+        if (y - 1 >= 0) {
+            if(board[x][y-1]!==0) {
+                return true
+            }
+            if (board[x + 1][y - 1] !== 0) {
+                return true
+            }
+        }
+        if (y + 1 < ySize) {
+            if(board[x][y+1]!==0) {
+                return true
+            }
+            if (board[x + 1][y + 1] !== 0) {
+                return true
+            }
+        }
+    }
+    return false
+
+}
+
+var debug = false
 
 //function minimax(board: number[][], depth: number, maximizingPlayer: number, curPlayer: number, players: Player[], winLenght: number, xSize: number, ySize: number){
-function minimax(board: number[][], depth: number,  curPlayer: number, winLenght: number, xSize: number, ySize: number, /*alpha: number, beta: number*/){
+function minimax(board: number[][], depth: number,  curPlayer: number, winLenght: number, xSize: number, ySize: number, alpha: number, beta: number){
+    numberOfChecks++
+   //if (numberOfChecks%10000===0) {
+       debug = true
+       //console.log(numberOfChecks)
+    //}
     //TODO REWRITE //////////////////////////////////////////////////////////////////////////////////////
     var analized = analizeBoard(board,xSize,ySize,winLenght,depth)
     //console.log(board)
@@ -236,47 +313,101 @@ function minimax(board: number[][], depth: number,  curPlayer: number, winLenght
         //console.log(analized.longestLenght.player)
         //console.log(getBoard(board,xSize,ySize)+'\n')
         //return 1 === +analized.longestLenght.player? 10000+analized.score:-10000-analized.score
-        if (analized.longestLenght.player === 1) {
-            return 10000+(1/depth)*1000
+        if (analized.longestLenght.player===1) {
+            return 100000+(1/depth)*10000
+            //return analized.score
         }
         else {
-            return -10000 - (1/depth)*1000
+            //return -analized.score
+            return -100000 - (1/depth)*10000
         }
+        //if (analized.longestLenght.player === 1) {
+            //console.log(getBoard(board,xSize,ySize)+' infinity')
+        //    return 100000+(1/depth)*10000
+        //}
+        //else {
+        //    //console.log(getBoard(board,xSize,ySize)+' -infinity')
+        //    return -100000 - (1/depth)*10000
+        //}
     }
     if (!analized.itsFree) {
         return 0
         //return analized.score * (curPlayer === 1?1:-1)//analized.longestLenght.player? analized.longestLenght.length:-analized.longestLenght.length
     }
-    var alpha = curPlayer===1?-Infinity:Infinity
+    var avamount = availableAmount(board,xSize,ySize)
+    //if (depth > 4) {
+    if (avamount > 16) {
+        return curPlayer===1?analized.score:-analized.score
+    }
+    //var alpha = curPlayer===1?-Infinity:Infinity
     //var alpha = -Infinity
     for (var x = 0; x < board.length; x++) {
     for (var y = 0; y < board[0].length; y++) {
+        
         //MAKE MOVES
-        if (board[x][y] === 0) {
+        //if (board[x][y] === 0) {
+        if (isAvailable(board,xSize,ySize,x,y)) {
             var newBoard = passByValue(board, xSize, ySize) 
             newBoard[x][y] = curPlayer
+                    if (debug && depth ==3) {
+                    console.log(`${'\t'.repeat(depth)}maximizing for x ${x} y ${y}`)
+                    console.log(`${'\t'.repeat(depth)}${getBoard(newBoard,xSize,ySize,depth)}`); 
+                    }
+                    var score: number = alpha
+            var id = getID(newBoard, xSize, ySize)
+            if (cache[id]) {
+                var curCache = cache[id]
+                score = 
+                    //score: 
+                    curPlayer === 1 ? curCache.score : -curCache.score
+                    //x: curCache.x,
+                    //y: curCache.y
+                
+            }
+            else {
+                score = minimax(passByValue(newBoard,xSize,ySize),depth+1,other(curPlayer),winLenght,xSize,ySize,alpha,beta)
+                if (score===null) { console.log('NULL 100'); return -Infinity }
+                if (true) {
+                    var curCache: Cache = {
+                        score: score,
+                        player: 1, //?
+                        x, y //?
+                    }
+                    cache[id] = curCache
+                    cacheLenght++
+                }
+
+            }
+                    //var score = minimax(passByValue(newBoard,xSize,ySize),depth+1,other(curPlayer),winLenght,xSize,ySize,alpha,beta)
                     
-                    //console.log(`${'\t'.repeat(depth)}maximizing for x ${x} y ${y}`)
-                    //console.log(`${'\t'.repeat(depth)}${getBoard(newBoard,xSize,ySize,depth)}`); 
-                    var score = minimax(passByValue(newBoard,xSize,ySize),depth+1,other(curPlayer),winLenght,xSize,ySize/*,-beta,-alpha*/)
-                    
-                    //if (Math.abs(score)===102){
-                        //console.log(`${'\t'.repeat(depth)}ma skore ${score}; x ${x} y ${y}; aktulni result ${alpha}; output delka ${analized.longestLenght.length}`)
-                    //}
+                    if (debug && depth===3){
+                        console.log(`${'\t'.repeat(depth)}ma skore ${score}; x ${x} y ${y}; aktulni result ${alpha}; output delka ${analized.longestLenght.length} player ${analized.longestLenght.player}`)
+                    }
             //if (score>= beta) {
                 //return beta
             //}
             if (curPlayer === 1) {
             //if (true) {
                 alpha = Math.max(alpha,score)
+                if (beta<= alpha) {
+                    return alpha
+                }
             }
             else {
-                alpha = Math.min(alpha,score)
+                beta = Math.min(beta,score)
+                if (beta<=alpha) {
+                   return beta
+                }
             }
             
         }
     }}
-    return alpha
+    if (curPlayer === 1) {
+        return alpha
+    }
+    else {
+        return beta
+    }
 }
 
 function getID(board: number[][], xSize: number, ySize: number) {
@@ -309,7 +440,7 @@ function checkWin(board: number[][], xSize:number, ySize: number, winSize: numbe
     for (var y = 0; y < ySize; y++) {
         if (board[x][y]===0) {isFree = true}
         //TODO loop only where max lenght posibble
-        var silenost = Math.max(length(board,x,y,1,0,xSize,ySize),length(board,x,y,0,1,xSize,ySize),length(board,x,y,1,1,xSize,ySize),length(board,x,y,-1,-1,xSize,ySize),length(board,x,y,-1,1,xSize,ySize),/*length(board,x,y,1,-1,xSize,ySize)*/)
+        var silenost = Math.max(length(board,x,y,1,0,xSize,ySize).lenght,length(board,x,y,0,1,xSize,ySize).lenght,length(board,x,y,1,1,xSize,ySize).lenght,length(board,x,y,-1,-1,xSize,ySize).lenght,length(board,x,y,-1,1,xSize,ySize).lenght,/*length(board,x,y,1,-1,xSize,ySize)*/)
         if (silenost>maxLenght && board[x][y] !== 0)
         {
             maxLenght = silenost
@@ -317,6 +448,10 @@ function checkWin(board: number[][], xSize:number, ySize: number, winSize: numbe
         }
     }}
     return {length: maxLenght, player, isFree}
+}
+
+function getScore(board: number[][], xSize: number, ySize:number, winSize: number) {
+    
 }
 
 //function analizeBoard(board: number[][],maximizingPlayer: number, xSize: number, ySize: number, winSize: number, depth: number) {
@@ -342,6 +477,7 @@ function analizeBoard(board: number[][],xSize: number, ySize: number, winSize: n
         itsFree: maxL.isFree
     } 
     //console.log('wot u doin here?')*/
+    /**/ 
     var longestLenght = {
         player: 0,
         length: 0, xy: ''
@@ -356,9 +492,9 @@ function analizeBoard(board: number[][],xSize: number, ySize: number, winSize: n
             if (board[x][y] === 0) {
                 itsFree = true
             }
-            if (board[x][y] == 2) {
-                enemyPieces++
-            }
+            //if (board[x][y] == 2) {
+            //    enemyPieces++
+            //}
             
             if (board[x][y] !== 0) {
 
@@ -367,38 +503,38 @@ function analizeBoard(board: number[][],xSize: number, ySize: number, winSize: n
             var lenghtLong = 0
 
             var output = length(board,x,y,1,0, xSize, ySize)
-            lenghtLong = Math.max(lenghtLong, output)
+            lenghtLong = Math.max(lenghtLong, output.lenght)
             //if (lenghtLong > out)
-            pieceScore*=output
+            pieceScore+=(10+output.free)**(output.lenght-1)
             
             var output = length(board,x,y,1,1, xSize, ySize)
-            lenghtLong = Math.max(lenghtLong, output)
-            pieceScore*=output
+            lenghtLong = Math.max(lenghtLong, output.lenght)
+            pieceScore+=(10+output.free)**(output.lenght-1)
 
             var output = length(board,x,y,0,1, xSize, ySize)
-            lenghtLong = Math.max(lenghtLong, output)
-            pieceScore*=output
+            lenghtLong = Math.max(lenghtLong, output.lenght)
+            pieceScore+=(10+output.free)**(output.lenght-1)
 
             var output = length(board,x,y,-1,0, xSize, ySize)
-            lenghtLong = Math.max(lenghtLong, output)
-            pieceScore*=output
+            lenghtLong = Math.max(lenghtLong, output.lenght)
+            pieceScore+=(10+output.free)**(output.lenght-1)
 
             var output = length(board,x,y,0,-1, xSize, ySize)
-            lenghtLong = Math.max(lenghtLong, output)
-            pieceScore*=output
+            lenghtLong = Math.max(lenghtLong, output.lenght)
+            pieceScore+=(10+output.free)**(output.lenght-1)
 
 
             var output = length(board,x,y,1,-1, xSize, ySize)
-            lenghtLong = Math.max(lenghtLong, output)
-            pieceScore*=output
+            lenghtLong = Math.max(lenghtLong, output.lenght)
+            pieceScore+=(10+output.free)**(output.lenght-1)
 
             var output = length(board,x,y,-1,1, xSize, ySize)
-            lenghtLong = Math.max(lenghtLong, output)
-            pieceScore*=output
+            lenghtLong = Math.max(lenghtLong, output.lenght)
+            pieceScore+=(10+output.free)**(output.lenght-1)
 
             var output = length(board,x,y,-1,-1, xSize, ySize)
-            lenghtLong = Math.max(lenghtLong, output)
-            pieceScore*=output
+            lenghtLong = Math.max(lenghtLong, output.lenght)
+            pieceScore+=(10+output.free)**(output.lenght-1)
 
             //console.log(`lenght ${lenghtLong} on ${x} ${y}`)
 
@@ -430,14 +566,21 @@ function analizeBoard(board: number[][],xSize: number, ySize: number, winSize: n
 }
 
 function length(board: number[][], x: number, y: number, factorX: number, factorY: number, xSize: number, ySize:number) {
+    if (x===0&&y===1) {
+        //var xd = 0
+    }
     var lenght = 1
+    var free1 = 0
+    if (x-factorX >=0 && x-factorX<xSize&& y-factorY >= 0 && y-factorY<ySize) {//console.log(`${factorX} ${factorY} ${x} ${y}`)
+        if (board[x-factorX][y-factorY]===0) {free1 = 1}}
+    var free2 = 0
     //var curX = x+factorX
     //var curY = y+factorY
     while(true) {
         //Check if out of board
         //console.log(`${x+factorX} ${y+factorY}; ${factorX} ${factorY}`)
         
-        if (board[x][y]===0) {break}
+        if (board[x][y]===0) {free2 = 1;break}
         if (x+factorX <0 || x+factorX>=xSize|| y+factorY < 0 || y+factorY>=ySize) {break}
         if (board[x][y] !== board[x+factorX][y+factorY]) {
             break
@@ -446,7 +589,8 @@ function length(board: number[][], x: number, y: number, factorX: number, factor
         y+=factorY
         lenght++
     }
-    return lenght
+
+    return {lenght, free: free1+free2,factorX,factorY}
 }
 
 function getBoard(board: number[][], xSize: number, ySize: number, depth = 0) {
@@ -461,7 +605,8 @@ function getBoard(board: number[][], xSize: number, ySize: number, depth = 0) {
                 output += `⚑ `
             }
             else {
-                output += `0 `
+                //output += `0 `
+                output += `${isAvailable(board,xSize,ySize,x,y)?1:0} `
             }
             //output+=`${board[x][y]} `
         }

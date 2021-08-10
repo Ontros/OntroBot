@@ -2,6 +2,10 @@
   "name": "ontrobot",
   "version": "dev1.4",
   "description": "Ontrův personální discord bot",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Ontros/OntroBot.git"
+  },
   "main": "./dist/index.js",
   "scripts": {
     "start": "tsc && node ."
@@ -12,10 +16,15 @@
     "discord-buttons": "^2.4.1",
     "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
+    "node": "^14.16.1",
+    "node-fetch": "^2.6.1",
     "opusscript": "0.0.7",
     "random-seed": "^0.3.0",
     "simple-youtube-api": "^5.2.1",
-    "ytdl-core": "^4.4.5"
+    "spotify-finder": "^2.1.1",
+    "spotify-to-youtube": "^1.0.1",
+    "spotify-web-api-node": "^5.0.2",
+    "ytdl-core": "^4.9.1"
   },
   "devDependencies": {
     "@types/node": "^14.14.25"

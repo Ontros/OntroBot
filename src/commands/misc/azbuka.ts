@@ -7,7 +7,7 @@ module.exports = {
     minArgs: 1,
     maxArgs: null,
     callback: async (message: Message, args: string[], text: string) => {
-        if (!message.guild) {return;}
+        if (!message.guild) { return; }
         message.channel.send(TextToAzbuka(text))
     },
     permissions: [],
@@ -17,13 +17,13 @@ module.exports = {
 
 function TextToAzbuka(text: string) {
     var output = ''
-    text.split('').forEach((text)=>{
-        output+=charToAzbuka(text)
+    text.split('').forEach((text) => {
+        output += charToAzbuka(text)
     })
     return output
 }
 
-function charToAzbuka(text:string) {
+function charToAzbuka(text: string) {
     switch (text) {
         case 'a': return 'а'
         case 'b': return 'б'

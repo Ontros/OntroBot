@@ -202,7 +202,7 @@ type CommandOptions = {
 type Server = {
     queue: Song[];
     dispathcher?: Dispatcher;
-    loop: boolean;
+    loop: (0 | 1 | 2 | 3);
     connection?: Discord.VoiceConnection;
     playing: boolean;
     volume: number;
@@ -215,17 +215,17 @@ type Server = {
 
 type Languages = "english" | "dev" | "czech";
 type GetUser = (message: Discord.Message, arg0: string) => Promise<Discord.GuildMember | null>;
-type GetCur_role = (roles: Step[], user: Member) => {curStep: (Discord.Role | null); roleIndex: number}
+type GetCur_role = (roles: Step[], user: Member) => { curStep: (Discord.Role | null); roleIndex: number }
 type Config = {
     rules: Rules
 }
 
 type Rules = {
-    channelID: (Discord.Snowflake|null)
-    roleID: (Discord.Snowflake|null)
+    channelID: (Discord.Snowflake | null)
+    roleID: (Discord.Snowflake | null)
 }
 
-interface Global  {
+interface Global {
     bot: Discord.Client;
     YTDL: any;
     YOUTUBE: any;
@@ -252,6 +252,7 @@ type Song = {
     id: string;
     url: string;
     requestedBy: string;
+    duration: any
 };
 
 type ServerManager = (id: string, change?: boolean) => void
@@ -282,7 +283,6 @@ type commands = { //used in category
 
 type Category = {
     name: string
-    description: string
     commands: commands
 }
 
@@ -290,12 +290,10 @@ type Command = {
     name: string
     aliases: string
     args: string
-    descriptionShort: string
-    descriptionLong: string
 }
 
 type ReactionFormOption = {
-    callback: (FormCallback | null) 
+    callback: (FormCallback | null)
     title: string
 }
 
@@ -304,15 +302,16 @@ type ButtonOption = {
 }
 
 type FormCallback = (userMessage: Discord.Message, botMessage: (Discord.Message), reaction: Discord.MessageReaction) => void
-type GetTextChannel = (message: Discord.Message,input: string) => (Discord.TextChannel |null)
-type GetVoiceChannel = (message: Discord.Message,input: string) => (Discord.VoiceChannel |null)
+type GetTextChannel = (message: Discord.Message, input: string) => (Discord.TextChannel | null)
+type GetVoiceChannel = (message: Discord.Message, input: string) => (Discord.VoiceChannel | null)
 
-type GetRole = (message: Discord.Message,input: string) => Promise<Discord.Role |null>
+type GetRole = (message: Discord.Message, input: string) => Promise<Discord.Role | null>
 
 type ButtonForm = (userMessage: Discord.Message, botMessage: (Discord.Message | null), title: string, question: string, buttonOptions: ButtonOption[]) => Promise<(ButtonFormOutput)>;
 type ReactionForm = (userMessage: Discord.Message, botMessage: (Discord.Message | null), title: string, question: string, callbacks: ReactionFormOption[]) => Promise<ReactionFormOutput>;
-type CreateEmbed = (message: Discord.Message, title: string, description: (string|null), fields: (Discord.EmbedField[]), imageURL?: (string|null)) => Discord.MessageEmbed;
-type TextInput = (userMessage: User.Message, botMessage: (Discord.Message), title: string, question: string, filter: ((input: string)=>Promise<boolean>) | null) => Promise<TextInputOutput>
+type CreateEmbed = (message: Discord.Message, title: string, description: (string | null), fields: (Discord.EmbedField[]), imageURL?: (string | null)) => Discord.MessageEmbed;
+type ProgressBar = (message: Discord.Message, title: string, description: (string | null), status: number, imageURL?: (string | null)) => Discord.MessageEmbed
+type TextInput = (userMessage: User.Message, botMessage: (Discord.Message), title: string, question: string, filter: ((input: string) => Promise<boolean>) | null) => Promise<TextInputOutput>
 type TextInputOutput = {
     text: string;
     botMessage: Discord.Message;

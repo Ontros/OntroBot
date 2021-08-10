@@ -5,7 +5,7 @@ module.exports = {
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
-    callback: (message: Message, args: string[], text: string) => {
+    callback: async (message: Message, args: string[], text: string) => {
         message.channel.send("UwU!");
     }
 }

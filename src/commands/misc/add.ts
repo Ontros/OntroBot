@@ -6,10 +6,10 @@ module.exports = {
     permissionError: '',
     minArgs: 2,
     maxArgs: 2,
-    callback: (message: Message, args: string[], text: string) => {
-        message.channel.send((parseInt(args[0])+parseInt(args[1])).toString());
+    callback: async (message: Message, args: string[], text: string) => {
+        message.channel.send((parseInt(args[0]) + parseInt(args[1])).toString());
     },
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
-} 
+}

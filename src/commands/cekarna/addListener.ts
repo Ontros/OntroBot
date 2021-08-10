@@ -10,13 +10,13 @@ module.exports = {
     requiredRoles: [],
     allowedIDs: [],
     callback: async (message: Message, args: string[], text: string) => {
-        if (!message.guild) {return}
-        const {lang} = global
+        if (!message.guild) { return }
+        const { lang } = global
         var server = global.servers[message.guild.id];
-        const user = await global.getUser(message, args[0]); if (!user) {message.channel.send(global.lang(message.guild.id, 'USR_ID_NOT'));return;}
+        const user = await global.getUser(message, args[0]); if (!user) { message.channel.send(global.lang(message.guild.id, 'USR_ID_NOT')); return; }
         if (!server.cekarnaPings.includes(user.id)) {
             server.cekarnaPings.push(user.id);
-            message.channel.send(lang(message.guild.id, 'LIST_ADD')+': '+user.displayName);
+            message.channel.send(lang(message.guild.id, 'LIST_ADD') + ': ' + user.displayName);
             global.serverManager(message.guild.id, true);
         }
         else {

@@ -6,7 +6,7 @@ module.exports = {
     requiredRoles: [],
     allowedIDs: [],
     allowedServer: ['699609602685272074'],
-    callback: (message: Message, args: string[], text: string) => {
+    callback: async (message: Message, args: string[], text: string) => {
         message.reply("Ne ty!");
     }
 }
