@@ -1,5 +1,8 @@
 import { Client, Guild, Intents, Message, MessageReaction, PartialUser, User, VoiceState } from "discord.js";
 import { ButtonForm, Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
+//TODO: npm command build and run docker
+//TODO: npm command build docker
+//TODO: npm command run docker
 
 type Servers = {
     [index: string]: Server;

@@ -15,16 +15,15 @@ module.exports = {
         if (!message.guild || !bot.user) { return }
         if (args[0]) {
             if (args[0].toLowerCase() != "list") {
-                //if (langJ.languages.includes(args[0])) {
                 var isValidLang = false;
                 var arg: (Languages | null) = null
                 langJ.languages.forEach(element => {
                     if (element === args[0].toLowerCase()) { arg = element }
                 })
                 if (arg) {
-                    //if ($.inArray(args[0], langJ.languages)) {
                     global.servers[message.guild.id].language = arg;
                     message.channel.send(lang(message.guild.id, 'LANG_SET') + ': ' + arg);
+                    global.serverManager(message.guild.id, true);
                 }
                 else {
                     message.reply(lang(message.guild.id, 'LANG_UNKWN'))
