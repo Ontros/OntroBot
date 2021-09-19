@@ -28,9 +28,10 @@ const defaultServer: Server = {
     cekarnaChannel: "",
     cekarnaPings: [],
     steps: [],
-    config: {
-        rules: { channelID: null, roleID: null }
-    }
+    scheaduledTimes: []
+    // config: {
+    //     rules: { channelID: null, roleID: null }
+    // }
 }
 function checkServer(id: string) {
     //Existuje soubor?
@@ -77,10 +78,10 @@ function readServer(id: string) {
     if (!server.roles) {
         server.roles = []
     }
-    if (!server.config) {
-        // console.log(`defualt config + ${id}`)
-        server.config = defaultServer.config;
-    }
+    // if (!server.config) {
+    //     // console.log(`defualt config + ${id}`)
+    //     server.config = defaultServer.config;
+    // }
     //handle legacy
     if (typeof server.loop === 'boolean') {
         server.loop = 0

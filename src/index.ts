@@ -1,5 +1,7 @@
 import { Client, Guild, Intents, Message, MessageReaction, PartialUser, User, VoiceState } from "discord.js";
 import { ButtonForm, Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
+import schedule from "node-schedule"
+
 //TODO: npm command build and run docker
 //TODO: npm command build docker
 //TODO: npm command run docker
@@ -39,6 +41,7 @@ declare global {
             SpotifyToYoutube: any;
             SpotifyWebApi: any;
             progressBar: ProgressBar;
+            schedule: typeof schedule;
         }
     }
 }
@@ -76,6 +79,7 @@ global.SPOTIFY_CLIENT = process.env.SPOTIFY_CLIENT
 global.SpotifyToYoutube = require('spotify-to-youtube')
 global.SpotifyWebApi = require('spotify-web-api-node')
 global.progressBar = require('./utils/progressBar')
+global.schedule = schedule
 
 const token = process.env.DJS_TOKEN;
 global.YouTube = new youtube(process.env.YT_TOKEN);
@@ -205,24 +209,28 @@ bot.on('voiceStateUpdate', (oldState: VoiceState, newState: VoiceState) => {
     }
 })
 
-bot.on("messageReactionAdd", async (reaction: MessageReaction, user: (User | PartialUser)) => {
-    if (user.bot) { return }
-    if (user.partial) { user = await user.fetch() }
-    if (!reaction.message.guild) { return; }
-    global.serverManager(reaction.message.guild.id)
-    var server = global.servers[reaction.message.guild.id]
-    if (!server.config.rules.channelID) { return }
-    if (!server.config.rules.roleID) { return }
-    if (server.config.rules.channelID !== reaction.message.channel.id) { return }
-    const member = reaction.message.guild.member(user)
-    if (!member) { console.log('reaction no member (index.ts)'); return }
-    member.roles.add(server.config.rules.roleID)
-})
+//Rule reaction
+// bot.on("messageReactionAdd", async (reaction: MessageReaction, user: (User | PartialUser)) => {
+//     if (user.bot) { return }
+//     if (user.partial) { user = await user.fetch() }
+//     if (!reaction.message.guild) { return; }
+//     global.serverManager(reaction.message.guild.id)
+//     var server = global.servers[reaction.message.guild.id]
+//     if (!server.config.rules.channelID) { return }
+//     if (!server.config.rules.roleID) { return }
+//     if (server.config.rules.channelID !== reaction.message.channel.id) { return }
+//     const member = reaction.message.guild.member(user)
+//     if (!member) { console.log('reaction no member (index.ts)'); return }
+//     member.roles.add(server.config.rules.roleID)
+// })
 const PREFIX = '_';
 const OwnerID = '255345748441432064';
 const LanguageList = ["dev", "eng", "czk"];
 
 bot.setMaxListeners(0);
+
+import { remaindersInit } from "./utils/index/startRemainders"
+remaindersInit()
 
 bot.login(token);
 //TODO remove this

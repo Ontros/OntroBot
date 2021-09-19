@@ -83,8 +83,7 @@ module.exports = {
         if (matchPlaylist || matchTrack || matchAlbum) {
             // if (false) {
             message.channel.send(lang(message.guild.id, 'SPOTIFY_NO_SUPPORT'))
-            return
-            // //setting up spot to yt
+            //setting up spot to yt
             // const clients = global.SPOTIFY_CLIENT.split(':')
             // const spotifyApi = new global.SpotifyWebApi({
             //     clientId: clients[0],
@@ -104,7 +103,7 @@ module.exports = {
             // const spotifyToYoutube = global.SpotifyToYoutube(spotifyApi)
             // videoNames = []
             // //@ts-expect-error
-            //var botMessage = await message.channel.send(global.createEmbed(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, 'QUER_SPOTIFY'), []))
+            // var botMessage = await message.channel.send(global.createEmbed(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, 'QUER_SPOTIFY'), []))
 
             // //PLAYLIST
             // if (matchPlaylist) {
@@ -193,22 +192,22 @@ module.exports = {
                     if ((videoNames.length === 1 && server.queue.length > 2) || (videoNames.length > 1 && i !== 1)) {
                         //songa přidána do queue, už hraje bot
                         console.log('play.ts 195 error!! (asi snaha o spotify)')
-                        // if (Date.now() - lastStamp > 500 && botMessage) {
-                        //     var embed = global.progressBar(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, 'QUER_YT') +
-                        //         `\n ${ij}/${videoNames.length}`, ij / videoNames.length)
-                        //     botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
-                        //     botMessage.edit(embed)
-                        //     lastStamp = Date.now()
-                        // }
-                        // if (ij === videoNames.length) {
-                        //     var del = true
-                        //     if (botMessage) {
-                        //         botMessage.fetch().catch(() => { del = false })
-                        //         if (del) {
-                        //             botMessage.delete()
+                        //     if (Date.now() - lastStamp > 500 && botMessage) {
+                        //         var embed = global.progressBar(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, 'QUER_YT') +
+                        //             `\n ${ij}/${videoNames.length}`, ij / videoNames.length)
+                        //         botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
+                        //         botMessage.edit(embed)
+                        //         lastStamp = Date.now()
+                        //     }
+                        //     if (ij === videoNames.length) {
+                        //         var del = true
+                        //         if (botMessage) {
+                        //             botMessage.fetch().catch(() => { del = false })
+                        //             if (del) {
+                        //                 botMessage.delete()
+                        //             }
                         //         }
                         //     }
-                        // }
                     }
                     else {
                         if (!message.member?.voice.channel) {

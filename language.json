@@ -544,6 +544,22 @@
       "english": "Used for setting up the server",
       "czech": "Prvotně nastaví server"
     },
+    "DES_ADDREMAINDER_SHORT": {
+      "english": "This command is not meant to be used. If you see this I messed up. Oooooooooooops",
+      "czech": "This command is not meant to be used. If you see this I messed up. Oooooooooooops"
+    },
+    "DES_ADDREMAINDER_LONG": {
+      "english": "This command is not meant to be used. If you see this I messed up. Oooooooooooops",
+      "czech": "This command is not meant to be used. If you see this I messed up. Oooooooooooops"
+    },
+    "DES_LISTREMAINDERS_SHORT": {
+      "english": "This command is not meant to be used. If you see this I messed up. Oooooooooooops",
+      "czech": "This command is not meant to be used. If you see this I messed up. Oooooooooooops"
+    },
+    "DES_LISTREMAINDERS_LONG": {
+      "english": "This command is not meant to be used. If you see this I messed up. Oooooooooooops",
+      "czech": "This command is not meant to be used. If you see this I messed up. Oooooooooooops"
+    },
     "DES__SHORT": {
       "english": "",
       "czech": ""
@@ -551,10 +567,6 @@
     "DES__LONG": {
       "english": "",
       "czech": ""
-    },
-    "_HELP_COMMAND_NAME": {
-      "english": "To show details about a command type '_help <command name>'",
-      "czech": "Pro zobrazní podrobnsotí příkazu použijte: '_help <název příkazu>'"
     },
     "_HELP_CATEGORY_NAME": {
       "english": "To show details about a category type '_help <category name>'",
@@ -625,8 +637,13 @@
       "czech": "Chyba při změně rolí (pravděpodobně díky oprávněním)"
     },
     "SPOTIFY_NO_SUPPORT": {
-      "english": "I am sorry I don't currently support spotify",
-      "czech": "Omlouvám se, ale aktuálně nepodporuju spotify"
+      "english": "To use spotify, firstly _convert spotify playlist to youtube playlist",
+      "czech": "Omlouvám se, ale pro použití spotify nejdříve převeďte na spotify playlist (_convert)",
+      "dev": "Použij _convert, pepego"
+    },
+    "SETUP_FUTURE": {
+      "english": "Setup support will come to OntroBot website soon™!",
+      "czech": "Setup bude přidán na OntroBot stránku"
     }
   }
 }

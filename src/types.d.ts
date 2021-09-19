@@ -210,7 +210,8 @@ type Server = {
     cekarnaChannel: string;
     cekarnaPings: string[];
     steps: Step[];
-    config: Config
+    scheaduledTimes: ScheaduledTimes
+    // config: Config
 };
 
 type Languages = "english" | "dev" | "czech";
@@ -311,7 +312,7 @@ type ButtonForm = (userMessage: Discord.Message, botMessage: (Discord.Message | 
 type ReactionForm = (userMessage: Discord.Message, botMessage: (Discord.Message | null), title: string, question: string, callbacks: ReactionFormOption[]) => Promise<ReactionFormOutput>;
 type CreateEmbed = (message: Discord.Message, title: string, description: (string | null), fields: (Discord.EmbedField[]), imageURL?: (string | null)) => Discord.MessageEmbed;
 type ProgressBar = (message: Discord.Message, title: string, description: (string | null), status: number, imageURL?: (string | null)) => Discord.MessageEmbed
-type TextInput = (userMessage: User.Message, botMessage: (Discord.Message), title: string, question: string, filter: ((input: string) => Promise<boolean>) | null) => Promise<TextInputOutput>
+type TextInput = (userMessage: User.Message, botMessage: (Discord.Message | null), title: string, question: string, filter: ((input: string) => Promise<boolean>) | null) => Promise<TextInputOutput>
 type TextInputOutput = {
     text: string;
     botMessage: Discord.Message;
@@ -330,3 +331,17 @@ type ButtonOutput = {
     userMessage: Discord.Message;
     botMessage: Discord.Message;
 }
+
+type ScheaduledTime = {
+    year: (undefined | null | string),
+    month: (undefined | null | string),
+    date: (undefined | null | string),
+    dayOfWeek: (undefined | null | string),
+    hour: (undefined | null | string),
+    minute: (undefined | null | string),
+    second: (undefined | null | string),
+    repeatable: (boolean | null),
+    name: string
+}
+
+type ScheaduledTimes = ScheaduledTime[]

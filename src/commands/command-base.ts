@@ -108,27 +108,41 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
     //     console.error('MISSING COMMAND: ' + name)
     // }
 
-    if (!global.commands[catName]) {
-        //Create category
-        global.commands[catName] = {
-            name: camelToWords(catName),
-            commands: {}
+    var catIgnore = ['remainders']
+
+    function isIgnored(arg0: string) {
+        for (var ignore of catIgnore) {
+            if (ignore === arg0) {
+                return true
+            }
         }
-        //Test if lang for category exists
-        if (!global.langJ.translations[`${catName.toUpperCase()}_DES`]) {
-            console.error(`No translation for ${catName} description`)
+        return false
+    }
+
+    //HELP commands
+    if (!isIgnored(catName)) {
+        if (!global.commands[catName]) {
+            //Create category
+            global.commands[catName] = {
+                name: camelToWords(catName),
+                commands: {}
+            }
+            //Test if lang for category exists
+            if (!global.langJ.translations[`${catName.toUpperCase()}_DES`]) {
+                console.error(`No translation for ${catName} description`)
+            }
+        }
+        //Create command
+        global.commands[catName].commands[name] = {
+            name: camelToWords(name),
+            aliases: commandOptions.commands.toString(),
+            args: commandOptions.expectedArgs,
+        }
+        if (!global.langJ.translations[`DES_${name.toUpperCase()}_SHORT`] || !global.langJ.translations[`DES_${name.toUpperCase()}_LONG`]) {
+            console.error(`No translation for ${name} description`)
         }
     }
-    //var category = global.commands[catName]
-    //Create command
-    global.commands[catName].commands[name] = {
-        name: camelToWords(name),
-        aliases: commandOptions.commands.toString(),
-        args: commandOptions.expectedArgs,
-    }
-    if (!global.langJ.translations[`DES_${name.toUpperCase()}_SHORT`] || !global.langJ.translations[`DES_${name.toUpperCase()}_LONG`]) {
-        console.error(`No translation for ${name} description`)
-    }
+
 
     /*category.commands[name] = {
         name,
