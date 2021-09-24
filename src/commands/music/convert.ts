@@ -155,6 +155,7 @@ module.exports = {
 
         var ij = 0
         var lastStamp = Date.now()
+        //TODO: divene poradi
 
         await Promise.all(videoNames.map(async (name: any, i: number) => {
             i++

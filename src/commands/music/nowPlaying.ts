@@ -13,6 +13,9 @@ module.exports = {
 		const dispatcher = server.dispathcher;
 		const seconds = (dispatcher.streamTime - dispatcher.pausedTime) / 1000;
 		const durationO = server.queue[0].duration;
+		if (!durationO) {
+			throw Error("np.ts 17 WTFFFFFFFFFFFFFF")
+		}
 		const duration =
 			durationO.seconds +
 			durationO.minutes * 60 +

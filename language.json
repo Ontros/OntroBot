@@ -649,6 +649,10 @@
       "english": "Playlist succesfully saved!",
       "czech": "Playlist úspěšně uložen!"
     },
+    "COMING_1.5": {
+      "english": "This feature is coming in version 1.5!",
+      "czech": "Tahle funkce bude pridana ve verzi 1.5!"
+    },
     "SETUP_FUTURE": {
       "english": "Setup support will come to OntroBot website soon™!",
       "czech": "Setup bude přidán na OntroBot stránku"

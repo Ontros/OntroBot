@@ -287,7 +287,13 @@ type Song = {
     id: string;
     url: string;
     requestedBy: string;
-    duration: any
+    duration: ({
+        days: number;
+        hours: number;
+        minutes: number;
+        seconds: number;
+    } | undefined)
+    // duration: any
 };
 
 type ServerManager = (id: string, change?: boolean) => void
