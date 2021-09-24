@@ -211,9 +211,43 @@ type Server = {
     cekarnaPings: string[];
     steps: Step[];
     scheaduledTimes: ScheaduledTimes
+    playlists: (Playlists | undefined)
     // config: Config
 };
 
+type Playlists = Playlist[]
+type Playlist = { videos: Video[], name: string }
+type Video = {
+    id: string,
+    title: string,
+    //thumbnails: any
+}
+// thumbnails: {
+//     default: {
+//       url: 'https://i.ytimg.com/vi/m6XsA5RkIjI/default.jpg',
+//       width: 120,
+//       height: 90
+//     },
+//     medium: {
+//       url: 'https://i.ytimg.com/vi/m6XsA5RkIjI/mqdefault.jpg',
+//       width: 320,
+//       height: 180
+//     },
+//     high: {
+//       url: 'https://i.ytimg.com/vi/m6XsA5RkIjI/hqdefault.jpg',
+//       width: 480,
+//       height: 360
+//     },
+//     standard: {
+//       url: 'https://i.ytimg.com/vi/m6XsA5RkIjI/sddefault.jpg',
+//       width: 640,
+//       height: 480
+//     },
+//     maxres: {
+//       url: 'https://i.ytimg.com/vi/m6XsA5RkIjI/maxresdefault.jpg',
+//       width: 1280,
+//       height: 720
+//     }
 type Languages = "english" | "dev" | "czech";
 type GetUser = (message: Discord.Message, arg0: string) => Promise<Discord.GuildMember | null>;
 type GetCur_role = (roles: Step[], user: Member) => { curStep: (Discord.Role | null); roleIndex: number }

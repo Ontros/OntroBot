@@ -178,34 +178,42 @@ bot.on('voiceStateUpdate', async (oldMember: VoiceState, newMember: VoiceState) 
 })
 
 bot.on('voiceStateUpdate', (oldState: VoiceState, newState: VoiceState) => {
-    //disconnect
-    if (!newState.channelID && oldState.member?.id === bot.user?.id) {
-        console.log(oldState.member)
-        console.log(newState.member)
-        if (!newState.member || !newState.member.guild.id) { console.log('index.js bot disconnect no guild'); return }
-        var server = global.servers[newState.member.guild.id]
-        server.dispathcher.destroy();
-        server.queue = []
-    }
-    //server mute
-    else if (newState.member && newState.member.id === bot.user?.id) {
-        var server = global.servers[newState.member.guild.id]
-        if (newState.serverMute) {
+    try {
+
+        //disconnect
+        if (!newState.channelID && oldState.member?.id === bot.user?.id) {
+            console.log(oldState.member)
+            console.log(newState.member)
+            if (!newState.member || !newState.member.guild.id) { console.log('index.js bot disconnect no guild'); return }
+            var server = global.servers[newState.member.guild.id]
             if (server.dispathcher) {
-                console.log(server.dispathcher)
-                try {
-                    server.dispathcher.pause();
+                server.dispathcher.destroy();
+            }
+            server.queue = []
+        }
+        //server mute
+        else if (newState.member && newState.member.id === bot.user?.id) {
+            var server = global.servers[newState.member.guild.id]
+            if (newState.serverMute) {
+                if (server.dispathcher) {
+                    console.log(server.dispathcher)
+                    try {
+                        server.dispathcher.pause();
+                    }
+                    catch { }
                 }
-                catch { }
+            }
+            else {
+                if (server.dispathcher) {
+                    try {
+                        server.dispathcher.resume();
+                    } catch { }
+                }
             }
         }
-        else {
-            if (server.dispathcher) {
-                try {
-                    server.dispathcher.resume();
-                } catch { }
-            }
-        }
+    }
+    catch {
+        console.log('index js 216 error')
     }
 })
 

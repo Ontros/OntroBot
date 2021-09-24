@@ -11,6 +11,7 @@ module.exports = {
     maxArgs: 1,
     minArgs: 0,
     expectedArgs: '<page number>',
+    //TODO: weird queue syntax outzput
     callback: async (message: Message, args: string[], text: string) => {
         const { lang, Discord, bot } = global;
         if (!bot.user || !message.guild) { return }

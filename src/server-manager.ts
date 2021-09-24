@@ -28,7 +28,8 @@ const defaultServer: Server = {
     cekarnaChannel: "",
     cekarnaPings: [],
     steps: [],
-    scheaduledTimes: []
+    scheaduledTimes: [],
+    playlists: undefined
     // config: {
     //     rules: { channelID: null, roleID: null }
     // }
@@ -60,6 +61,8 @@ function updateServerFile(id: string) {
     server.playing = true;
     var queue = server.queue;
     server.queue = [];
+    console.log(JSON.stringify(server))
+    console.log(server)
     global.fs.writeFileSync('./data/' + id + '.json', JSON.stringify(server), (err: Error) => {
         if (err) {
             console.log(err);

@@ -1,6 +1,7 @@
 import console from "console";
-import { Message, VoiceConnection } from "discord.js";
+import { EmbedField, Message, VoiceConnection } from "discord.js";
 import { Song } from "../../types";
+import getPlaylistByName from '../../utils/getPlaylistByName'
 
 module.exports = {
     commands: ['play', 'p'],
@@ -20,12 +21,14 @@ module.exports = {
             //here crash fix plz
             //console.log(server.queue)
             server.dispathcher = connection.play(YTDL(
-                server.loop === 2 ? server.queue[Math.floor(Math.random() * (server.queue.length) + 1) - 1].url :
+                server.loop === 2 ?
+                    server.queue[Math.floor(Math.random() * (server.queue.length) + 1) - 1].url :
                     server.queue[0].url, { filter: "audioonly" }));
             server.connection = connection;
             server.dispathcher.setVolume(server.volume / 100);
 
             server.dispathcher.on("finish", function () {
+                console.log('play finish')
                 if (!server.queue[1]) {
                     server.playing = false;
                     server.queue = []
@@ -50,16 +53,23 @@ module.exports = {
             });
         }
 
-        async function FindVideo(url: string, message: Message) {
-            //console.log(`looking for ${url}`)
+        async function FindVideo(url: string, message: Message, isID?: boolean) {
+            isID = isID ? true : false
+            console.log(`looking for ${url}`)
             const { YouTube } = global;
-            try {
-                var video = await YouTube.getVideo(url);
+            if (isID) {
+                var video = await YouTube.getVideoByID(url)
             }
-            catch
-            {
-                var videos = await YouTube.searchVideos(url, 1);
-                var video = await YouTube.getVideoByID(videos[0].id);
+            else {
+                try {
+                    var video = await YouTube.getVideo(url);
+                }
+                catch
+                {
+                    console.log('play searching - spotify debug - todo delete')
+                    var videos = await YouTube.searchVideos(url, 1);
+                    var video = await YouTube.getVideoByID(videos[0].id);
+                }
             }
 
             var song: Song =
@@ -75,115 +85,53 @@ module.exports = {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
         const { lang } = global;
-        //nalezeni videa
         var videoNames = [text]
+        var startingLength = global.servers[message.guild.id].queue.length
         var matchPlaylist = text.match(/^(https:\/\/open.spotify.com\/playlist\/|https:\/\/open.spotify.com\/user\/spotify\/playlist\/|spotify:user:spotify:playlist:)(?<url>[a-zA-Z0-9]+)(.*)$/)
         var matchTrack = text.match(/^(https:\/\/open.spotify.com\/track\/|spotify:user:spotify:track:)(?<url>[a-zA-Z0-9]+)(.*)$/)
         var matchAlbum = text.match(/^(https:\/\/open.spotify.com\/album\/|spotify:user:spotify:album:)(?<url>[a-zA-Z0-9]+)(.*)$/)
+        var isID = false
         if (matchPlaylist || matchTrack || matchAlbum) {
-            // if (false) {
             message.channel.send(lang(message.guild.id, 'SPOTIFY_NO_SUPPORT'))
-            //setting up spot to yt
-            // const clients = global.SPOTIFY_CLIENT.split(':')
-            // const spotifyApi = new global.SpotifyWebApi({
-            //     clientId: clients[0],
-            //     clientSecret: clients[1],
-            //     redirectUri: 'http://www.example.com/callback'
-            // })
-            // const refreshed = await global.fetch("https://accounts.spotify.com/api/token", {
-            //     body: "grant_type=refresh_token&refresh_token=" + global.SPOTIFY_OAUTH,
-            //     headers: {
-            //         Authorization: "Basic " + new Buffer(global.SPOTIFY_CLIENT).toString('base64'),
-            //         "Content-Type": "application/x-www-form-urlencoded"
-            //     },
-            //     method: "POST"
-            // })
-            // var ans = await refreshed.json();
-            // spotifyApi.setAccessToken(ans.access_token)
-            // const spotifyToYoutube = global.SpotifyToYoutube(spotifyApi)
-            // videoNames = []
-            // //@ts-expect-error
-            // var botMessage = await message.channel.send(global.createEmbed(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, 'QUER_SPOTIFY'), []))
-
-            // //PLAYLIST
-            // if (matchPlaylist) {
-            //     //@ts-expect-error
-            //     var playlists = await global.fetch("https://api.spotify.com/v1/playlists/" + matchPlaylist.groups?.url, {
-            //         headers: {
-            //             Accept: "application/json",
-            //             Authorization: "Bearer " + ans.access_token,
-            //             "Content-Type": "application/json"
-            //         }
-            //     })
-            //     var playlist = await playlists.json();
-            //     var i = 0;
-            //     var length = playlist.tracks.items.length
-            //     var lastStamp = Date.now()
-            //     await Promise.all(playlist.tracks.items.map(async (track: any, index: number) => {
-            //         var id: string = track.track.id
-            //         var youtubeID = await spotifyToYoutube(id).catch((err: Error) => { console.log(err) })
-            //         videoNames[index] = youtubeID
-            //         i++
-            //         if (Date.now() - lastStamp > 500) {
-            //             if (!message.guild) { return }
-            //             var embed = global.progressBar(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, `QUER_SPOTIFY`) + `\n${i}/${length}`, i / length)
-            //             botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
-            //             botMessage.edit(embed)
-            //             lastStamp = Date.now()
-            //         }
-            //     }))
-            // }
-
-            // //ALBUM
-            // if (matchAlbum) {
-            //     //@ts-expect-error
-            //     var albums = await global.fetch("https://api.spotify.com/v1/albums/" + matchAlbum.groups?.url, {
-            //         headers: {
-            //             Accept: "application/json",
-            //             Authorization: "Bearer " + ans.access_token,
-            //             "Content-Type": "application/json"
-            //         }
-            //     })
-            //     var album = await albums.json();
-            //     var i = 0;
-            //     var length = album.tracks.items.length
-            //     var lastStamp = Date.now()
-            //     await Promise.all(album.tracks.items.map(async (track: any, index: number) => {
-            //         var id: string = track.id
-            //         var youtubeID = await spotifyToYoutube(id)
-            //         videoNames[index] = youtubeID
-            //         i++
-            //         if (Date.now() - lastStamp > 500) {
-            //             if (!message.guild) { return }
-            //             var embed = global.progressBar(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, 'QUER_SPOTIFY') + `\n${i}/${length}`, i / length)
-            //             botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
-            //             botMessage.edit(embed)
-            //             lastStamp = Date.now()
-            //         }
-            //     }))
-            // }
-
-            // //TRACK
-            // if (matchTrack) {
-            //     //@ts-expect-error
-            //     var tracks = await global.fetch("https://api.spotify.com/v1/tracks/" + matchTrack.groups?.url, {
-            //         headers: {
-            //             Accept: "application/json",
-            //             Authorization: "Bearer " + ans.access_token,
-            //             "Content-Type": "application/json"
-            //         }
-            //     })
-            //     var track = await tracks.json();
-            //     videoNames[0] = await spotifyToYoutube(track.id)
-            // }
         }
-        var startingLength = global.servers[message.guild.id].queue.length
+        if (args[0] === 'list') {
+            //TODO: tansalate
+            if (!args[1]) {
+                var fields: (EmbedField[] | undefined) = global.servers[message.guild.id].playlists?.map((playlist) => {
+                    return { name: playlist.name, inline: false, value: `${playlist.videos.length} songs` }
+                })
+                if (!fields) {
+                    throw new Error("play.ts list fiels error")
+                    return
+                }
+
+                message.channel.send(global.createEmbed(message, 'List of Playlists',
+                    'For more details visit my webiste: <websiste link>', fields
+                ))
+            }
+            else {
+                isID = true
+                var newPlaylist = getPlaylistByName(message.guild.id, args[1])
+                if (!newPlaylist) {
+                    message.channel.send("Playlist not found")
+                    return
+                }
+                else {
+                    videoNames = newPlaylist.videos.map((video) => { return video.id })//global.servers[message.guild.id].playlists
+                }
+            }
+
+        }
         var ij = 0
-        var lastStamp = Date.now()
+        // var lastStamp = Date.now()
+        //TODO: plan to code
+        //pokud nehraje tak join a pridat do queue
+        //pokud hraje tak pridat do queue
 
         Promise.all(videoNames.map(async (name: any, i: number) => {
             // FindVideo((matchPlaylist || matchTrack || matchAlbum) ? `https://www.youtube.com/watch?v=${name}` : name, message)
-            FindVideo(name, message)
+
+            FindVideo(name, message, isID)
                 .then(song => {
                     if (!message.guild) { return }
                     global.servers[message.guild.id].queue[startingLength + i] = song;

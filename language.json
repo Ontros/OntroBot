@@ -641,6 +641,14 @@
       "czech": "Omlouvám se, ale pro použití spotify nejdříve převeďte na spotify playlist (_convert)",
       "dev": "Použij _convert, pepego"
     },
+    "URL_INV": {
+      "english": "This url is invalid!",
+      "czech": "Tahle url není správná"
+    },
+    "LIST_SAVE_OK": {
+      "english": "Playlist succesfully saved!",
+      "czech": "Playlist úspěšně uložen!"
+    },
     "SETUP_FUTURE": {
       "english": "Setup support will come to OntroBot website soon™!",
       "czech": "Setup bude přidán na OntroBot stránku"
