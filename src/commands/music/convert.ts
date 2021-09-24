@@ -24,6 +24,7 @@ module.exports = {
         var matchTrack = spotifyUrl.match(/^(https:\/\/open.spotify.com\/track\/|spotify:user:spotify:track:)(?<url>[a-zA-Z0-9]+)(.*)$/)
         var matchAlbum = spotifyUrl.match(/^(https:\/\/open.spotify.com\/album\/|spotify:user:spotify:album:)(?<url>[a-zA-Z0-9]+)(.*)$/)
         var matchArtist = spotifyUrl.match(/^(https:\/\/open.spotify.com\/artist\/|spotify:user:spotify:album:)(?<url>[a-zA-Z0-9]+)(.*)$/)
+        //TOOD: remove depricated method
         if (matchPlaylist || matchTrack || matchAlbum || matchArtist) {
             // if (false) {
             //setting up spot to yt
