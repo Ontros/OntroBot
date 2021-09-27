@@ -138,7 +138,7 @@ module.exports = {
         if (!message.guild) { return }
 
         var playing = server.queue.length > 1
-        if (songs) {
+        if (songs.length > 0) {
             var videos: Song[] = songs.map((song: Video) => { return { title: song.title, id: song.id, url: 'https://www.youtube.com/watch?v=' + song.id, requestedBy: message.author.username, duration: undefined } })
             global.servers[message.guild.id].queue = [...global.servers[message.guild.id].queue, ...videos]
         }
