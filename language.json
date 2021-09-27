@@ -656,6 +656,14 @@
     "SETUP_FUTURE": {
       "english": "Setup support will come to OntroBot website soon™!",
       "czech": "Setup bude přidán na OntroBot stránku"
+    },
+    "CUR_PREF": {
+      "english": "Current prefix is: ",
+      "czech": "Aktuální prefix je: "
+    },
+    "SET_PREF": {
+      "english": "Prefix set to: ",
+      "czech": "Prefix nastaven na: "
     }
   }
 }

@@ -210,8 +210,8 @@ type Server = {
     cekarnaChannel: string;
     cekarnaPings: string[];
     steps: Step[];
-    scheaduledTimes: ScheaduledTimes
     playlists: (Playlists | undefined)
+    prefix: string;
     // config: Config
 };
 

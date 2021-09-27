@@ -1,7 +1,7 @@
 import { Message, Role } from "discord.js";
 import { CommandOptions } from "../types";
 
-const prefix = '_';
+// const prefix = '_';
 //const serverManager = require('.././server-manager');
 
 const validatePermissions = (permissions: string[]) => {
@@ -167,6 +167,8 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
             console.log('ERROR WITH LOADING SERVER --> STOPPING COMMAND ', err)
             return
         }
+
+        var prefix = global.servers[message.guild.id].prefix
 
         if (!member || !guild.me) {
             message.channel.send(lang(guild.id, 'USR_ID_NOT'))

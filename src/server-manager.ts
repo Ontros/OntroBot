@@ -28,12 +28,15 @@ const defaultServer: Server = {
     cekarnaChannel: "",
     cekarnaPings: [],
     steps: [],
-    scheaduledTimes: [],
-    playlists: undefined
+    playlists: undefined,
+    prefix: '_'
     // config: {
     //     rules: { channelID: null, roleID: null }
     // }
 }
+
+var checkOnLoad = ['steps', 'playlists', 'prefix']
+
 function checkServer(id: string) {
     //Existuje soubor?
     if (!global.fs.existsSync('./data/' + id + '.json')) {
@@ -78,8 +81,14 @@ function updateServerFile(id: string) {
 function readServer(id: string) {
     const server = require('./../data/' + id + '.json');
     // console.log('READING!');
-    if (!server.roles) {
-        server.roles = []
+    // if (!server.roles) {
+    //     server.roles = []
+    // }
+    for (var childName of checkOnLoad) {
+        if (server[childName] === undefined) {
+            //@ts-expect-error
+            server[childName] = defaultServer[childName]
+        }
     }
     // if (!server.config) {
     //     // console.log(`defualt config + ${id}`)
