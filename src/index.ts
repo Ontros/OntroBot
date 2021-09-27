@@ -237,8 +237,8 @@ const LanguageList = ["dev", "eng", "czk"];
 
 bot.setMaxListeners(0);
 
-import { remaindersInit } from "./utils/index/startRemainders"
-remaindersInit()
+// import { remaindersInit } from "../archive/startRemainders"
+// remaindersInit()
 
 bot.login(token);
 //TODO remove this

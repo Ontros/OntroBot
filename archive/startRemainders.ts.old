@@ -1,6 +1,6 @@
 import { TextChannel } from "discord.js";
-import { ScheaduledTimes } from "../../types";
-import timeToDate from "../timeToDate";
+import { ScheaduledTimes } from "../src/types";
+import timeToDate from "../src/utils/timeToDate";
 export const remaindersInit = async () => {
     //NOTE: restart znamena ze se zpetne netrigernou 
     const rule = new global.schedule.RecurrenceRule();
