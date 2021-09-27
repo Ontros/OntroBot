@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 
 module.exports = {
-    commands: ['listRemainders', 'listRem'],
+    commands: ['listReminders', 'listRem'],
     expectedArgs: '<>',
     permissionError: '',
     minArgs: 0,

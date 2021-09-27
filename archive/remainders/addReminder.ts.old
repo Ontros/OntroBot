@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import { Job } from 'node-schedule';
-import { ReactionFormOption, ScheaduledTime } from '../../types';
-import timeToDate from '../../utils/timeToDate';
+import { ReactionFormOption, ScheaduledTime } from '../../src/types';
+import timeToDate from '../../src/utils/timeToDate';
 // ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ─██████████████───██████████████─██████──────────██████─██████████████─████████████████───██████████████────██████████████───██████████████─████████████───
 // ─██░░░░░░░░░░██───██░░░░░░░░░░██─██░░██──────────██░░██─██░░░░░░░░░░██─██░░░░░░░░░░░░██───██░░░░░░░░░░██────██░░░░░░░░░░██───██░░░░░░░░░░██─██░░░░░░░░████─
@@ -31,7 +31,7 @@ import timeToDate from '../../utils/timeToDate';
 
 
 module.exports = {
-    commands: ['addRemainder', 'addRem'],
+    commands: ['addReminder', 'addRem'],
     expectedArgs: '<>',
     permissionError: '',
     minArgs: 0,
