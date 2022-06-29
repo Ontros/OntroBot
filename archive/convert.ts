@@ -150,6 +150,7 @@ module.exports = {
             return
         }
 
+        console.log("valid")
         var videos: Video[] = []
         var i = 0
 

@@ -3,7 +3,7 @@ import { Message, MessageEmbed } from "discord.js";
 module.exports = {
     commands: ['help'],
     callback: async (message: Message, args: string[], text: string) => {
-        //TODO change to selection
+        //TODO change to selection??
         if (!message.guild) { return }
         const { Discord, bot, lang } = global
         if (!bot.user) { return }

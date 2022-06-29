@@ -637,9 +637,9 @@
       "czech": "Chyba při změně rolí (pravděpodobně díky oprávněním)"
     },
     "SPOTIFY_NO_SUPPORT": {
-      "english": "To use spotify, firstly _convert spotify playlist to youtube playlist",
-      "czech": "Omlouvám se, ale pro použití spotify nejdříve převeďte na spotify playlist (_convert)",
-      "dev": "Použij _convert, pepego"
+      "english": "To use spotify, firstly _convert spotify playlist to youtube playlist (its broken now)",
+      "czech": "Omlouvám se, ale pro použití spotify nejdříve převeďte na spotify playlist (_convert, kterej nefunguje)",
+      "dev": "Použij _convert, pepego (kterej nefunguje)"
     },
     "URL_INV": {
       "english": "This url is invalid!",

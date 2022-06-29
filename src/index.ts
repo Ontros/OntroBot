@@ -2,9 +2,6 @@ import { Client, Guild, Intents, Message, MessageReaction, PartialUser, User, Vo
 import { ButtonForm, Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
 import schedule from "node-schedule"
 
-//TODO: npm command build and run docker
-//TODO: npm command build docker
-//TODO: npm command run docker
 
 type Servers = {
     [index: string]: Server;
@@ -241,9 +238,3 @@ bot.setMaxListeners(0);
 // remaindersInit()
 
 bot.login(token);
-//TODO remove this
-bot.addListener('message', (message) => {
-    if (message.guild) { return }
-    if (message.author === bot.user) { return }
-    if (message.content === 'ahoj') { message.channel.send('ahoj') }
-})
