@@ -234,7 +234,6 @@ module.exports = {
 // const url = require('url');
 // const open = require('open');
 // const destroyer = require('server-destroy');
-// const keys = { "web": { "client_id": "543847268583-qmmklb3mt2a07le441es40j3l45efce3.apps.googleusercontent.com", "project_id": "gmail-notifications-320810", "auth_uri": "https://accounts.google.com/o/oauth2/auth", "token_uri": "https://oauth2.googleapis.com/token", "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs", "client_secret": "NmBzVSYjwCTcrBBzc0ju66cy", "redirect_uris": ["urn:ietf:wg:oauth:2.0:oob", "http://localhost"] } }
 // //T OD O : zrpovoznit url na authentifikaci a poslat do PM
 // async function main() {
 //     const oAuth2Client: any = await getAuthenticatedClient();
