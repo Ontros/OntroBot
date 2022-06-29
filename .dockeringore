@@ -1,0 +1,9 @@
+.env
+audio.mp3
+node_modules
+say.js
+data/*
+.vs
+ticTacToe.ts
+ticTacToe.js
+.vscode

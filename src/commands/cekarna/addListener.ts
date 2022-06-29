@@ -1,3 +1,5 @@
+import { Message } from "discord.js";
+
 //const serverManager = require('../.././server-manager');
 module.exports = {
     commands: ['addListener'],
@@ -7,17 +9,15 @@ module.exports = {
     permissions: ["ADMINISTRATOR"],
     requiredRoles: [],
     allowedIDs: [],
-    callback: (message: Message, args: string[], text: string) => {
-        const {lang} = global
+    callback: async (message: Message, args: string[], text: string) => {
+        if (!message.guild) { return }
+        const { lang } = global
         var server = global.servers[message.guild.id];
-        if (!message.guild.member(args[0])) {
-            message.channel.send(lang(message.guild.id, 'USR_ID_NOT'));
-            return
-        }
-        if (!server.cekarnaPings.includes(args[0])) {
-            server.cekarnaPings.push(args[0]);
-            message.channel.send(lang(message.guild.id, 'LIST_ADD')+': '+args[0]);
-            serverManager(message.guild.id, true);
+        const user = await global.getUser(message, args[0]); if (!user) { message.channel.send(global.lang(message.guild.id, 'USR_ID_NOT')); return; }
+        if (!server.cekarnaPings.includes(user.id)) {
+            server.cekarnaPings.push(user.id);
+            message.channel.send(lang(message.guild.id, 'LIST_ADD') + ': ' + user.displayName);
+            global.serverManager(message.guild.id, true);
         }
         else {
             message.channel.send(lang(message.guild.id, 'LIST_EXISTS'));

@@ -1,5 +1,7 @@
+import { Server } from "./types";
+
 //const fs = require('fs');
-module.exports = (id: number, change: boolean) => {
+module.exports = (id: string, change: boolean) => {
     try {
         if (change != null && change == true) {
             updateServerFile(id);
@@ -10,63 +12,92 @@ module.exports = (id: number, change: boolean) => {
         }
     }
     catch (e) {
-        console.log(e);
         console.log('Error with opening/writing to data -> loading default server!');
+        console.log(e);
         global.servers[id] = defaultServer;
     }
 }
-const defaultServer = {
+const defaultServer: Server = {
     queue: [],
     dispathcher: undefined,
-    loop: false,
+    loop: 0,
     connection: undefined,
     playing: true,
     volume: 5,
     language: "english",
     cekarnaChannel: "",
-    cekarnaPings: []
+    cekarnaPings: [],
+    steps: [],
+    playlists: undefined,
+    prefix: '_'
+    // config: {
+    //     rules: { channelID: null, roleID: null }
+    // }
 }
-function checkServer(id: number) 
-{
+
+var checkOnLoad = ['steps', 'playlists', 'prefix']
+
+function checkServer(id: string) {
     //Existuje soubor?
-    if (!fs.existsSync('./data/'+id+'.json')) {
+    if (!global.fs.existsSync('./data/' + id + '.json')) {
         //Vytvoř ho
-        fs.writeFileSync('./data/'+id+'.json', JSON.stringify(defaultServer), (err: Error) => {
+        global.fs.writeFileSync('./data/' + id + '.json', JSON.stringify(defaultServer), (err: Error) => {
             if (err) {
                 console.log(err);
             }
         });
-        console.log('WRITING!');
+        // console.log('WRITING NEW!');
     }
 }
 
-function updateServerFile(id:number) {
-    console.log('WRITING!');
+function updateServerFile(id: string) {
+    //WARNING: This code is awful
+    // console.log('WRITING!');
     var server = global.servers[id];
     var connection = server.connection;
     server.connection = undefined;
     var dispathcher = server.dispathcher;
     server.dispathcher = undefined;
-    var loop = server.loop;
-    server.loop = false;
+    //var loop = server.loop;
+    //server.loop = 0;
     var playing = server.playing;
     server.playing = true;
     var queue = server.queue;
     server.queue = [];
-    fs.writeFileSync('./data/'+id+'.json', JSON.stringify(server), (err: Error) => {
+    console.log(JSON.stringify(server))
+    console.log(server)
+    global.fs.writeFileSync('./data/' + id + '.json', JSON.stringify(server), (err: Error) => {
         if (err) {
             console.log(err);
         }
     });
     server.connection = connection;
     server.dispathcher = dispathcher;
-    server.loop = loop;
+    //server.loop = loop;
     server.playing = playing;
     server.queue = queue;
 }
 
-function readServer(id:number) {
-    const server = require('./../data/'+id+'.json');
-    console.log('READING!');
+function readServer(id: string) {
+    const server = require('./../data/' + id + '.json');
+    // console.log('READING!');
+    // if (!server.roles) {
+    //     server.roles = []
+    // }
+    for (var childName of checkOnLoad) {
+        if (server[childName] === undefined) {
+            //@ts-expect-error
+            server[childName] = defaultServer[childName]
+        }
+    }
+    // if (!server.config) {
+    //     // console.log(`defualt config + ${id}`)
+    //     server.config = defaultServer.config;
+    // }
+    //handle legacy
+    if (typeof server.loop === 'boolean') {
+        server.loop = 0
+    }
+    //save to memory
     global.servers[id] = server;
 }

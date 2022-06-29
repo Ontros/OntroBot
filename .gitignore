@@ -3,3 +3,8 @@ node_modules
 say.js
 data/*
 dist/*
+.vs
+ticTacToe.ts
+ticTacToe.js
+.vscode
+oauth2.keys.json
