@@ -213,7 +213,18 @@ type Server = {
     playlists: (Playlists | undefined)
     prefix: string;
     // config: Config
+    roleGiver?: RoleGiver;
 };
+
+type RoleGiver = {
+    messageID: string;
+    roleReactions: RoleReaction[];
+};
+
+type RoleReaction = {
+    emoji: string;
+    roleID: string;
+}
 
 type Playlists = Playlist[]
 type Playlist = { videos: Video[], name: string }

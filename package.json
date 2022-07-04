@@ -1,6 +1,6 @@
 {
   "name": "ontrobot",
-  "version": "1.4",
+  "version": "1.4.1",
   "description": "Ontrův personální discord bot",
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
     "discord-buttons": "^2.4.1",
     "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
+    "emoji-dictionary": "^1.0.11",
     "node-fetch": "^2.6.1",
     "node-schedule": "^2.0.0",
     "opusscript": "0.0.7",

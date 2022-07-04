@@ -1,6 +1,7 @@
 import { Client, Guild, Intents, Message, MessageReaction, PartialUser, User, VoiceState } from "discord.js";
 import { ButtonForm, Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
 import schedule from "node-schedule"
+const emojiDic = require("emoji-dictionary")
 
 
 type Servers = {
@@ -213,21 +214,63 @@ bot.on('voiceStateUpdate', (oldState: VoiceState, newState: VoiceState) => {
         console.log('index js 216 error')
     }
 })
+bot.on("messageReactionRemove", async (reaction: MessageReaction, user: (User | PartialUser)) => {
+    const { lang } = global;
+    if (user.bot) { return }
+    if (user.partial) { user = await user.fetch() }
+    if (!reaction.message.guild) { return; }
+    global.serverManager(reaction.message.guild.id)
+    var server = global.servers[reaction.message.guild.id]
+    if (!server.roleGiver) { return }
+    if (server.roleGiver.messageID !== reaction.message.id) { return }
+    const member = reaction.message.guild.member(user)
+    if (!member) { console.log('reaction no member (index.ts)'); user.send(lang(reaction.message.guild.id, 'UNKWN_ERR_HALT')); return }
+    var emojiString: string = emojiDic.getName(reaction.emoji.toString())
+
+    var roleIndex = server.roleGiver.roleReactions.findIndex((value) => {
+        return value.emoji === emojiString
+    })
+
+    if (reaction.count === 0) {
+        reaction.message.react(reaction.emoji)
+    }
+
+    if (roleIndex != -1) {
+        member.roles.remove(server.roleGiver.roleReactions[roleIndex].roleID)
+    }
+})
 
 //Rule reaction
-// bot.on("messageReactionAdd", async (reaction: MessageReaction, user: (User | PartialUser)) => {
-//     if (user.bot) { return }
-//     if (user.partial) { user = await user.fetch() }
-//     if (!reaction.message.guild) { return; }
-//     global.serverManager(reaction.message.guild.id)
-//     var server = global.servers[reaction.message.guild.id]
-//     if (!server.config.rules.channelID) { return }
-//     if (!server.config.rules.roleID) { return }
-//     if (server.config.rules.channelID !== reaction.message.channel.id) { return }
-//     const member = reaction.message.guild.member(user)
-//     if (!member) { console.log('reaction no member (index.ts)'); return }
-//     member.roles.add(server.config.rules.roleID)
-// })
+bot.on("messageReactionAdd", async (reaction: MessageReaction, user: (User | PartialUser)) => {
+    const { lang } = global;
+    if (user.bot) { return }
+    if (user.partial) { user = await user.fetch() }
+    if (!reaction.message.guild) { return; }
+    global.serverManager(reaction.message.guild.id)
+    var server = global.servers[reaction.message.guild.id]
+    if (!server.roleGiver) { return }
+    if (server.roleGiver.messageID !== reaction.message.id) { return }
+    const member = reaction.message.guild.member(user)
+    if (!member) { console.log('reaction no member (index.ts)'); user.send(lang(reaction.message.guild.id, 'UNKWN_ERR_HALT')); return }
+    var emojiString: string = emojiDic.getName(reaction.emoji.toString())
+
+    var roleIndex = server.roleGiver.roleReactions.findIndex((value) => {
+        return value.emoji === emojiString
+    })
+
+    if (reaction.count === 1) {
+        reaction.message.react(reaction.emoji)
+    }
+
+    if (roleIndex != -1) {
+        member.roles.add(server.roleGiver.roleReactions[roleIndex].roleID)
+    }
+    else {
+        user.send("no, bad emoji")
+        reaction.remove()
+    }
+
+})
 const PREFIX = '_';
 const OwnerID = '255345748441432064';
 const LanguageList = ["dev", "eng", "czk"];
