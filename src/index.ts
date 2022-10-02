@@ -8,6 +8,10 @@ type Servers = {
     [index: string]: Server;
 }
 
+type UserBalance = {
+    [index: string]: number;
+}
+
 declare global {
     namespace NodeJS {
         interface Global {
@@ -40,6 +44,7 @@ declare global {
             SpotifyWebApi: any;
             progressBar: ProgressBar;
             schedule: typeof schedule;
+            userBalance: UserBalance;
         }
     }
 }
@@ -56,6 +61,7 @@ global.serverManager = require('././server-manager');
 global.langJ = require('./../language.json');
 global.Package = require('./../package.json');;
 global.servers = {};
+global.userBalance = {};
 global.lang = require('./language.js');
 global.getUser = require('./utils/getUser')
 // global.commands = require('./../commands.json')

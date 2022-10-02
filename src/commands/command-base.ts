@@ -169,6 +169,7 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
         }
 
         var prefix = global.servers[message.guild.id].prefix
+        // var prefix = "_"
 
         if (!member || !guild.me) {
             message.channel.send(lang(guild.id, 'USR_ID_NOT'))

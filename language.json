@@ -560,11 +560,41 @@
       "english": "This command is not meant to be used. If you see this I messed up. Oooooooooooops",
       "czech": "This command is not meant to be used. If you see this I messed up. Oooooooooooops"
     },
+    "DES_GAMBA_SHORT": {
+      "english": "Don't do it!",
+      "czech": "Nedělej to!",
+      "dev": "uwu gamba"
+    },
+    "DES_GAMBA_LONG": {
+      "english": "Don't do it!",
+      "czech": "Nedělej to!",
+      "dev": "uwu gamba"
+    },
+    "DES_PREFIX_SHORT": {
+      "english": "Change the prefix",
+      "czech": "Změň předponu"
+    },
+    "DES_PREFIX_LONG": {
+      "english": "Change the prefix",
+      "czech": "Změň předponu"
+    },
+    "DES_FARMAR_SHORT": {
+      "english": "Self promotion",
+      "czech": "Reklama"
+    },
+    "DES_FARMAR_LONG": {
+      "english": "Self promotion",
+      "czech": "Reklama"
+    },
     "DES__SHORT": {
       "english": "",
       "czech": ""
     },
     "DES__LONG": {
+      "english": "",
+      "czech": ""
+    },
+    "_HELP_COMMAND_NAME": {
       "english": "",
       "czech": ""
     },
