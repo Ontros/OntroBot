@@ -21,7 +21,7 @@ module.exports = {
         var penysSize = 'ERROR'
         if (requestedPlayer.id === '255345748441432064') {
             //message.channel.send(+lang(message.guild.id, 'PP_SIZE')+": 420 cm");
-            penysSize = '420'
+            penysSize = '30'
         }
         else if (requestedPlayer.id === '275639448299896833') {
             //message.reply(lang(message.guild.id, 'PP_SIZE')+": "+(-69).toString() + " cm");

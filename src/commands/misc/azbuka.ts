@@ -17,10 +17,42 @@ module.exports = {
 
 function TextToAzbuka(text: string) {
     var output = ''
-    text.split('').forEach((text) => {
-        output += charToAzbuka(text)
+    var previosChar: undefined | string = undefined
+    text.split('').forEach((char, index, array) => {
+        if (previosChar) {
+            //Pasting from double
+            output += previosChar
+            previosChar = undefined
+        }
+        else {
+            try {
+                var double = findDouble(char + array[index + 1])
+                if (double) {
+                    previosChar = double
+                }
+                else {
+                    output += charToAzbuka(char)
+                }
+            }
+            catch {
+                output += charToAzbuka(char)
+            }
+        }
     })
     return output
+}
+
+function findDouble(double: string) {
+    switch (double) {
+        case 'je': return 'е'
+        case 'jo': return 'ё'
+        case 'ch': return 'х'
+        case 'šč': return 'щ'
+        case 'ju': return 'ю'
+        case 'ja': return 'я'
+        default: return undefined
+    }
+
 }
 
 function charToAzbuka(text: string) {
@@ -28,9 +60,8 @@ function charToAzbuka(text: string) {
         case 'a': return 'а'
         case 'b': return 'б'
         case 'v': return 'в'
-        case 'g': return 'д'
-        case 'e': return 'е'
-        case 'é': return 'ё'
+        case 'g': return 'г'
+        case 'd': return 'д'
         case 'ž': return 'ж'
         case 'z': return 'з'
         case 'i': return 'и'
@@ -49,14 +80,15 @@ function charToAzbuka(text: string) {
         case 'h': return 'х'
         case 'c': return 'ц'
         case 'č': return 'ч'
-        case 'w': return 'ш'
-        case 'š': return 'щ'
+        case 'š': return 'ш'
         case 'ů': return 'ъ'
         case 'y': return 'ы'
         case 'q': return 'ь'
+        case 'e': return 'е'
         case 'ě': return 'э'
         case 'ý': return 'ю'
         case 'á': return 'я'
+        case ' ': return ' '
         default: return '-'
     }
 }
