@@ -1,4 +1,4 @@
-import { Client, Guild, Intents, Message, MessageReaction, PartialUser, User, VoiceState } from "discord.js";
+import { Channel, Client, Guild, GuildMember, Intents, Message, MessageReaction, PartialUser, User, VoiceChannel, VoiceState } from "discord.js";
 import { ButtonForm, Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
 import schedule from "node-schedule"
 const emojiDic = require("emoji-dictionary")
@@ -181,13 +181,45 @@ bot.on('voiceStateUpdate', async (oldMember: VoiceState, newMember: VoiceState) 
     }
 })
 
-bot.on('voiceStateUpdate', (oldState: VoiceState, newState: VoiceState) => {
+bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) => {
     try {
+        //Logging
+        try {
+            if (oldState.channelID !== newState.channelID) {
+                serverManager(newState.guild.id, false)
+                if (!global.servers[newState.guild.id].logServer) {
+                    return
+                }
+                var logOrDis = ""
+                if (!newState.channelID) {
+                    //disconnect
+                    logOrDis = "disconnected from"
+                }
+                else {
+                    //connect
+                    logOrDis = "connected to"
+                }
+                if (!process.env.LOGGING_CHANNEL) {
+                    console.log("missing ENV LOGGING CHANNEL")
+                    return
+                }
+                const channel = await bot.channels.fetch(process.env.LOGGING_CHANNEL, false)
+                if (channel.isText()) {
+                    //@ts-expect-error
+                    var member: GuildMember = newState.member || oldState.member
+                    //@ts-expect-error
+                    var voiceChannel: VoiceChannel = oldState.channel || newState.channel
+                    channel.send(`${member.nickname || member.user.username} has ${logOrDis} ${voiceChannel.name}`)
+                }
+                else {
+                    console.log("logging channel isnt text")
+                }
+            }
 
+        }
+        catch { console.log("error logging") }
         //disconnect
         if (!newState.channelID && oldState.member?.id === bot.user?.id) {
-            console.log(oldState.member)
-            console.log(newState.member)
             if (!newState.member || !newState.member.guild.id) { console.log('index.js bot disconnect no guild'); return }
             var server = global.servers[newState.member.guild.id]
             if (server.dispathcher) {

@@ -7,6 +7,7 @@ module.exports = {
 	minArgs: 0,
 	maxArgs: 0,
 	callback: async (message: Message, args: string[], text: string) => {
+		//TODO: when loop random uses queue[0]
 		const { bot, lang } = global;
 		if (!message.guild) { return }
 		var server = global.servers[message.guild.id];
