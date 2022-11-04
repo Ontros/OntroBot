@@ -29,7 +29,8 @@ const defaultServer: Server = {
     cekarnaPings: [],
     steps: [],
     playlists: undefined,
-    prefix: '_'
+    prefix: '_',
+    logServer: false
     // config: {
     //     rules: { channelID: null, roleID: null }
     // }

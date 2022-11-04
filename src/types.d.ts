@@ -214,6 +214,7 @@ type Server = {
     prefix: string;
     // config: Config
     roleGiver?: RoleGiver;
+    logServer: boolean;
 };
 
 type RoleGiver = {
