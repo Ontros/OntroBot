@@ -77,18 +77,13 @@ global.fetch = require('node-fetch')
 if (!process.env.SPOTIFY_OAUTH || !process.env.SPOTIFY_CLIENT) { throw new Error('SPOTIFY_OAUTH missing') }
 global.SPOTIFY_OAUTH = process.env.SPOTIFY_OAUTH
 global.SPOTIFY_CLIENT = process.env.SPOTIFY_CLIENT
-global.SpotifyToYoutube = require('spotify-to-youtube')
-global.SpotifyWebApi = require('spotify-web-api-node')
 global.progressBar = require('./utils/progressBar')
 global.schedule = schedule
 
 const token = process.env.DJS_TOKEN;
 global.YouTube = new youtube(process.env.YT_TOKEN);
 
-
-
 bot.on('ready', () => {
-
     if (process.env.STATUS) {
         if (bot.user) {
             bot.user.setActivity(process.env.STATUS)

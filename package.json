@@ -25,11 +25,7 @@
     "play-dl": "^1.9.6",
     "random-seed": "^0.3.0",
     "simple-youtube-api": "^5.2.1",
-    "spotify-finder": "^2.1.1",
-    "spotify-to-youtube": "^1.0.1",
-    "spotify-web-api-node": "^5.0.2",
     "tsc": "^2.0.3",
-    "youtube-dl-exec": "^2.1.8",
     "ytdl-core": "^4.11.2"
   },
   "devDependencies": {

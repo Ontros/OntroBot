@@ -1,11 +1,8 @@
 import console from "console";
-import { EmbedField, Message, } from "discord.js";
+import { Message, } from "discord.js";
 import { Song, Video } from "../../types";
-import getPlaylistByName from '../../utils/getPlaylistByName'
-import { exec as ytdlexec } from 'youtube-dl-exec';
-import { createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection } from "@discordjs/voice";
-const playDL = require('play-dl')
-// import 'play-dl'
+import { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection } from "@discordjs/voice";
+import playDL from 'play-dl'
 
 module.exports = {
     commands: ['play', 'p'],
@@ -19,7 +16,6 @@ module.exports = {
     callback: async (message: Message, args: string[], text: string) => {
         async function play(connection: VoiceConnection, message: Message) {
             try {
-
                 if (!message.guild) { return }
                 var server = global.servers[message.guild.id];
                 // const { YTDL } = global;
@@ -53,7 +49,8 @@ module.exports = {
                 // })
                 // console.log("stream")
                 // return
-                const audioResource = createAudioResource(stream.stream, { inputType: stream.type })
+                const audioResource = createAudioResource(stream.stream, { inputType: stream.type, inlineVolume: true })
+                audioResource.volume?.setVolume(server.volume / 100)
                 const player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } })
                 server.audioResource = audioResource
                 server.player = player
@@ -61,12 +58,10 @@ module.exports = {
                 // server.dispathcher = connection.play(audioResource.playStream)
                 server.dispathcher = connection.subscribe(player)
                 server.connection = connection;
-                audioResource.volume?.setVolume(server.volume / 100)
                 server.player.on("stateChange", async function (oldState, newState) {
                     if (newState.status !== "idle") {
                         return
                     }
-                    console.log('play finish')
                     if (!server.queue[1] && server.loop !== 3) {
                         //KONEC
                         server.playing = false;
