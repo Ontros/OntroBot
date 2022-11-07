@@ -47,6 +47,8 @@ declare global {
     }
 }
 
+
+
 import Discord from 'discord.js'
 global.Discord = Discord;
 global.YTDL = require('ytdl-core');
@@ -243,6 +245,7 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
         console.log('index js 216 error')
     }
 })
+process.on("unhandledRejection", (e) => { console.log(e, "unhandled promise rejection") })
 bot.on("messageReactionRemove", async (reaction, user) => {
     const { lang } = global;
     if (user.bot) { return }

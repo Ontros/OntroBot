@@ -1,6 +1,6 @@
 import console from "console";
 import { Message } from "discord.js";
-import { Song, Video } from "../../types";
+import { ReactionFormOption, Song, Video } from "../../types";
 import { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection } from "@discordjs/voice";
 import playDL from 'play-dl'
 import disconnectBot from "../../utils/disconnectBot";
@@ -15,6 +15,7 @@ module.exports = {
     allowedIDs: [],
     requireChannelPerms: true,
     callback: async (message: Message, args: string[], text: string) => {
+        //TODO: fix on youtube.com --> search, restarting playing when already playing, sometimes song randomly ends (probably switch to youtube-dl-exec)
         async function play(connection: VoiceConnection, message: Message) {
             try {
                 if (!message.guild) { return }
@@ -26,6 +27,11 @@ module.exports = {
                     //@ts-ignore
                     newSong = await FindVideo(newSong.id, message, true)
                     server.queue[newSongIndex] = newSong
+                }
+                if (!newSong.url) {
+                    message.channel.send("Missing song url")
+                    disconnectBot(message.guild.id)
+                    return
                 }
                 const stream = await playDL.stream(newSong.url)
                 const audioResource = createAudioResource(stream.stream, { inputType: stream.type, inlineVolume: true })
@@ -74,57 +80,151 @@ module.exports = {
 
         async function FindVideo(url: string, message: Message, isID?: boolean): Promise<Song[]> {
             return new Promise(async (resolve) => {
-                isID = isID ? true : false
-                console.log(`looking for ${url}`)
+                if (!message.guild?.id) {
+                    return
+                }
                 const { YouTube } = global;
+                var videos: any[] = []
                 if (isID) {
-                    var video = await YouTube.getVideoByID(url)
+                    try {
+                        var video = await YouTube.getVideoByID(url)
+                        resolve(video)
+                        return
+                    }
+                    catch (e) {
+                        message.channel.send(lang(message.guild.id, "UNKWN_ERR"))
+                        console.log(e)
+                        return
+
+                    }
                 }
                 else {
+                    //1. Zkusit najít playlist/podle URL
                     try {
-                        var video = await YouTube.getVideo(url);
-                    }
-                    catch
-                    {
+                        const id = url
+                        const id1 = url.match(/youtu(?:.*\/v\/|.*v\=|\.be\/)([A-Za-z0-9_\-]{11})/)?.[1]
+                        const id2 = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/)?.[1]
                         try {
                             var playlist = await YouTube.getPlaylist(url)
-                            var videos = await playlist.getVideos()
-
+                            videos = await playlist.getVideos()
                         }
                         catch {
-                            var videos = await YouTube.searchVideos(url, 1);
-                            var video = await YouTube.getVideoByID(videos[0].id);
+                            try {
+                                videos = [await YouTube.getVideo(url)]
+                            }
+                            catch {
+                                try {
+                                    videos = [await YouTube.getVideoByID(id)]
+                                }
+                                catch {
+                                    try {
+                                        videos = [await YouTube.getVideoByID(id1)]
+                                    }
+                                    catch {
+                                        try {
+                                            videos = [await YouTube.getVideoByID(id2)]
+                                        }
+                                        catch {
+                                            //2. Vyhledat
+                                            try {
+                                                var callbacks: ReactionFormOption[] = []
+                                                videos = await YouTube.searchVideos(url, 10)
+                                                for (var video of videos) {
+                                                    callbacks.push({ callback: null, title: `${video.title} ${lang(message.guild.id, 'BY')} ${video.channel.title}` })
+                                                }
+                                                var output = await global.reactionForm(message, null, 'Search', 'What song do you want to play?', callbacks, true)
+                                                if (output.botMessage.deletable)
+                                                    output.botMessage.delete()
+                                                var videos = [videos[output.id]]
+                                            }
+                                            catch (e) {
+                                                message.channel.send(lang(message.guild.id, "UNKWN_ERR"))
+                                                console.log(e)
+                                                return
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
                         }
                     }
+                    catch {
+                        message.channel.send(lang(message.guild.id, "UNKWN_ERR"))
+                        return
+                    }
                 }
-                if (videos) {
-                    resolve(videos.map((vid: any) => {
-                        return {
-                            title: vid.title,
-                            id: vid.id,
-                            url: 'https://www.youtube.com/watch?v=' + vid.id,
-                            requestedBy: message.author.username,
-                            duration: vid.duration
-                        }
-                    }))
-                }
-                else {
-                    resolve(video)
-                }
+                // isID = isID ? true : false
+                // console.log(`looking for ${url}`)
+                // if (isID) {
+                // var video = await YouTube.getVideoByID(url)
+                // }
+                // else {
+                //     try {
+                //         var video = await YouTube.getVideo(url);
+                //     }
+                //     catch
+                //     {
+                //         try {
+                // var playlist = await YouTube.getPlaylist(url)
+                // var videos = await playlist.getVideos()
+                //         }
+                //         catch {
+                //             var videos = await YouTube.searchVideos(url, 1);
+                //             var video = await YouTube.getVideoByID(videos[0].id);
+                //         }
+                //     }
+                // }
+                resolve(videos.map((vid: any) => {
+                    return {
+                        title: vid.title,
+                        id: vid.id,
+                        url: 'https://www.youtube.com/watch?v=' + vid.id,
+                        requestedBy: message.author.username,
+                        duration: vid.duration
+                    }
+                }))
             })
         }
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
         const { lang } = global;
         var videoName = text
-        // var startingLength = global.servers[message.guild.id].queue.length
-        var matchPlaylist = text.match(/^(https:\/\/open.spotify.com\/playlist\/|https:\/\/open.spotify.com\/user\/spotify\/playlist\/|spotify:user:spotify:playlist:)(?<url>[a-zA-Z0-9]+)(.*)$/)
-        var matchTrack = text.match(/^(https:\/\/open.spotify.com\/track\/|spotify:user:spotify:track:)(?<url>[a-zA-Z0-9]+)(.*)$/)
-        var matchAlbum = text.match(/^(https:\/\/open.spotify.com\/album\/|spotify:user:spotify:album:)(?<url>[a-zA-Z0-9]+)(.*)$/)
         var songs: Video[] = []
-        if (matchPlaylist || matchTrack || matchAlbum) {
-            message.channel.send(lang(message.guild.id, 'SPOTIFY_NO_SUPPORT'))
+        if (!message.guild) { return }
+        var playing = server.queue.length > 1
+        // if (songs.length > 0) {
+        //     var videos: Song[] = songs.map((song: Video) => { return { title: song.title, id: song.id, url: 'https://www.youtube.com/watch?v=' + song.id, requestedBy: message.author.username, duration: undefined } })
+        //     global.servers[message.guild.id].queue = [...global.servers[message.guild.id].queue, ...videos]
+        // }
+        // else {
+        var video: Song[] = await FindVideo(videoName, message)
+        // console.log(video)
+        for (var vid of video) {
+            // console.log("vid", vid)
+            global.servers[message.guild.id].queue.push(vid)
+            // console.log("q", global.servers[message.guild.id].queue)
         }
+        // }
+        if (!message.member?.voice.channel) {
+            message.channel.send(lang(message.guild.id, 'NOT_IN_VC'));
+            return;
+        }
+        if (playing) {
+            message.channel.send(lang(message.guild.id, 'QUEUE_ADD'))
+        }
+        else {
+            const connection = joinVoiceChannel({
+                channelId: message.member.voice.channel.id,
+                guildId: message.guild.id,
+                adapterCreator: message.guild.voiceAdapterCreator
+            })
+            play(connection, message);
+            message.channel.send(lang(message.guild.id, 'PLAY_START'));
+        }
+        // if (matchPlaylist || matchTrack || matchAlbum) {
+        //     message.channel.send(lang(message.guild.id, 'SPOTIFY_NO_SUPPORT'))
+        // }
         // if (args[0] === 'list') {
         //     //TODO: tansalate
         //     if (!args[1]) {
@@ -158,39 +258,6 @@ module.exports = {
         //TODO: plan to code
         //pokud nehraje tak join a pridat do queue
         //pokud hraje tak pridat do queue
-
-
-
-        if (!message.guild) { return }
-
-        var playing = server.queue.length > 1
-        if (songs.length > 0) {
-            var videos: Song[] = songs.map((song: Video) => { return { title: song.title, id: song.id, url: 'https://www.youtube.com/watch?v=' + song.id, requestedBy: message.author.username, duration: undefined } })
-            global.servers[message.guild.id].queue = [...global.servers[message.guild.id].queue, ...videos]
-        }
-        else {
-            var video = await FindVideo(videoName, message)
-            for (var vid of video) {
-                global.servers[message.guild.id].queue.push(vid)
-            }
-        }
-        if (!message.member?.voice.channel) {
-            message.channel.send(lang(message.guild.id, 'NOT_IN_VC'));
-            return;
-        }
-        if (playing) {
-            message.channel.send(lang(message.guild.id, 'QUEUE_ADD'))
-        }
-        else {
-            const connection = joinVoiceChannel({
-                channelId: message.member.voice.channel.id,
-                guildId: message.guild.id,
-                adapterCreator: message.guild.voiceAdapterCreator
-            })
-            play(connection, message);
-            message.channel.send(lang(message.guild.id, 'PLAY_START'));
-        }
-
     }
 }
 
