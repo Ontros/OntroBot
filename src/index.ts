@@ -1,5 +1,5 @@
-import { Channel, Client, Guild, GuildMember, Intents, Message, MessageReaction, PartialUser, User, VoiceChannel, VoiceState } from "discord.js";
-import { ButtonForm, Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
+import { Client, Guild, GuildMember, Message, VoiceChannel, VoiceState } from "discord.js";
+import { Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
 import schedule from "node-schedule"
 const emojiDic = require("emoji-dictionary")
 
@@ -26,7 +26,7 @@ declare global {
             servers: Servers;
             lang: Lang;
             YouTube: any;
-            Discord: any;
+            Discord: typeof Discord;
             getUser: GetUser;
             commands: Commands;
             reactionForm: ReactionForm;
@@ -35,8 +35,6 @@ declare global {
             getTextChannel: GetTextChannel;
             getRole: GetRole;
             getVoiceChannel: GetVoiceChannel;
-            disbut: any;
-            buttonForm: ButtonForm;
             fetch: any;
             SPOTIFY_OAUTH: string;
             SPOTIFY_CLIENT: string;
@@ -49,13 +47,16 @@ declare global {
     }
 }
 
-global.Discord = require('discord.js');
+
+
+import Discord from 'discord.js'
+global.Discord = Discord;
 global.YTDL = require('ytdl-core');
 const youtube = require('simple-youtube-api');
 global.fs = require('fs');
 global.path = require('path');
-let intents = new Intents(Intents.ALL);
-global.bot = new global.Discord.Client({ ws: { intents: intents } });
+// let intents = new Intents(Intents.ALL);
+global.bot = new global.Discord.Client({ intents: 131071 });
 const { Console } = require('console');
 global.serverManager = require('././server-manager');
 global.langJ = require('./../language.json');
@@ -72,26 +73,19 @@ global.textInput = require('./utils/textInput')
 global.getTextChannel = require('./utils/getTextChannel')
 global.getVoiceChannel = require('./utils/getVoiceChannel')
 global.getRole = require('./utils/getRole')
-global.disbut = require('discord-buttons')(global.bot)
-global.buttonForm = require('./utils/buttonForm')
 const { fs, bot, path, serverManager } = global
 require('dotenv').config({ path: path.join(__dirname + './../.env') });
 global.fetch = require('node-fetch')
 if (!process.env.SPOTIFY_OAUTH || !process.env.SPOTIFY_CLIENT) { throw new Error('SPOTIFY_OAUTH missing') }
 global.SPOTIFY_OAUTH = process.env.SPOTIFY_OAUTH
 global.SPOTIFY_CLIENT = process.env.SPOTIFY_CLIENT
-global.SpotifyToYoutube = require('spotify-to-youtube')
-global.SpotifyWebApi = require('spotify-web-api-node')
 global.progressBar = require('./utils/progressBar')
 global.schedule = schedule
 
 const token = process.env.DJS_TOKEN;
 global.YouTube = new youtube(process.env.YT_TOKEN);
 
-
-
 bot.on('ready', () => {
-
     if (process.env.STATUS) {
         if (bot.user) {
             bot.user.setActivity(process.env.STATUS)
@@ -124,7 +118,7 @@ bot.on('raw', packet => {
     if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
     const channel = bot.channels.cache.get(packet.d.channel_id);
     if (!channel) { console.log('No channel found (index.tx)'); return }
-    if (!channel.isText()) { return }
+    if (!channel.isTextBased()) { return }
     if (channel.messages.cache.has(packet.d.message_id)) return;
     channel.messages.fetch(packet.d.message_id).then((message: Message) => {
         const emoji = packet.d.emoji.id ? `${packet.d.emoji.name}:${packet.d.emoji.id}` : packet.d.emoji.name;
@@ -139,8 +133,8 @@ bot.on('raw', packet => {
 
 
 bot.on('voiceStateUpdate', async (oldMember: VoiceState, newMember: VoiceState) => {
-    let newUserChannel = newMember.channelID;
-    let oldUserChannel = oldMember.channelID;
+    let newUserChannel = newMember.channelId;
+    let oldUserChannel = oldMember.channelId;
 
     if (newUserChannel != oldUserChannel) {
         if (newUserChannel !== null) {
@@ -160,7 +154,7 @@ bot.on('voiceStateUpdate', async (oldMember: VoiceState, newMember: VoiceState) 
                     catch {
                         return;
                     }
-                    if (user.voice.channelID) {
+                    if (user.voice.channelId) {
                         //je ve voice channelu
                         //user.user.send("ČEKÁRNA!");
                         user.user.send(global.createEmbed(
@@ -185,13 +179,13 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
     try {
         //Logging
         try {
-            if (oldState.channelID !== newState.channelID) {
+            if (oldState.channelId !== newState.channelId) {
                 serverManager(newState.guild.id, false)
                 if (!global.servers[newState.guild.id].logServer) {
                     return
                 }
                 var logOrDis = ""
-                if (!newState.channelID) {
+                if (!newState.channelId) {
                     //disconnect
                     logOrDis = "disconnected from"
                 }
@@ -203,8 +197,8 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
                     console.log("missing ENV LOGGING CHANNEL")
                     return
                 }
-                const channel = await bot.channels.fetch(process.env.LOGGING_CHANNEL, false)
-                if (channel.isText()) {
+                const channel = await bot.channels.fetch(process.env.LOGGING_CHANNEL, { cache: false })
+                if (channel && channel.isTextBased()) {
                     //@ts-expect-error
                     var member: GuildMember = newState.member || oldState.member
                     //@ts-expect-error
@@ -219,11 +213,11 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
         }
         catch { console.log("error logging") }
         //disconnect
-        if (!newState.channelID && oldState.member?.id === bot.user?.id) {
+        if (!newState.channelId && oldState.member?.id === bot.user?.id) {
             if (!newState.member || !newState.member.guild.id) { console.log('index.js bot disconnect no guild'); return }
             var server = global.servers[newState.member.guild.id]
             if (server.dispathcher) {
-                server.dispathcher.destroy();
+                server.dispathcher.connection.destroy();
             }
             server.queue = []
         }
@@ -231,18 +225,17 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
         else if (newState.member && newState.member.id === bot.user?.id) {
             var server = global.servers[newState.member.guild.id]
             if (newState.serverMute) {
-                if (server.dispathcher) {
-                    console.log(server.dispathcher)
+                if (server.player) {
                     try {
-                        server.dispathcher.pause();
+                        server.player.pause();
                     }
                     catch { }
                 }
             }
             else {
-                if (server.dispathcher) {
+                if (server.player) {
                     try {
-                        server.dispathcher.resume();
+                        server.player.unpause();
                     } catch { }
                 }
             }
@@ -252,7 +245,8 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
         console.log('index js 216 error')
     }
 })
-bot.on("messageReactionRemove", async (reaction: MessageReaction, user: (User | PartialUser)) => {
+process.on("unhandledRejection", (e) => { console.log(e, "unhandled promise rejection") })
+bot.on("messageReactionRemove", async (reaction, user) => {
     const { lang } = global;
     if (user.bot) { return }
     if (user.partial) { user = await user.fetch() }
@@ -261,7 +255,7 @@ bot.on("messageReactionRemove", async (reaction: MessageReaction, user: (User | 
     var server = global.servers[reaction.message.guild.id]
     if (!server.roleGiver) { return }
     if (server.roleGiver.messageID !== reaction.message.id) { return }
-    const member = reaction.message.guild.member(user)
+    const member = reaction.message.guild.members.cache.get(user.id)
     if (!member) { console.log('reaction no member (index.ts)'); user.send(lang(reaction.message.guild.id, 'UNKWN_ERR_HALT')); return }
     var emojiString: string = emojiDic.getName(reaction.emoji.toString())
 
@@ -279,7 +273,7 @@ bot.on("messageReactionRemove", async (reaction: MessageReaction, user: (User | 
 })
 
 //Rule reaction
-bot.on("messageReactionAdd", async (reaction: MessageReaction, user: (User | PartialUser)) => {
+bot.on("messageReactionAdd", async (reaction, user) => {
     const { lang } = global;
     if (user.bot) { return }
     if (user.partial) { user = await user.fetch() }
@@ -288,7 +282,7 @@ bot.on("messageReactionAdd", async (reaction: MessageReaction, user: (User | Par
     var server = global.servers[reaction.message.guild.id]
     if (!server.roleGiver) { return }
     if (server.roleGiver.messageID !== reaction.message.id) { return }
-    const member = reaction.message.guild.member(user)
+    const member = reaction.message.guild.members.cache.get(user.id)
     if (!member) { console.log('reaction no member (index.ts)'); user.send(lang(reaction.message.guild.id, 'UNKWN_ERR_HALT')); return }
     var emojiString: string = emojiDic.getName(reaction.emoji.toString())
 
@@ -309,13 +303,7 @@ bot.on("messageReactionAdd", async (reaction: MessageReaction, user: (User | Par
     }
 
 })
-const PREFIX = '_';
-const OwnerID = '255345748441432064';
-const LanguageList = ["dev", "eng", "czk"];
-
-bot.setMaxListeners(0);
-
-// import { remaindersInit } from "../archive/startRemainders"
-// remaindersInit()
+//@ts-ignore
+global.bot.setMaxListeners(0)
 
 bot.login(token);

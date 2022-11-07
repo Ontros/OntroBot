@@ -1,16 +1,19 @@
 import { Message } from "discord.js";
 
 module.exports = async (message: Message, input: string) => {
-    if (input[0] === '<') {
-        input = input.substring(3, input.length - 1)
+    try {
+        const id = input.replace('<', '').replace('>', '').replace('@', '')
+        console.log(id)
+        if (!message.guild) { return }
+        var user = await message.guild.members.fetch({ user: id, cache: false }).catch(() => {
+            return null;
+        });
+        if (!user) {
+            return null;
+        }
+        return user
     }
-    if (isNaN(parseInt(input))) {
+    catch {
         return null
     }
-    if (!message.guild) { return }
-    var user = await message.guild.members.fetch({ user: input, cache: false }).catch(() => { if (message.guild) { message.channel.send(global.lang(message.guild.id, 'UNKWN_ERR')) }; return null; });
-    if (!user) {
-        return null;
-    }
-    return user
 }

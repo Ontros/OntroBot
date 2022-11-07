@@ -595,8 +595,8 @@
       "czech": ""
     },
     "_HELP_COMMAND_NAME": {
-      "english": "",
-      "czech": ""
+      "english": "To show details about a command type _help <command name>",
+      "czech": "Pro zobrazní podrobnsotí příkazu použijte: '_help <název příkazu>'"
     },
     "_HELP_CATEGORY_NAME": {
       "english": "To show details about a category type '_help <category name>'",

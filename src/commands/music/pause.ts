@@ -3,7 +3,7 @@ import { Message } from "discord.js";
 module.exports = {
     commands: ['pause'],
     permissions: [],
-    requireChannelPerms: true,
+    requireChannelPerms: false,
     requiredRoles: [],
     allowedIDs: [],
     callback: async (message: Message, args: string[], text: string) => {
@@ -12,11 +12,11 @@ module.exports = {
         const { lang } = global;
         //console.log(message.guild.voice.connection);
         //if (message.guild.voice.connection){
-        if (server.dispathcher == undefined) {
+        if (server.player == undefined) {
             message.channel.send(lang(message.guild.id, "NO_PLAY"));
             return;
         }
-        server.dispathcher.pause();
+        server.player.pause();
         message.channel.send(lang(message.guild.id, 'PAUSE'));
         //}
         //else {

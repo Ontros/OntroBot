@@ -1,4 +1,5 @@
 import { Message } from "discord.js";
+import disconnectBot from "../../utils/disconnectBot";
 
 module.exports = {
     commands: ['skip', 's', 'next'],
@@ -8,7 +9,7 @@ module.exports = {
     minArgs: 0,
     maxArgs: 1,
     expectedArgs: '<number to skip>',
-    requireChannelPerms: true,
+    requireChannelPerms: false,
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
@@ -29,16 +30,18 @@ module.exports = {
                 return
             }
         }
-        // console.log(skipAmount)
+        if (skipAmount < 1) {
+            skipAmount = 1
+        }
         for (var i = 0; i < skipAmount - 1; i++) {
-            // console.log('skip')
             if (!server.queue[1]) {
                 server.playing = false;
                 server.queue = []
                 if (!server.connection) {
                     throw new Error('connection not established skip:39')
                 }
-                server.connection.disconnect();
+                disconnectBot(message.guild.id)
+                // server.connection.disconnect();
                 return
             }
             if (server.loop === 0) {
@@ -49,8 +52,9 @@ module.exports = {
                 var oldSong: any = server.queue.shift();
                 server.queue.push(oldSong);
             }
+            //If 2/3 do nothing
         }
-        server.dispathcher.end();
+        server.dispathcher.player.stop();
         message.channel.send(lang(message.guild.id, 'SKIP'));
     },
 }

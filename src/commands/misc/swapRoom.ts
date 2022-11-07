@@ -1,4 +1,4 @@
-import { Message, VoiceChannel } from 'discord.js';
+import { Message, VoiceBasedChannel, VoiceChannel } from 'discord.js';
 
 module.exports = {
     commands: ['swaproom'],
@@ -12,11 +12,11 @@ module.exports = {
         var destinationRoom: (VoiceChannel | null) = await global.getVoiceChannel(message, args[0])
         var mentionAmount = 0
         if (message.mentions.users) {
-            mentionAmount = message.mentions.users.array().length
+            mentionAmount = message.mentions.users.map(val => { return val }).length
         }
         if (args.length - mentionAmount === 2) {
             //user zadal starting room
-            var startRoom: (VoiceChannel | null | undefined) = await global.getVoiceChannel(message, args[0])
+            var startRoom: (VoiceBasedChannel | null | undefined) = await global.getVoiceChannel(message, args[0])
             destinationRoom = await global.getVoiceChannel(message, args[1])
         }
         else {
@@ -32,7 +32,8 @@ module.exports = {
             //throw new Error('Could not found voice channel')
             return;
         }
-        var members = startRoom.members.array()
+        // var members = startRoom.members.array()
+        var members = startRoom.members.map((val) => { return val })
         members.forEach(member => {
             if (!message.mentions.has(member.user)) {
                 member.voice.setChannel(destinationRoom)

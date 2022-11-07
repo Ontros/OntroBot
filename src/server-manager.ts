@@ -4,7 +4,7 @@ import { Server } from "./types";
 module.exports = (id: string, change: boolean) => {
     try {
         if (change != null && change == true) {
-            updateServerFile(id);
+            updateServerFile(id, global.servers[id]);
         }
         checkServer(id);
         if (!global.servers[id]) {
@@ -30,7 +30,9 @@ const defaultServer: Server = {
     steps: [],
     playlists: undefined,
     prefix: '_',
-    logServer: false
+    logServer: false,
+    player: undefined,
+    audioResource: undefined
     // config: {
     //     rules: { channelID: null, roleID: null }
     // }
@@ -51,32 +53,21 @@ function checkServer(id: string) {
     }
 }
 
-function updateServerFile(id: string) {
-    //WARNING: This code is awful
-    // console.log('WRITING!');
-    var server = global.servers[id];
-    var connection = server.connection;
-    server.connection = undefined;
-    var dispathcher = server.dispathcher;
-    server.dispathcher = undefined;
-    //var loop = server.loop;
-    //server.loop = 0;
-    var playing = server.playing;
-    server.playing = true;
-    var queue = server.queue;
-    server.queue = [];
-    console.log(JSON.stringify(server))
-    console.log(server)
-    global.fs.writeFileSync('./data/' + id + '.json', JSON.stringify(server), (err: Error) => {
+function updateServerFile(id: string, server: Server) {
+    console.log('WRITING!');
+    //IGNORE: connection, dispatcher, audioResource, player, playing, queue
+    var localServer: Server = Object.assign({}, server)
+    localServer.connection = undefined
+    localServer.dispathcher = undefined
+    localServer.audioResource = undefined
+    localServer.player = undefined
+    localServer.playing = false
+    localServer.queue = []
+    global.fs.writeFileSync('./data/' + id + '.json', JSON.stringify(localServer), (err: Error) => {
         if (err) {
             console.log(err);
         }
     });
-    server.connection = connection;
-    server.dispathcher = dispathcher;
-    //server.loop = loop;
-    server.playing = playing;
-    server.queue = queue;
 }
 
 function readServer(id: string) {

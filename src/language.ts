@@ -9,6 +9,8 @@ module.exports = (id: string, textId: string) => {
     if (server.language == 'dev' && !langJ.translations[textId]['dev']) {
         return langJ.translations[textId]["czech"]
     }
+    const output = langJ.translations[textId][server.language]
 
-    return langJ.translations[textId][server.language]
+    if (!output) { console.log(textId); return "NO TRANSLATION" }
+    return output
 }

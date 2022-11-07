@@ -1,4 +1,4 @@
-import { EmbedField, Message, MessageEmbed } from "discord.js";
+import { EmbedField, Message, } from "discord.js";
 
 module.exports = (message: Message, title: string, description: (string | null), status: number, imageURL?: (string | null)) => {
     //status - 0.0 - 1.0
@@ -13,7 +13,9 @@ module.exports = (message: Message, title: string, description: (string | null),
             progressBar += '🔘'
         }
     }
-    return global.createEmbed(message, title, description + '\n' + progressBar, [], imageURL)
+    const output = global.createEmbed(message, title, description + '\n' + progressBar, [], imageURL)
+    console.log(output)
+    return output
     // if(!message.guild) {return}
     // const {Discord,bot,lang} = global
     // if (!bot.user) {return}

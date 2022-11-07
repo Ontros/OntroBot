@@ -11,8 +11,11 @@ module.exports = {
 		const { bot, lang } = global;
 		if (!message.guild) { return }
 		var server = global.servers[message.guild.id];
-		const dispatcher = server.dispathcher;
-		const seconds = (dispatcher.streamTime - dispatcher.pausedTime) / 1000;
+		if (!server.audioResource?.playbackDuration) {
+			message.channel.send(lang(message.guild.id, "NO_PLAY"))
+			return
+		}
+		const seconds = server.audioResource.playbackDuration / 1000;
 		const durationO = server.queue[0].duration;
 		if (!durationO) {
 			throw Error("np.ts 17 WTFFFFFFFFFFFFFF")
@@ -22,13 +25,14 @@ module.exports = {
 			durationO.minutes * 60 +
 			durationO.hours * 60 * 60 +
 			durationO.days * 60 * 60 * 24;
-		message.channel.send(global.progressBar(message,
-			lang(message.guild.id, "NOW_PLAY"),
-			`${server.queue[0].title}\n${lang(message.guild.id, "REQ_BY")}: ${server.queue[0].requestedBy
-			}\n${secondsToString(seconds)}/${secondsToString(duration)}`,
-			seconds / duration
-		)
-		);
+		message.channel.send({
+			embeds: [global.progressBar(message,
+				lang(message.guild.id, "NOW_PLAY"),
+				`${server.queue[0].title}\n${lang(message.guild.id, "REQ_BY")}: ${server.queue[0].requestedBy
+				}\n${secondsToString(seconds)}/${secondsToString(duration)}`,
+				seconds / duration
+			)]
+		});
 	},
 	permissions: [],
 	requiredRoles: [],

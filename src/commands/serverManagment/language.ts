@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { EmbedBuilder, Message } from "discord.js";
 import { Languages } from "../../types";
 
 //const Discord = require('discord.js');
@@ -31,7 +31,8 @@ module.exports = {
                 }
             }
             else {
-                const Embed = new Discord.MessageEmbed()
+                const avatarURL = message.author.avatarURL()
+                const Embed = new EmbedBuilder()
                     .setColor('#0099ff')
                     .setTitle('Language list')
                     .setThumbnail(bot.user.avatarURL());
@@ -39,11 +40,12 @@ module.exports = {
                 langJ.languages.forEach((langua: String) => {
                     langList += langua[0].toUpperCase() + langua.slice(1) + "\n";
                 });
-                Embed.addField(lang(message.guild.id, 'AVAILABLE_LANG') + ":", langList);
-                Embed.setImage(bot.user.avatarURL())
-                    .setTimestamp()
-                    .setFooter(lang(message.guild.id, 'LANG_LIST_REQ_BY') + ': ' + message.author.username, message.author.avatarURL());
-                message.channel.send(Embed);
+                Embed.addFields({ name: lang(message.guild.id, 'AVAILABLE_LANG') + ":", value: langList });
+                Embed.setImage(avatarURL).setTimestamp()
+                if (avatarURL) {
+                    Embed.setFooter({ text: lang(message.guild.id, 'LANG_LIST_REQ_BY') + ': ' + message.author.username, iconURL: avatarURL })
+                }
+                message.channel.send({ embeds: [Embed] });
             }
         }
         else {

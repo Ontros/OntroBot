@@ -23,8 +23,11 @@ module.exports = {
             }
             server.volume = parseFloat(args[0])
 
-            if (server.dispathcher) {
-                server.dispathcher.setVolume(server.volume / 100);
+            if (server.audioResource?.volume) {
+                server.audioResource.volume.setVolume(server.volume / 100);
+            }
+            else {
+                console.log("No audio Resource")
             }
             message.channel.send(lang(message.guild.id, 'SET_VOL') + ': ' + server.volume + '%');
             global.serverManager(message.guild.id, true);
