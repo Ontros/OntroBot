@@ -1,7 +1,11 @@
 import console from "console";
-import { EmbedField, Message, VoiceConnection } from "discord.js";
+import { EmbedField, Message, } from "discord.js";
 import { Song, Video } from "../../types";
 import getPlaylistByName from '../../utils/getPlaylistByName'
+import { exec as ytdlexec } from 'youtube-dl-exec';
+import { createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection } from "@discordjs/voice";
+const playDL = require('play-dl')
+// import 'play-dl'
 
 module.exports = {
     commands: ['play', 'p'],
@@ -14,48 +18,78 @@ module.exports = {
     requireChannelPerms: true,
     callback: async (message: Message, args: string[], text: string) => {
         async function play(connection: VoiceConnection, message: Message) {
-            if (!message.guild) { return }
-            var server = global.servers[message.guild.id];
-            const { YTDL } = global;
-            server.playing = true;
-            //here crash fix plz
-            //console.log(server.queue)
-            var newSongIndex = server.loop === 2 ? Math.floor(Math.random() * (server.queue.length) + 1) - 1 : 0
-            var newSong: Song = server.queue[newSongIndex]
-            if (!newSong.duration) {
-                //@ts-ignore
-                newSong = await FindVideo(newSong.id, message, true)
-                server.queue[newSongIndex] = newSong
-            }
-            server.dispathcher = await connection.play(YTDL(newSong.url, { filter: "audioonly" }));
-            server.connection = connection;
-            server.dispathcher.setVolume(server.volume / 100);
+            try {
 
-            server.dispathcher.on("finish", async function () {
-                console.log('play finish')
-                if (!server.queue[1] && server.loop !== 3) {
-                    //KONEC
-                    server.playing = false;
-                    server.queue = []
-                    connection.disconnect();
-                    return
-                }
-                if (server.loop === 0) {
-                    server.queue.shift();
-                }
-                else if (server.loop === 1) {
-                    //move song to end of queue
-                    var oldSong: any = server.queue.shift();
-                    server.queue.push(oldSong);
-                }
-                await play(connection, message);
-            });
-            server.dispathcher.on("error", function (Error: Error) {
-                console.log(Error)
-                console.log("dispatcher error");
                 if (!message.guild) { return }
-                message.channel.send(lang(message.guild.id, 'UNKWN_ERR_HALT'))
-            });
+                var server = global.servers[message.guild.id];
+                // const { YTDL } = global;
+                // const YTDL = play
+                // const YTDL = ytdlexec
+                server.playing = true;
+                //here crash fix plz
+                //console.log(server.queue)
+                var newSongIndex = server.loop === 2 ? Math.floor(Math.random() * (server.queue.length) + 1) - 1 : 0
+                var newSong: Song = server.queue[newSongIndex]
+                if (!newSong.duration) {
+                    //@ts-ignore
+                    newSong = await FindVideo(newSong.id, message, true)
+                    server.queue[newSongIndex] = newSong
+                }
+
+                // server.dispathcher = await connection.play(YTDL(newSong.url, { filter: "audioonly" }));
+                // const stream = YTDL(newSong.url, { filter: "audioonly" });
+                // const stream = YTDL(
+                //     newSong.url, {
+                //     output: "-",
+                //     format: "bestaudio[ext=webm+acodec=opus+tbr>100]/bestaudio[ext=webm+acodec=opus]/bestaudio/best",
+                //     limitRate: '1M',
+                //     rmCacheDir: true,
+                //     verbose: true
+                // }, { stdio: ['ignore', 'pipe', 'ignore'] }).then((stream) => {
+                //     // const audioResource = createAudioResource(stream.stdout!)
+                //     // server.dispathcher = connection.play(audioResource)
+
+                const stream = await playDL.stream(newSong.url)
+                // })
+                // console.log("stream")
+                // return
+                const audioResource = createAudioResource(stream.stream, { inputType: stream.type })
+                const player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } })
+                player.play(audioResource)
+                // server.dispathcher = connection.play(audioResource.playStream)
+                server.dispathcher = connection.subscribe(player)
+                server.connection = connection;
+                server.dispathcher.setVolume(server.volume / 100);
+                server.dispathcher.on("finish", async function () {
+                    console.log('play finish')
+                    if (!server.queue[1] && server.loop !== 3) {
+                        //KONEC
+                        server.playing = false;
+                        server.queue = []
+                        connection.disconnect();
+                        return
+                    }
+                    if (server.loop === 0) {
+                        server.queue.shift();
+                    }
+                    else if (server.loop === 1) {
+                        //move song to end of queue
+                        var oldSong: any = server.queue.shift();
+                        server.queue.push(oldSong);
+                    }
+                    await play(connection, message);
+                });
+                server.dispathcher.on("error", function (Error: Error) {
+                    console.log(Error)
+                    console.log("dispatcher error");
+                    if (!message.guild) { return }
+                    message.channel.send(lang(message.guild.id, 'UNKWN_ERR'))
+                });
+
+            }
+            catch (e) {
+                console.log(e)
+            }
         }
 
         async function FindVideo(url: string, message: Message, isID?: boolean): Promise<Song[]> {
@@ -168,12 +202,19 @@ module.exports = {
             message.channel.send(lang(message.guild.id, 'QUEUE_ADD'))
         }
         else {
-            message.member.voice.channel.join()
-                .then(function (connection: VoiceConnection) {
-                    if (!message.guild) { return }
-                    play(connection, message);
-                    message.channel.send(lang(message.guild.id, 'PLAY_START'));
-                }).catch((err: Error) => console.log(err));
+            const connection = joinVoiceChannel({
+                channelId: message.member.voice.channel.id,
+                guildId: message.guild.id,
+                adapterCreator: message.guild.voiceAdapterCreator
+            })
+            play(connection, message);
+            message.channel.send(lang(message.guild.id, 'PLAY_START'));
+            // message.member.voice.channel.join()
+            //     .then(function (connection: VoiceConnection) {
+            //         if (!message.guild) { return }
+            //         play(connection, message);
+            //         message.channel.send(lang(message.guild.id, 'PLAY_START'));
+            //     }).catch((err: Error) => console.log(err));
         }
 
     }

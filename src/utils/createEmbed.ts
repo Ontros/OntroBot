@@ -1,4 +1,4 @@
-import { EmbedField, Message, MessageEmbed } from "discord.js";
+import { EmbedField, Message, Embed, EmbedBuilder } from "discord.js";
 
 module.exports = (message: Message, title: string, description: (string | null), fields: EmbedField[], imageURL?: (string | null)) => {
     const { Discord, bot, lang } = global
@@ -12,7 +12,7 @@ module.exports = (message: Message, title: string, description: (string | null),
         // }
         // if (!imageURL) { return }
     }
-    const embed: MessageEmbed = new Discord.MessageEmbed()
+    const embed = new EmbedBuilder()
     embed.setColor('#0099ff')
         .setTitle(title)
         .addFields(fields)

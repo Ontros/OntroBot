@@ -154,13 +154,11 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
 
     global.bot.on('message', async (message: Message) => {
         const { member, content, guild, channel } = message
-        const { lang } = global;
-        if (!guild || !message.guild) {
-            //console.log("DM");
+        const { lang, bot } = global;
+        if (!guild || !message.guild || channel.isDMBased()) {
             return;
         }
         try {
-            //console.log(guild.id);
             global.serverManager(message.guild.id);
         }
         catch (err) {
@@ -171,7 +169,7 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
         var prefix = global.servers[message.guild.id].prefix
         // var prefix = "_"
 
-        if (!member || !guild.me) {
+        if (!member || !guild.client) {
             message.channel.send(lang(guild.id, 'USR_ID_NOT'))
             return;
         }
@@ -179,13 +177,13 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
         for (const alias of commands) {
             if (content.toLowerCase().split(/[ ]+/)[0] === `${prefix}${alias.toLowerCase()}`) {
                 for (const permission of commandOptions.permissions) {
-                    if (!member.hasPermission(permission)) {
+                    if (!member.permissions.has(permission)) {
                         message.reply(lang(guild.id, 'CMD_NO_PERM'))
                         return
                     }
                 }
                 for (const requiredRole of commandOptions.requiredRoles) {
-                    const role = (await guild.roles.fetch()).cache.find((role: Role) => role.name == requiredRole);
+                    const role = (await guild.roles.fetch()).find((role: Role) => role.name == requiredRole);
                     if (!role || !member.roles.cache.has(role.id)) {
                         message.reply(lang(guild.id, 'ROLE_RQR')[0] + requiredRole + lang(guild.id, 'ROLE_RQR')[0])
                         return
@@ -219,23 +217,32 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
                     return;
                 }
 
-                const botPermissionsIn = guild.me.permissionsIn(channel);
-                if (!botPermissionsIn.has('SEND_MESSAGES')) {
+                if (!bot.user || !bot.user.id || !bot) {
+                    console.log("bot has no id")
+                    return
+                }
+                const botMember = message.guild.members.cache.get(bot.user.id)
+                if (!botMember) {
+                    console.log("bot is not a member")
+                    return
+                }
+                const botPermissionsIn = botMember.permissionsIn(channel);
+                if (!botPermissionsIn.has('SendMessages')) {
                     member.user.send(lang(guild.id, 'NO_WRITE_PERM'));
                     return;
                 }
 
-                if (!botPermissionsIn.has('EMBED_LINKS')) {
+                if (!botPermissionsIn.has('EmbedLinks')) {
                     channel.send(lang(guild.id, 'NO_EMBED_PERM'));
                     return;
                 }
 
-                if (!botPermissionsIn.has('MANAGE_MESSAGES')) {
+                if (!botPermissionsIn.has('ManageMessages')) {
                     message.channel.send(lang(message.guild.id, 'NO_MANAGE_MESSAGES_PERM'))
                     return
                 }
 
-                if (!botPermissionsIn.has('ADD_REACTIONS')) {
+                if (!botPermissionsIn.has('AddReactions')) {
                     message.channel.send(lang(message.guild.id, 'NO_ADD_REACTIONS_PERM'))
                     return
                 }
@@ -245,14 +252,14 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
                         message.channel.send(lang(guild.id, 'NOT_IN_VC'))
                         return
                     }
-                    const permissionsInVoice = guild.me.permissionsIn(member.voice.channel);
+                    const permissionsInVoice = botMember.permissionsIn(member.voice.channel);
 
-                    if (!permissionsInVoice.has('CONNECT')) {
+                    if (!permissionsInVoice.has('Connect')) {
                         channel.send(lang(guild.id, 'NO_JOIN_PERM'));
                         return;
                     }
 
-                    if (!permissionsInVoice.has('SPEAK')) {
+                    if (!permissionsInVoice.has('Speak')) {
                         channel.send(lang(guild.id, 'NO_SPEAK_PERM'));
                         return;
                     }

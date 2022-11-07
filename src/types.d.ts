@@ -199,11 +199,12 @@ type CommandOptions = {
     requireChannelPerms: boolean;
 };
 
+import { createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection } from "@discordjs/voice";
 type Server = {
     queue: Song[];
     dispathcher?: Dispatcher;
     loop: (0 | 1 | 2 | 3);
-    connection?: Discord.VoiceConnection;
+    connection?: VoiceConnection;
     playing: boolean;
     volume: number;
     language: Languages;
@@ -360,7 +361,7 @@ type GetVoiceChannel = (message: Discord.Message, input: string) => (Discord.Voi
 
 type GetRole = (message: Discord.Message, input: string) => Promise<Discord.Role | null>
 
-type ButtonForm = (userMessage: Discord.Message, botMessage: (Discord.Message | null), title: string, question: string, buttonOptions: ButtonOption[]) => Promise<(ButtonFormOutput)>;
+// type ButtonForm = (userMessage: Discord.Message, botMessage: (Discord.Message | null), title: string, question: string, buttonOptions: ButtonOption[]) => Promise<(ButtonFormOutput)>;
 type ReactionForm = (userMessage: Discord.Message, botMessage: (Discord.Message | null), title: string, question: string, callbacks: ReactionFormOption[]) => Promise<ReactionFormOutput>;
 type CreateEmbed = (message: Discord.Message, title: string, description: (string | null), fields: (Discord.EmbedField[]), imageURL?: (string | null)) => Discord.MessageEmbed;
 type ProgressBar = (message: Discord.Message, title: string, description: (string | null), status: number, imageURL?: (string | null)) => Discord.MessageEmbed

@@ -1,4 +1,4 @@
-import { EmbedField, Message, MessageEmbed } from "discord.js";
+import { EmbedField, Message, } from "discord.js";
 
 module.exports = (message: Message, title: string, description: (string | null), status: number, imageURL?: (string | null)) => {
     //status - 0.0 - 1.0

@@ -17,11 +17,12 @@ module.exports = async (userMessage: Message, botMessage: (Message), title: stri
     }
 
     //await message:
-    const collectorFilter: CollectorFilter = (message: Message, user: User) => {
-        return message.author.id === userMessage.author.id
-    }
-    const collection = await userMessage.channel.awaitMessages(collectorFilter, { max: 1 })
-    const inputMessage = collection.first()
+    // const collectorFilter: CollectorFilter = (message: Message, user: User) => {
+    //     return message.author.id === userMessage.author.id
+    // }
+    // const collection = await userMessage.channel.awaitMessages(collectorFilter, { max: 1 })
+    // const inputMessage = collection.first()
+    const inputMessage = userMessage.channel.lastMessage
     if (!inputMessage) { console.log("mess error"); return undefined }
     if (filter) {
         if (!filter(inputMessage.content)) {

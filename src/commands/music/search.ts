@@ -1,4 +1,4 @@
-import { Message, VoiceConnection } from 'discord.js';
+import { Message, } from 'discord.js';
 import { ReactionFormOption, Song } from '../../types';
 
 module.exports = {

@@ -1,4 +1,3 @@
-import { MessageButton } from "discord-buttons";
 import { Message } from "discord.js";
 
 module.exports = {

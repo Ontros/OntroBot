@@ -14,7 +14,7 @@ module.exports = {
         var server = global.servers[message.guild.id];
         const { lang } = global;
         const channel = message.guild.channels.cache.get(args[0])
-        if (!channel || channel.type !== 'voice') {
+        if (!channel || !channel.isVoiceBased()) {
             message.channel.send(lang(message.guild.id, 'CHAN_ID_NOT'));
             return
         }

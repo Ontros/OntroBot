@@ -38,21 +38,28 @@ module.exports = async (userMessage: Message, botMessage: (Message), title: stri
     const reactionsFiltered = reactions.filter((react) => { return !botMessage.reactions.cache.has(react) })
     addReactions(botMessage, reactionsFiltered)
 
-    const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
-        return reactions.includes(reaction.emoji.name) && user.id === userMessage.author.id
-    }
+    //const filter: CollectorFilter = (reaction: MessageReaction, user: User) => {
+    //    return reactions.includes(reaction.emoji.name) && user.id === userMessage.author.id
+    //}
     await botMessage.fetch()
     // console.log('awaiting')
 
-    const collection = await botMessage.awaitReactions(filter, { max: 1 })
+    const collection = await botMessage.awaitReactions()
 
     //author reacted:
-    const react = collection.first()
+    //const react = collection.first()
+    //TODO: check if working
+    const react = collection.find((reaction, i) => {
+        if (!reaction.emoji.name) {
+            return false
+        }
+        return reactions.includes(reaction.emoji.name) && reaction.client.user.id
+    })
     if (!react) { console.log("react error"); return }
     react.users.remove(userMessage.author)
 
     //Get callback number
-    const callNum = emojiNumbers.indexOf(react.emoji.name)
+    const callNum = emojiNumbers.indexOf(react.emoji.name ? react.emoji.name : "-1")
     if (!formOptions[callNum].callback) {
         const output: ReactionFormOutput = {
             id: callNum,
