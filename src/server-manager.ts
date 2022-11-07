@@ -30,7 +30,9 @@ const defaultServer: Server = {
     steps: [],
     playlists: undefined,
     prefix: '_',
-    logServer: false
+    logServer: false,
+    player: undefined,
+    audioResource: undefined
     // config: {
     //     rules: { channelID: null, roleID: null }
     // }

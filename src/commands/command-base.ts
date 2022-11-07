@@ -152,7 +152,7 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
         descriptionLong: "placeholder"
     }*/
 
-    global.bot.on('message', async (message: Message) => {
+    global.bot.on('messageCreate', async (message: Message) => {
         const { member, content, guild, channel } = message
         const { lang, bot } = global;
         if (!guild || !message.guild || channel.isDMBased()) {

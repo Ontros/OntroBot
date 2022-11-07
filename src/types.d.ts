@@ -199,10 +199,12 @@ type CommandOptions = {
     requireChannelPerms: boolean;
 };
 
-import { createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection } from "@discordjs/voice";
+import { AudioPlayer, AudioResource, createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, joinVoiceChannel, NoSubscriberBehavior, PlayerSubscription, VoiceConnection } from "@discordjs/voice";
 type Server = {
     queue: Song[];
-    dispathcher?: Dispatcher;
+    dispathcher?: PlayerSubscription | undefined;
+    audioResource: AudioResource<null> | undefined;
+    player: AudioPlayer | undefined;
     loop: (0 | 1 | 2 | 3);
     connection?: VoiceConnection;
     playing: boolean;

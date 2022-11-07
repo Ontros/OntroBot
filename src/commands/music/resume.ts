@@ -11,11 +11,11 @@ module.exports = {
         var server = global.servers[message.guild.id];
         const { lang } = global;
         //console.log(message.guild.voice.connection);
-        if (server.dispathcher == undefined) {
+        if (server.player == undefined) {
             message.channel.send(lang(message.guild.id, "NO_PLAY"));
             return;
         }
-        server.dispathcher.resume();
+        server.player.unpause();
         message.channel.send(lang(message.guild.id, 'RESUME'));
     },
 }

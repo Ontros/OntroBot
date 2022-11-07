@@ -55,12 +55,17 @@ module.exports = {
                 // return
                 const audioResource = createAudioResource(stream.stream, { inputType: stream.type })
                 const player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } })
+                server.audioResource = audioResource
+                server.player = player
                 player.play(audioResource)
                 // server.dispathcher = connection.play(audioResource.playStream)
                 server.dispathcher = connection.subscribe(player)
                 server.connection = connection;
-                server.dispathcher.setVolume(server.volume / 100);
-                server.dispathcher.on("finish", async function () {
+                audioResource.volume?.setVolume(server.volume / 100)
+                server.player.on("stateChange", async function (oldState, newState) {
+                    if (newState.status !== "idle") {
+                        return
+                    }
                     console.log('play finish')
                     if (!server.queue[1] && server.loop !== 3) {
                         //KONEC
@@ -79,7 +84,7 @@ module.exports = {
                     }
                     await play(connection, message);
                 });
-                server.dispathcher.on("error", function (Error: Error) {
+                server.player.on("error", function (Error: Error) {
                     console.log(Error)
                     console.log("dispatcher error");
                     if (!message.guild) { return }

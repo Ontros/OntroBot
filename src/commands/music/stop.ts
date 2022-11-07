@@ -20,7 +20,7 @@ module.exports = {
         if (server.connection) {
             server.connection.disconnect();
         }
-        server.dispathcher.destroy();
+        server.dispathcher.connection.destroy();
         message.channel.send(lang(message.guild.id, 'STOP'));
     },
 }

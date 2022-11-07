@@ -1,4 +1,4 @@
-import { Channel, Client, Guild, GuildMember, Message, MessageReaction, PartialUser, User, VoiceChannel, VoiceState } from "discord.js";
+import { Client, Guild, GuildMember, Message, VoiceChannel, VoiceState } from "discord.js";
 import { Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
 import schedule from "node-schedule"
 const emojiDic = require("emoji-dictionary")
@@ -54,7 +54,7 @@ const youtube = require('simple-youtube-api');
 global.fs = require('fs');
 global.path = require('path');
 // let intents = new Intents(Intents.ALL);
-global.bot = new global.Discord.Client({ intents: 98013 });
+global.bot = new global.Discord.Client({ intents: 131071 });
 const { Console } = require('console');
 global.serverManager = require('././server-manager');
 global.langJ = require('./../language.json');
@@ -220,7 +220,7 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
             if (!newState.member || !newState.member.guild.id) { console.log('index.js bot disconnect no guild'); return }
             var server = global.servers[newState.member.guild.id]
             if (server.dispathcher) {
-                server.dispathcher.destroy();
+                server.dispathcher.connection.destroy();
             }
             server.queue = []
         }
@@ -228,18 +228,17 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
         else if (newState.member && newState.member.id === bot.user?.id) {
             var server = global.servers[newState.member.guild.id]
             if (newState.serverMute) {
-                if (server.dispathcher) {
-                    console.log(server.dispathcher)
+                if (server.player) {
                     try {
-                        server.dispathcher.pause();
+                        server.player.pause();
                     }
                     catch { }
                 }
             }
             else {
-                if (server.dispathcher) {
+                if (server.player) {
                     try {
-                        server.dispathcher.resume();
+                        server.player.unpause();
                     } catch { }
                 }
             }
@@ -306,13 +305,7 @@ bot.on("messageReactionAdd", async (reaction, user) => {
     }
 
 })
-// const PREFIX = '_';
-// const OwnerID = '255345748441432064';
-// const LanguageList = ["dev", "eng", "czk"];
-
-// bot.setMaxListeners(0);
-
-// import { remaindersInit } from "../archive/startRemainders"
-// remaindersInit()
+//@ts-ignore
+global.bot.setMaxListeners(0)
 
 bot.login(token);

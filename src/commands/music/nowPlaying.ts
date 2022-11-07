@@ -11,8 +11,11 @@ module.exports = {
 		const { bot, lang } = global;
 		if (!message.guild) { return }
 		var server = global.servers[message.guild.id];
-		const dispatcher = server.dispathcher;
-		const seconds = (dispatcher.streamTime - dispatcher.pausedTime) / 1000;
+		if (!server.audioResource?.playbackDuration) {
+			message.channel.send(lang(message.guild.id, "NO_PLAY"))
+			return
+		}
+		const seconds = server.audioResource.playbackDuration / 1000;
 		const durationO = server.queue[0].duration;
 		if (!durationO) {
 			throw Error("np.ts 17 WTFFFFFFFFFFFFFF")

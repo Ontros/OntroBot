@@ -50,7 +50,7 @@ module.exports = {
                 server.queue.push(oldSong);
             }
         }
-        server.dispathcher.end();
+        server.dispathcher.player.stop();
         message.channel.send(lang(message.guild.id, 'SKIP'));
     },
 }
