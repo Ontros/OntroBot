@@ -1,11 +1,12 @@
 import console from "console";
-import { Message, } from "discord.js";
+import { Message } from "discord.js";
 import { Song, Video } from "../../types";
 import { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection } from "@discordjs/voice";
 import playDL from 'play-dl'
+import disconnectBot from "../../utils/disconnectBot";
 
 module.exports = {
-    commands: ['play', 'p'],
+    commands: ['play', 'p', 'search'],
     expectedArgs: '<url>',
     minArgs: 1,
     maxArgs: null,
@@ -18,12 +19,7 @@ module.exports = {
             try {
                 if (!message.guild) { return }
                 var server = global.servers[message.guild.id];
-                // const { YTDL } = global;
-                // const YTDL = play
-                // const YTDL = ytdlexec
                 server.playing = true;
-                //here crash fix plz
-                //console.log(server.queue)
                 var newSongIndex = server.loop === 2 ? Math.floor(Math.random() * (server.queue.length) + 1) - 1 : 0
                 var newSong: Song = server.queue[newSongIndex]
                 if (!newSong.duration) {
@@ -31,31 +27,13 @@ module.exports = {
                     newSong = await FindVideo(newSong.id, message, true)
                     server.queue[newSongIndex] = newSong
                 }
-
-                // server.dispathcher = await connection.play(YTDL(newSong.url, { filter: "audioonly" }));
-                // const stream = YTDL(newSong.url, { filter: "audioonly" });
-                // const stream = YTDL(
-                //     newSong.url, {
-                //     output: "-",
-                //     format: "bestaudio[ext=webm+acodec=opus+tbr>100]/bestaudio[ext=webm+acodec=opus]/bestaudio/best",
-                //     limitRate: '1M',
-                //     rmCacheDir: true,
-                //     verbose: true
-                // }, { stdio: ['ignore', 'pipe', 'ignore'] }).then((stream) => {
-                //     // const audioResource = createAudioResource(stream.stdout!)
-                //     // server.dispathcher = connection.play(audioResource)
-
                 const stream = await playDL.stream(newSong.url)
-                // })
-                // console.log("stream")
-                // return
                 const audioResource = createAudioResource(stream.stream, { inputType: stream.type, inlineVolume: true })
                 audioResource.volume?.setVolume(server.volume / 100)
                 const player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } })
                 server.audioResource = audioResource
                 server.player = player
-                player.play(audioResource)
-                // server.dispathcher = connection.play(audioResource.playStream)
+                server.player.play(audioResource)
                 server.dispathcher = connection.subscribe(player)
                 server.connection = connection;
                 server.player.on("stateChange", async function (oldState, newState) {
@@ -66,7 +44,8 @@ module.exports = {
                         //KONEC
                         server.playing = false;
                         server.queue = []
-                        connection.disconnect();
+                        disconnectBot(message.guild?.id)
+                        // connection.disconnect();
                         return
                     }
                     if (server.loop === 0) {
@@ -77,6 +56,7 @@ module.exports = {
                         var oldSong: any = server.queue.shift();
                         server.queue.push(oldSong);
                     }
+                    //if 2/3 do nothing
                     await play(connection, message);
                 });
                 server.player.on("error", function (Error: Error) {
@@ -209,12 +189,6 @@ module.exports = {
             })
             play(connection, message);
             message.channel.send(lang(message.guild.id, 'PLAY_START'));
-            // message.member.voice.channel.join()
-            //     .then(function (connection: VoiceConnection) {
-            //         if (!message.guild) { return }
-            //         play(connection, message);
-            //         message.channel.send(lang(message.guild.id, 'PLAY_START'));
-            //     }).catch((err: Error) => console.log(err));
         }
 
     }

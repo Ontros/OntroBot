@@ -25,13 +25,14 @@ module.exports = {
 			durationO.minutes * 60 +
 			durationO.hours * 60 * 60 +
 			durationO.days * 60 * 60 * 24;
-		message.channel.send(global.progressBar(message,
-			lang(message.guild.id, "NOW_PLAY"),
-			`${server.queue[0].title}\n${lang(message.guild.id, "REQ_BY")}: ${server.queue[0].requestedBy
-			}\n${secondsToString(seconds)}/${secondsToString(duration)}`,
-			seconds / duration
-		)
-		);
+		message.channel.send({
+			embeds: [global.progressBar(message,
+				lang(message.guild.id, "NOW_PLAY"),
+				`${server.queue[0].title}\n${lang(message.guild.id, "REQ_BY")}: ${server.queue[0].requestedBy
+				}\n${secondsToString(seconds)}/${secondsToString(duration)}`,
+				seconds / duration
+			)]
+		});
 	},
 	permissions: [],
 	requiredRoles: [],

@@ -3,7 +3,7 @@ import { Message } from "discord.js";
 module.exports = {
     commands: ['pause'],
     permissions: [],
-    requireChannelPerms: true,
+    requireChannelPerms: false,
     requiredRoles: [],
     allowedIDs: [],
     callback: async (message: Message, args: string[], text: string) => {

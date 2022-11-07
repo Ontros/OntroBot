@@ -4,18 +4,20 @@ module.exports = {
     commands: ['loop', 'l'],
     maxArgs: 1,
     minArgs: 0,
-    requireChannelPerms: true,
+    requireChannelPerms: false,
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
         const { lang } = global
         if (!args[0]) {
             //loop help
-            message.channel.send(global.createEmbed(message, 'Loop help', `Current loop state is: ${server.loop}\nUse '_loop <new state>' to change`,
-                [{ name: 'stop(0)', value: 'Stops looping', inline: false },
-                { name: 'queue(1)', value: 'Starts queuing', inline: false },
-                { name: 'random(2)', value: 'Starts random queue', inline: false },
-                { name: 'track(3)', value: 'Starts looping current track', inline: false }]))
+            message.channel.send({
+                embeds: [global.createEmbed(message, 'Loop help', `Current loop state is: ${server.loop}\nUse '_loop <new state>' to change`,
+                    [{ name: 'stop(0)', value: 'Stops looping', inline: false },
+                    { name: 'queue(1)', value: 'Starts queuing', inline: false },
+                    { name: 'random(2)', value: 'Starts random queue', inline: false },
+                    { name: 'track(3)', value: 'Starts looping current track', inline: false }])]
+            })
             return
         }
         if (['0, stop'].some(i => i === args[0])) {

@@ -4,7 +4,7 @@ module.exports = {
     commands: ['shuffle'],
     permissions: [],
     requiredRoles: [],
-    requireChannelPerms: true,
+    requireChannelPerms: false,
     maxArgs: 0,
     minArgs: 0,
     allowedIDs: [],
