@@ -155,7 +155,7 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
     global.bot.on('messageCreate', async (message: Message) => {
         const { member, content, guild, channel } = message
         const { lang, bot } = global;
-        if (!guild || !message.guild || channel.isDMBased()) {
+        if (!guild || !message.guild || channel.isDMBased() || message.author.bot) {
             return;
         }
         try {
