@@ -1,4 +1,5 @@
 import { Message, EmbedBuilder } from "discord.js";
+import camelToWords from "../../utils/camelToWords";
 
 module.exports = {
     commands: ['help'],
@@ -65,10 +66,7 @@ module.exports = {
     allowedIDs: [],
 }
 
-function camelToWords(text: string) {
-    var result = text.replace(/([A-Z])/g, " $1");
-    return result.charAt(0).toUpperCase() + result.slice(1);
-}
+
 
 function camelize(str: string) {
     return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {

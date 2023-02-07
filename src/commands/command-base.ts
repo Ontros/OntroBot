@@ -56,7 +56,7 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
         maxArgs = null,
         permissions: [],
         requiredRoles: [],
-        allowedIDs: [],
+        allowedIDs: undefined,
         allowedServer = '',
         callback,
         requireChannelPerms = false,
@@ -190,7 +190,7 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
                     }
                 }
 
-                if (commandOptions.allowedIDs.length != 0) {
+                if (!!commandOptions.allowedIDs && commandOptions.allowedIDs.length != 0) {
                     var isAllowed = false;
                     for (const username of commandOptions.allowedIDs) {
                         if (username === message.author.id) {

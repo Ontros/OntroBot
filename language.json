@@ -586,6 +586,22 @@
       "english": "Self promotion",
       "czech": "Reklama"
     },
+    "DES_CEKARNA_SHORT": {
+      "english": "Used to manage waiting room",
+      "czech": "Úprava čekárny"
+    },
+    "DES_CEKARNA_LONG": {
+      "english": "Used to manage waiting room",
+      "czech": "Úprava čekárny"
+    },
+    "DES_ADDLISTENER.JS_SHORT": {
+      "english": "Add listener",
+      "czech": "Pridani posluchace"
+    },
+    "DES_ADDLISTENER.JS_LONG": {
+      "english": "Add listener",
+      "czech": "Pridani posluchace"
+    },
     "DES__SHORT": {
       "english": "",
       "czech": ""
