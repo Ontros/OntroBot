@@ -5,6 +5,18 @@ import { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberB
 import playDL from 'play-dl'
 import disconnectBot from "../../utils/disconnectBot";
 
+// const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
+//     const newUdp = Reflect.get(newNetworkState, 'udp');
+//     clearInterval(newUdp?.keepAliveInterval);
+// }
+
+// voiceConnection.on('stateChange', (oldState, newState) => {
+//     const oldNetworking = Reflect.get(oldState, 'networking');
+//     const newNetworking = Reflect.get(newState, 'networking');
+
+//     oldNetworking?.off('stateChange', networkStateChangeHandler);
+//     newNetworking?.on('stateChange', networkStateChangeHandler);
+// });
 module.exports = {
     commands: ['play', 'p', 'search'],
     expectedArgs: '<url>',
@@ -37,12 +49,31 @@ module.exports = {
                 const audioResource = createAudioResource(stream.stream, { inputType: stream.type, inlineVolume: true })
                 audioResource.volume?.setVolume(server.volume / 100)
                 const player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } })
+                const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
+                    const newUdp = Reflect.get(newNetworkState, 'udp');
+                    clearInterval(newUdp?.keepAliveInterval);
+                }
                 server.audioResource = audioResource
                 server.player = player
                 server.player.play(audioResource)
                 server.dispathcher = connection.subscribe(player)
                 server.connection = connection;
+                connection.on("stateChange", (oldState, newState) => {
+                    console.log('state1')
+                    const oldNetworking = Reflect.get(oldState, 'networking');
+                    const newNetworking = Reflect.get(newState, 'networking');
+
+                    oldNetworking?.off('stateChange', networkStateChangeHandler);
+                    newNetworking?.on('stateChange', networkStateChangeHandler);
+
+                })
                 server.player.on("stateChange", async function (oldState, newState) {
+                    console.log('state2')
+                    // if (oldState.status === VoiceConnectionStatus.Ready && new_state.status === VoiceConnectionStatus.Connecting) {
+                    // connection.configureNetworking();
+                    // return
+
+                    // }
                     if (newState.status !== "idle") {
                         return
                     }
