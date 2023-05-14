@@ -188,18 +188,35 @@ type GetCur_role = (roles: Step[], user: Member) => {curStep: (Role | null); rol
 type CommandOptions = {
     commands: string | string[];
     expectedArgs: string;
-    permissionError: string;
+    permissionError?: string;
     minArgs: number;
     maxArgs: number;
     permissions: Discord.PermissionString[];
     requiredRoles: Discord.RoleResolvable[];
-    allowedIDs: string[];
-    allowedServer: string;
-    callback: Function;
-    requireChannelPerms: boolean;
+    allowedIDs?: string[];
+    allowedServer?: string;
+    callback: (message: Message, args: string[], text: string) => Promise<void>;
+    requireChannelPerms?: boolean;
+    data: Omit<(SlashCommandBuilder | SlashCommandSubcommandBuilder), any>;
+    isCommand?: true;
+};
+
+interface Command extends CommandOptions {
+    name: string;
+}
+
+interface SubcommandContainer extends SubcommandContainerOptions {
+    name: string;
+    subcommands?: Subcommand[]
+}
+
+type SubcommandContainerOptions = {
+    data: Omit<SlashCommandBuilder, any>;
+    isCommand: false;
 };
 
 import { AudioPlayer, AudioResource, createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, joinVoiceChannel, NoSubscriberBehavior, PlayerSubscription, VoiceConnection } from "@discordjs/voice";
+import { SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
 type Server = {
     queue: Song[];
     dispathcher?: PlayerSubscription | undefined;
@@ -334,7 +351,7 @@ type Commands = { //used in server
 }
 
 type commands = { //used in category
-    [index: string]: Command
+    [index: string]: HelpCommand
 }
 
 type Category = {
@@ -342,7 +359,7 @@ type Category = {
     commands: commands
 }
 
-type Command = {
+type HelpCommand = {
     name: string
     aliases: string
     args: string
