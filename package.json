@@ -1,7 +1,7 @@
 {
   "name": "ontrobot",
-  "version": "1.6.0",
-  "description": "Ontrův personální discord bot",
+  "version": "1.6.1",
+  "description": "Ontrův osobní discord bot",
   "repository": {
     "type": "git",
     "url": "git://github.com/Ontros/OntroBot.git"

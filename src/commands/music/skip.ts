@@ -19,8 +19,8 @@ module.exports = {
             return
         }
         if (server.dispathcher == undefined) {
-            message.channel.send(lang(message.guild.id, "UNKWN_ERR"));
-            throw new Error("dispathcher missing!!!");
+            message.channel.send(lang(message.guild.id, "NO_PLAY"));
+            return
         }
         var skipAmount = 1
         if (args[0]) {
@@ -41,7 +41,6 @@ module.exports = {
                     throw new Error('connection not established skip:39')
                 }
                 disconnectBot(message.guild.id)
-                // server.connection.disconnect();
                 return
             }
             if (server.loop === 0) {

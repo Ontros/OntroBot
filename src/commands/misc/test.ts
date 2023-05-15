@@ -9,6 +9,8 @@ module.exports = {
     permissions: [],
     requiredRoles: [],
     callback: async (message: Message, Arguments: string[], text: string) => {
+        if (!message.guild) { return }
+        var server = global.servers[message.guild.id];
         message.reply("toast")
         // let startFrom = Arguments[0]
         // let globalMessages: (Collection<string, Message<true>> | Collection<string, Message<false>>)[] = []

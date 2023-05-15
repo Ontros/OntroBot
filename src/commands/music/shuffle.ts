@@ -1,4 +1,6 @@
 import { Message } from "discord.js";
+import shuffle from "../../utils/shuffle";
+import disconnectBot from "../../utils/disconnectBot";
 
 module.exports = {
     commands: ['shuffle'],
@@ -10,31 +12,18 @@ module.exports = {
     allowedIDs: [],
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
-        var server = global.servers[message.guild.id];
+        const server = global.servers[message.guild.id];
         const { lang } = global;
-        if (!server.queue) {
+        if (server.queue.length < 2) {
+            message.channel.send(lang(message.guild.id, 'NO_TO_SHUFFEL'));
+            return
+        }
+        if (server.dispathcher == undefined || !server.queue) {
             message.channel.send(lang(message.guild.id, "NO_PLAY"));
-            return;
+            return
         }
         server.queue = shuffle(server.queue)
+        server.dispathcher.player.stop();
         message.channel.send(lang(message.guild.id, 'SHUFFLED'));
     },
-}
-
-function shuffle(array: Array<any>) {
-    var currentIndex = array.length, randomIndex;
-
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
-
-        // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-    }
-
-    return array;
 }

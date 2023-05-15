@@ -318,7 +318,7 @@ type Song = {
     title: string;
     id: string;
     url: string;
-    requestedBy: string;
+    requestedBy: Discord.User;
     duration: ({
         days: number;
         hours: number;

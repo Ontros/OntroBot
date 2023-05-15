@@ -14,7 +14,12 @@ module.exports = {
             message.channel.send(lang(message.guild.id, "NO_PLAY"));
             return;
         }
-        server.player.unpause();
-        message.channel.send(lang(message.guild.id, 'RESUME'));
+        if (server.player.state.status === "paused") {
+            server.player.unpause();
+            message.channel.send(lang(message.guild.id, 'RESUME'));
+        }
+        else {
+            message.channel.send(lang(message.guild.id, 'NOT_PAUSED'))
+        }
     },
 }

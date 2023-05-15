@@ -41,8 +41,13 @@
     },
     "PAUSE": {
       "english": "Pausing",
-      "czech": "Zastavuji",
+      "czech": "Pozastavuji",
       "dev": "Díky za pauzu bráško :heart:"
+    },
+    "NOT_PAUSED": {
+      "english": "Nothing to resume!",
+      "czech": "Nejsem pozastaven",
+      "dev": "Není co odpauzovat LMAO"
     },
     "QUEUE_ADD": {
       "english": "Added song to queue",
@@ -192,6 +197,10 @@
     "NO_TO_SKIP": {
       "english": "No song to skip! Try _stop",
       "czech": "Žádná songa na skipnutí! Zkus _stop"
+    },
+    "NO_TO_SHUFFEL": {
+      "english": "Not enough songs to shuffel!",
+      "czech": "Nedostatek písniček na zpřeházení!"
     },
     "NO_PLAY": {
       "english": "Nothing is playing!",
