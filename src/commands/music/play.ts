@@ -4,19 +4,8 @@ import { ReactionFormOption, Song, Video } from "../../types";
 import { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection } from "@discordjs/voice";
 import playDL from 'play-dl'
 import disconnectBot from "../../utils/disconnectBot";
+import shuffle from "../../utils/shuffle";
 
-// const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
-//     const newUdp = Reflect.get(newNetworkState, 'udp');
-//     clearInterval(newUdp?.keepAliveInterval);
-// }
-
-// voiceConnection.on('stateChange', (oldState, newState) => {
-//     const oldNetworking = Reflect.get(oldState, 'networking');
-//     const newNetworking = Reflect.get(newState, 'networking');
-
-//     oldNetworking?.off('stateChange', networkStateChangeHandler);
-//     newNetworking?.on('stateChange', networkStateChangeHandler);
-// });
 module.exports = {
     commands: ['play', 'p', 'search'],
     expectedArgs: '<url>',
@@ -33,7 +22,7 @@ module.exports = {
                 if (!message.guild) { return }
                 var server = global.servers[message.guild.id];
                 server.playing = true;
-                var newSongIndex = server.loop === 2 ? Math.floor(Math.random() * (server.queue.length) + 1) - 1 : 0
+                var newSongIndex = 0
                 var newSong: Song = server.queue[newSongIndex]
                 if (!newSong.duration) {
                     //@ts-ignore
@@ -49,40 +38,20 @@ module.exports = {
                 const audioResource = createAudioResource(stream.stream, { inputType: stream.type, inlineVolume: true })
                 audioResource.volume?.setVolume(server.volume / 100)
                 const player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } })
-                const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
-                    const newUdp = Reflect.get(newNetworkState, 'udp');
-                    clearInterval(newUdp?.keepAliveInterval);
-                }
                 server.audioResource = audioResource
                 server.player = player
                 server.player.play(audioResource)
                 server.dispathcher = connection.subscribe(player)
                 server.connection = connection;
-                connection.on("stateChange", (oldState, newState) => {
-                    console.log('state1')
-                    const oldNetworking = Reflect.get(oldState, 'networking');
-                    const newNetworking = Reflect.get(newState, 'networking');
-
-                    oldNetworking?.off('stateChange', networkStateChangeHandler);
-                    newNetworking?.on('stateChange', networkStateChangeHandler);
-
-                })
                 server.player.on("stateChange", async function (oldState, newState) {
-                    console.log('state2')
-                    // if (oldState.status === VoiceConnectionStatus.Ready && new_state.status === VoiceConnectionStatus.Connecting) {
-                    // connection.configureNetworking();
-                    // return
-
-                    // }
                     if (newState.status !== "idle") {
-                        return
+                        return //new song
                     }
-                    if (!server.queue[1] && server.loop !== 3) {
+                    if (!server.queue[1] && server.loop === 0) {
                         //KONEC
                         server.playing = false;
                         server.queue = []
                         disconnectBot(message.guild?.id)
-                        // connection.disconnect();
                         return
                     }
                     if (server.loop === 0) {
@@ -90,10 +59,18 @@ module.exports = {
                     }
                     else if (server.loop === 1) {
                         //move song to end of queue
-                        var oldSong: any = server.queue.shift();
+                        var oldSong: Song | undefined = server.queue.shift();
+                        if (!oldSong) {
+                            console.log("wtf play.ts queue end on loop 1 (SHOULD NOT HAPPEN!)")
+                            message.channel.send(lang(message.channel.id, "UNKWN_ERR"))
+                            return
+                        }
                         server.queue.push(oldSong);
                     }
-                    //if 2/3 do nothing
+                    else if (server.loop === 2) {
+                        server.queue = shuffle(server.queue)
+                    }
+                    //if 3 handled elsewhere
                     await play(connection, message);
                 });
                 server.player.on("error", function (Error: Error) {
@@ -102,7 +79,6 @@ module.exports = {
                     if (!message.guild) { return }
                     message.channel.send(lang(message.guild.id, 'UNKWN_ERR'))
                 });
-
             }
             catch (e) {
                 console.log(e)
@@ -185,34 +161,13 @@ module.exports = {
                         return
                     }
                 }
-                // isID = isID ? true : false
-                // console.log(`looking for ${url}`)
-                // if (isID) {
-                // var video = await YouTube.getVideoByID(url)
-                // }
-                // else {
-                //     try {
-                //         var video = await YouTube.getVideo(url);
-                //     }
-                //     catch
-                //     {
-                //         try {
-                // var playlist = await YouTube.getPlaylist(url)
-                // var videos = await playlist.getVideos()
-                //         }
-                //         catch {
-                //             var videos = await YouTube.searchVideos(url, 1);
-                //             var video = await YouTube.getVideoByID(videos[0].id);
-                //         }
-                //     }
-                // }
-                resolve(videos.map((vid: any) => {
+                resolve(videos.map((video: any) => {
                     return {
-                        title: vid.title,
-                        id: vid.id,
-                        url: 'https://www.youtube.com/watch?v=' + vid.id,
-                        requestedBy: message.author.username,
-                        duration: vid.duration
+                        title: video.title,
+                        id: video.id,
+                        url: 'https://www.youtube.com/watch?v=' + video.id,
+                        requestedBy: message.author,
+                        duration: video.duration
                     }
                 }))
             })
@@ -221,17 +176,17 @@ module.exports = {
         var server = global.servers[message.guild.id];
         const { lang } = global;
         var videoName = text
-        var songs: Video[] = []
+        // var songs: Video[] = []
         if (!message.guild) { return }
-        var playing = server.queue.length > 1
+        var playing = !(!server.connection || server.connection.state.status === 'disconnected')
         // if (songs.length > 0) {
         //     var videos: Song[] = songs.map((song: Video) => { return { title: song.title, id: song.id, url: 'https://www.youtube.com/watch?v=' + song.id, requestedBy: message.author.username, duration: undefined } })
         //     global.servers[message.guild.id].queue = [...global.servers[message.guild.id].queue, ...videos]
         // }
         // else {
-        var video: Song[] = await FindVideo(videoName, message)
+        var foundVideos: Song[] = await FindVideo(videoName, message)
         // console.log(video)
-        for (var vid of video) {
+        for (var vid of foundVideos) {
             // console.log("vid", vid)
             global.servers[message.guild.id].queue.push(vid)
             // console.log("q", global.servers[message.guild.id].queue)
@@ -257,7 +212,6 @@ module.exports = {
         //     message.channel.send(lang(message.guild.id, 'SPOTIFY_NO_SUPPORT'))
         // }
         // if (args[0] === 'list') {
-        //     //TODO: tansalate
         //     if (!args[1]) {
         //         var fields: (EmbedField[] | undefined) = global.servers[message.guild.id].playlists?.map((playlist) => {
         //             return { name: playlist.name, inline: false, value: `${playlist.videos.length} songs` }

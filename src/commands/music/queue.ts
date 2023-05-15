@@ -3,7 +3,7 @@
 import { EmbedBuilder, Message } from "discord.js";
 
 module.exports = {
-    commands: ['queue'],
+    commands: ['queue', 'q'],
     permissions: [],
     requireChannelPerms: false,
     requiredRoles: [],
@@ -13,7 +13,7 @@ module.exports = {
     expectedArgs: '<page number>',
     //TODO: weird queue syntax outzput
     callback: async (message: Message, args: string[], text: string) => {
-        const { lang, Discord, bot } = global;
+        const { lang, bot } = global;
         if (!bot.user || !message.guild) { return }
         var server = global.servers[message.guild.id];
         var i = 1;
@@ -30,7 +30,6 @@ module.exports = {
                 return
             }
         }
-
         for (var i = page * 10; i < (page + 1) * 10; i++) {
             if (!message.guild) { return }
             var song = server.queue[i]
@@ -39,8 +38,6 @@ module.exports = {
             }
             catch { }
         }
-
-
         exampleEmbed
             .setTimestamp()
             .setDescription(`${global.lang(message.guild.id, 'PAGE')} ${page + 1}/${pageMax}`)

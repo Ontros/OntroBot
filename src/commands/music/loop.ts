@@ -20,7 +20,7 @@ module.exports = {
             })
             return
         }
-        if (['0, stop'].some(i => i === args[0])) {
+        if (['0', 'stop'].some(i => i === args[0])) {
             //no queue
             message.channel.send(lang(message.guild.id, 'LOOP_NO'));
             server.loop = 0;
@@ -43,6 +43,7 @@ module.exports = {
         else {
             message.channel.send(lang(message.guild.id, 'INPUT_ERR_HALT'))
         }
+        global.serverManager(message.guild.id, true);
     },
     permissions: [],
     requiredRoles: [],
