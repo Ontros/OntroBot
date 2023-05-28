@@ -176,19 +176,20 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
 
         for (const alias of commands) {
             if (content.toLowerCase().split(/[ ]+/)[0] === `${prefix}${alias.toLowerCase()}`) {
-                for (const permission of commandOptions.permissions) {
-                    if (!member.permissions.has(permission)) {
-                        message.reply(lang(guild.id, 'CMD_NO_PERM'))
-                        return
-                    }
-                }
-                for (const requiredRole of commandOptions.requiredRoles) {
-                    const role = (await guild.roles.fetch()).find((role: Role) => role.name == requiredRole);
-                    if (!role || !member.roles.cache.has(role.id)) {
-                        message.reply(lang(guild.id, 'ROLE_RQR')[0] + requiredRole + lang(guild.id, 'ROLE_RQR')[0])
-                        return
-                    }
-                }
+                //TODO: redeploy
+                //for (const permission of commandOptions.permissions) {
+                    //if (!member.permissions.has(permission)) {
+                    //    message.reply(lang(guild.id, 'CMD_NO_PERM'))
+                    //    return
+                    //}
+                //}
+                //for (const requiredRole of commandOptions.requiredRoles) {
+                //    const role = (await guild.roles.fetch()).find((role: Role) => role.name == requiredRole);
+                //    if (!role || !member.roles.cache.has(role.id)) {
+                //        message.reply(lang(guild.id, 'ROLE_RQR')[0] + requiredRole + lang(guild.id, 'ROLE_RQR')[0])
+                //        return
+                //    }
+                //}
 
                 if (!!commandOptions.allowedIDs && commandOptions.allowedIDs.length != 0) {
                     var isAllowed = false;
