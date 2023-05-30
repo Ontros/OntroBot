@@ -1,4 +1,4 @@
-import { EmbedBuilder, Message } from "discord.js";
+import { EmbedBuilder, Message, SlashCommandBuilder } from "discord.js";
 import { Languages } from "../../types";
 
 //const Discord = require('discord.js');
@@ -6,9 +6,13 @@ module.exports = {
     commands: ['language', 'lang'],
     expectedArgs: '<lang>',
     minArgs: 0,
-    maxArgs: 2,
-    permissions: ["ADMINISTRATOR"],
+    maxArgs: 1,
+    permissions: ["MANAGE_GUILD"],
     requiredRoles: [],
+    data: new SlashCommandBuilder().addStringOption(option => option.setRequired(false).setName("language").setNameLocalizations({ cs: "jazyk" })
+        .addChoices({ name: "Cesky", value: "cz" }, { name: "English", value: "en" }, { name: "Ostravsky", value: "dev" })
+        .setDescription("New language").setDescriptionLocalizations({ cs: "Nový jazyk" })),
+    isCommand: true,
     allowedIDs: [],
     callback: async (message: Message, args: string[], text: string) => {
         const { langJ, lang, Discord, bot } = global

@@ -12,11 +12,9 @@ if (!token) {
 const config = {
     token,
     clientId,
-    guildId: '755839445051375779'
+    guildId: '754055036132262069'
 }
 import { SlashCommandBuilder } from 'discord.js';
-import fs from 'fs'
-import { CommandOptions } from './types';
 import readAllCommands from './utils/readAllCommands';
 // const commands = [];
 // Grab all the command files from the commands directory you created earlier
@@ -41,7 +39,6 @@ const rest = new REST({ version: '10' }).setToken(config.token);
         console.log(commands)
         const dataJSONs = commands.map((command) => { return (command.data as SlashCommandBuilder).toJSON() })
         console.log(dataJSONs)
-
 
         // The put method is used to fully refresh all commands in the guild with the current set
         const data: any = await rest.put(

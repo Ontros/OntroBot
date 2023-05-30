@@ -190,7 +190,7 @@ type CommandOptions = {
     expectedArgs: string;
     permissionError?: string;
     minArgs: number;
-    maxArgs: number;
+    maxArgs: number | null;
     permissions: Discord.PermissionString[];
     requiredRoles: Discord.RoleResolvable[];
     allowedIDs?: string[];
@@ -198,7 +198,7 @@ type CommandOptions = {
     callback: (message: Message, args: string[], text: string) => Promise<void>;
     requireChannelPerms?: boolean;
     data: Omit<(SlashCommandBuilder | SlashCommandSubcommandBuilder), any>;
-    isCommand?: true;
+    isCommand: true;
 };
 
 interface Command extends CommandOptions {
@@ -232,7 +232,6 @@ type Server = {
     steps: Step[];
     playlists: (Playlists | undefined)
     prefix: string;
-    // config: Config
     roleGiver?: RoleGiver;
     logServer: boolean;
 };

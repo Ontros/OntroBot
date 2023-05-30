@@ -1,14 +1,18 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder } from "discord.js";
 import shuffle from "../../utils/shuffle";
 import disconnectBot from "../../utils/disconnectBot";
+import { CommandOptions } from "../../types";
 
 module.exports = {
     commands: ['shuffle'],
     permissions: [],
     requiredRoles: [],
     requireChannelPerms: false,
+    expectedArgs: '',
     maxArgs: 0,
     minArgs: 0,
+    data: new SlashCommandBuilder(),
+    isCommand: true,
     allowedIDs: [],
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
@@ -26,4 +30,4 @@ module.exports = {
         server.dispathcher.player.stop();
         message.channel.send(lang(message.guild.id, 'SHUFFLED'));
     },
-}
+} as CommandOptions

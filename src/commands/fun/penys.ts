@@ -1,10 +1,22 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder } from "discord.js";
+import { CommandOptions } from "../../types";
 
 module.exports = {
     commands: ['penys', 'pp'],
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
+    expectedArgs: "<userID>",
+    minArgs: 0,
+    maxArgs: 1,
+    isCommand: true,
+    data: new SlashCommandBuilder().addUserOption(option => option.setRequired(false)
+        .setName("user")
+        .setDescription("Penys of user")
+        .setNameLocalizations({ "cs": "uživatel" })
+        .setDescriptionLocalizations({ "cs": "Penys od uživatele" })
+    ),
+
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         const { lang } = global;
@@ -33,4 +45,4 @@ module.exports = {
         }
         message.channel.send(`<@!${requestedPlayer.id}>, ${lang(message.guild.id, 'PP_SIZE') + ": " + penysSize + " cm"}`)
     }
-}
+} as CommandOptions

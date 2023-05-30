@@ -9,7 +9,7 @@ module.exports = async (message: Message, input: string) => {
     }
     if (!message.guild) { return }
     var channel = await global.bot.channels.fetch(input).catch(() => { if (message.guild) { message.channel.send(global.lang(message.guild.id, 'UNKWN_ERR')) }; return null; });
-    if (!channel || channel.isTextBased() || !channel.isVoiceBased()) {
+    if (!channel || channel.isTextBased()) {
         return null;
     }
     var textChannel = channel

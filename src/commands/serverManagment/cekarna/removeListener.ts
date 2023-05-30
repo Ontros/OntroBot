@@ -1,4 +1,5 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
+import { CommandOptions } from "../../../types";
 
 //const serverManager = require('../.././server-manager');
 module.exports = {
@@ -9,6 +10,11 @@ module.exports = {
     permissions: ["ADMINISTRATOR"],
     requiredRoles: [],
     allowedIDs: [],
+    data: new SlashCommandSubcommandBuilder().addUserOption(option => option
+        .setName("listener").setNameLocalizations({ "cs": "posluchac" })
+        .setDescription("The listener you want to remove").setDescriptionLocalizations({ "cs": "Uzivatel, ktereho chcete odebrat" })
+        .setRequired(true)),
+    isCommand: true,
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
@@ -23,4 +29,4 @@ module.exports = {
             message.channel.send(lang(message.guild.id, 'LIST_NO_EXIST'));
         }
     }
-}
+} as CommandOptions

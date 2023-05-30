@@ -20,6 +20,7 @@ export default (baseDir: string) => {
                 //File
                 const option: CommandOptions | SubcommandContainerOptions = require(path.join(baseDir, dir, file));
                 if (!option.data) {
+                    //If is not defined continue
                     continue
                 }
                 const translations = langJ.translations[`DES_${file.split('.')[0].toUpperCase()}_SHORT`];

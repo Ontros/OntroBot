@@ -1,11 +1,27 @@
 import { time } from "console";
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder } from "discord.js";
+import { CommandOptions } from "../../types";
 
 module.exports = {
     commands: ['gamba', 'g'],
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
+    expectedArgs: "<amount> <times?>",
+    isCommand: true,
+    minArgs: 1,
+    maxArgs: 2,
+    data: new SlashCommandBuilder().addIntegerOption(option => {
+        return option.setRequired(true)
+            .setMinValue(0)
+            .setName("money").setNameLocalizations({ "cs": "peníze" })
+            .setDescription("Amount to gamba (0=all)").setDescriptionLocalizations({ "cs": "Množtví na gambu (0=all)" })
+    }).addIntegerOption(option => {
+        return option.setRequired(false)
+            .setMinValue(1)
+            .setName("repetetion").setNameLocalizations({ "cs": "opakovani" })
+            .setDescription("How many times to do the gamba").setDescriptionLocalizations({ "cs": "Kolikrát provést gambu" })
+    }),
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         const { lang } = global;
@@ -72,4 +88,4 @@ module.exports = {
         }
         message.channel.send(`${message.author.username} has ${global.userBalance[user]} OnCoins; Won ${won}x, Lost ${lost}x`)
     }
-}
+} as CommandOptions

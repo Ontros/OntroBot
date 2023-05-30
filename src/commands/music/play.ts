@@ -1,6 +1,6 @@
 import console from "console";
-import { Message } from "discord.js";
-import { ReactionFormOption, Song, Video } from "../../types";
+import { Message, SlashCommandBuilder } from "discord.js";
+import { CommandOptions, ReactionFormOption, Song, Video } from "../../types";
 import { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection } from "@discordjs/voice";
 import playDL from 'play-dl'
 import disconnectBot from "../../utils/disconnectBot";
@@ -15,6 +15,12 @@ module.exports = {
     requiredRoles: [],
     allowedIDs: [],
     requireChannelPerms: true,
+    data: new SlashCommandBuilder().addStringOption(option => {
+        return option.setRequired(true).setName("video-information").setNameLocalizations({ "cs": "informace-o-videu" }).setDescriptionLocalizations({
+            "cs": "Co chcete přehrát, podporuje YT video link, YT plalist link a název YT videa",
+        }).setDescription("What you want to play, supports YT video links, YT playlist links and YT video names")
+    }),
+    isCommand: true,
     callback: async (message: Message, args: string[], text: string) => {
         //TODO: fix on youtube.com --> search, restarting playing when already playing, sometimes song randomly ends (probably switch to youtube-dl-exec)
         async function play(connection: VoiceConnection, message: Message) {
@@ -208,62 +214,5 @@ module.exports = {
             play(connection, message);
             message.channel.send(lang(message.guild.id, 'PLAY_START'));
         }
-        // if (matchPlaylist || matchTrack || matchAlbum) {
-        //     message.channel.send(lang(message.guild.id, 'SPOTIFY_NO_SUPPORT'))
-        // }
-        // if (args[0] === 'list') {
-        //     if (!args[1]) {
-        //         var fields: (EmbedField[] | undefined) = global.servers[message.guild.id].playlists?.map((playlist) => {
-        //             return { name: playlist.name, inline: false, value: `${playlist.videos.length} songs` }
-        //         })
-        //         if (!fields) {
-        //             throw new Error("play.ts list fiels error")
-        //             return
-        //         }
-
-        //         message.channel.send(global.createEmbed(message, 'List of Playlists',
-        //             'For more details visit my webiste: <websiste link>', fields
-        //         ))
-        //     }
-        //     else {
-        //         var newPlaylist = getPlaylistByName(message.guild.id, args[1])
-        //         if (!newPlaylist) {
-        //             message.channel.send("Playlist not found")
-        //             return
-        //         }
-        //         else {
-        //             //videoNames = newPlaylist.videos.map((video) => { return video.id })//global.servers[message.guild.id].playlists
-        //             songs = newPlaylist.videos
-        //         }
-        //     }
-
-        // }
-        // var ij = 0
-        // var lastStamp = Date.now()
-        //TODO: plan to code
-        //pokud nehraje tak join a pridat do queue
-        //pokud hraje tak pridat do queue
     }
-}
-
-// function sleep(ms: number) {
-//     return new Promise((resolve) => {
-//         setTimeout(resolve, ms);
-//     });
-// }
-    //     if (Date.now() - lastStamp > 500 && botMessage) {
-    //         var embed = global.progressBar(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, 'QUER_YT') +
-    //             `\n ${ij}/${videoNames.length}`, ij / videoNames.length)
-    //         botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
-    //         botMessage.edit(embed)
-    //         lastStamp = Date.now()
-    //     }
-    //     if (ij === videoNames.length) {
-    //         var del = true
-    //         if (botMessage) {
-    //             botMessage.fetch().catch(() => { del = false })
-    //             if (del) {
-    //                 botMessage.delete()
-    //             }
-    //         }
-    //     }
+} as CommandOptions

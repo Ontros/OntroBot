@@ -1,6 +1,7 @@
 //const Discord = require('discord.js');
 
-import { EmbedBuilder, Message } from "discord.js";
+import { EmbedBuilder, Message, SlashCommandBuilder } from "discord.js";
+import { CommandOptions } from "../../types";
 
 module.exports = {
     commands: ['queue', 'q'],
@@ -11,6 +12,10 @@ module.exports = {
     maxArgs: 1,
     minArgs: 0,
     expectedArgs: '<page number>',
+    isCommand: true,
+    data: new SlashCommandBuilder().addIntegerOption(option => {
+        return option.setRequired(false).setMinValue(1).setName("page-number").setNameLocalizations({ "cs": "strana-seznamu" }).setDescription("Page number that will be shown").setDescriptionLocalizations({ cs: "Strana, která bude zobrazena" })
+    }),
     //TODO: weird queue syntax outzput
     callback: async (message: Message, args: string[], text: string) => {
         const { lang, bot } = global;
@@ -48,4 +53,4 @@ module.exports = {
         }
         message.channel.send({ embeds: [exampleEmbed] });
     },
-}
+} as CommandOptions

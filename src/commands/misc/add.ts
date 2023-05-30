@@ -1,4 +1,5 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder } from "discord.js";
+import { CommandOptions } from "../../types";
 
 module.exports = {
     commands: ['add', 'addition'],
@@ -12,4 +13,10 @@ module.exports = {
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
-}
+    data: new SlashCommandBuilder().addNumberOption(option => {
+        return option.setName("first-number").setNameLocalizations({ "cs": "první-číslo" }).setRequired(true).setDescription("First number").setDescriptionLocalizations({ "cs": "První číslo" })
+    }).addNumberOption(option => {
+        return option.setName("second-number").setNameLocalizations({ "cs": "druhé-číslo" }).setRequired(true).setDescription("Second number").setDescriptionLocalizations({ "cs": "Druhé číslo" })
+    }),
+    isCommand: true
+} as CommandOptions

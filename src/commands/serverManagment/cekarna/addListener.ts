@@ -13,12 +13,11 @@ module.exports = {
     allowedIDs: [],
     data: new SlashCommandSubcommandBuilder()
         .addUserOption((option) => option
-            // .setNameLocalizations({ "cs": "Posluchac", "en-GB": "User" })
-            .setDescriptionLocalizations({ "cs": "Uzivatel, ktereho chcete pridat", "en-GB": "The user you want to add" })
-            .setName("user")
-            .setDescription("the user you want to add")
+            .setName("listener").setNameLocalizations({ "cs": "posluchac" })
+            .setDescription("The listener you want to add").setDescriptionLocalizations({ "cs": "Uzivatel, ktereho chcete pridat" })
             .setRequired(true))
     ,
+    isCommand: true,
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         const { lang } = global

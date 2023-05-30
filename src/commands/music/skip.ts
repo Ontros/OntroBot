@@ -1,5 +1,6 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder } from "discord.js";
 import disconnectBot from "../../utils/disconnectBot";
+import { CommandOptions } from "../../types";
 
 module.exports = {
     commands: ['skip', 's', 'next'],
@@ -8,6 +9,10 @@ module.exports = {
     allowedIDs: [],
     minArgs: 0,
     maxArgs: 1,
+    data: new SlashCommandBuilder().addIntegerOption(option => {
+        return option.setRequired(false).setName("skip-by").setNameLocalizations({ "cs": "přeskočit-o" }).setDescription("Skip queue by amount").setDescriptionLocalizations({ cs: "Množství o kolik se přeskočí queue" })
+    }),
+    isCommand: true,
     expectedArgs: '<number to skip>',
     requireChannelPerms: false,
     callback: async (message: Message, args: string[], text: string) => {
@@ -56,4 +61,4 @@ module.exports = {
         server.dispathcher.player.stop();
         message.channel.send(lang(message.guild.id, 'SKIP'));
     },
-}
+} as CommandOptions

@@ -1,11 +1,14 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder } from "discord.js";
+import { CommandOptions } from "../../types";
 
 module.exports = {
-	commands: ["np", "nowPlayin"],
+	commands: ["np", "nowPlaying"],
 	expectedArgs: "<>",
 	permissionError: "",
 	minArgs: 0,
 	maxArgs: 0,
+	data: new SlashCommandBuilder(),
+	isCommand: true,
 	callback: async (message: Message, args: string[], text: string) => {
 		//TODO: when loop random uses queue[0]
 		const { bot, lang } = global;
@@ -37,7 +40,7 @@ module.exports = {
 	permissions: [],
 	requiredRoles: [],
 	allowedIDs: [],
-};
+} as CommandOptions
 function secondsToString(seconds: number): string {
 	if (seconds < 60 * 60) {
 		return `${Math.floor(seconds / 60)}:${Math.floor(

@@ -1,5 +1,6 @@
-import { Message, EmbedBuilder } from "discord.js";
+import { Message, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import camelToWords from "../../utils/camelToWords";
+import { CommandOptions } from "../../types";
 
 module.exports = {
     commands: ['help'],
@@ -64,7 +65,13 @@ module.exports = {
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
-}
+    data: new SlashCommandBuilder().addStringOption(option => {
+        return option
+            .setName("name").setNameLocalizations({ "cs": "název" }).setRequired(false)
+            .setDescription("Name of command or category").setDescriptionLocalizations({ "cs": "Název příkazu nebo kategorie" })
+    }),
+    isCommand: true
+} as CommandOptions
 
 
 

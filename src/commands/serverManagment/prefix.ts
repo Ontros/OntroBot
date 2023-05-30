@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { Message, SlashCommandBuilder } from 'discord.js';
 
 module.exports = {
     commands: ['prefix'],
@@ -6,8 +6,13 @@ module.exports = {
     permissionError: '',
     minArgs: 0,
     maxArgs: 1,
+    data: new SlashCommandBuilder().addStringOption(option => {
+        return option.setRequired(false)
+            .setName("new-prefix").setNameLocalizations({ "cs": "nový-prefix" })
+            .setDescription("New prefix value").setDescriptionLocalizations({ "cs": "Nová hodnota prefixu" })
+    }),
+    isCommand: true,
     callback: async (message: Message, args: string[], text: string) => {
-        //TODO: ontroprefix -> vyvolani
         const { bot, lang } = global
         if (!message.guild) { return; }
         if (!args[0]) {

@@ -1,9 +1,15 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder } from "discord.js";
+import { CommandOptions } from "../../types";
 
 module.exports = {
     commands: ['resume', 'unpause'],
     permissions: [],
     requiredRoles: [],
+    expectedArgs: '',
+    minArgs: 0,
+    maxArgs: 0,
+    data: new SlashCommandBuilder(),
+    isCommand: true,
     requireChannelPerms: false,
     allowedIDs: [],
     callback: async (message: Message, args: string[], text: string) => {
@@ -22,4 +28,4 @@ module.exports = {
             message.channel.send(lang(message.guild.id, 'NOT_PAUSED'))
         }
     },
-}
+} as CommandOptions

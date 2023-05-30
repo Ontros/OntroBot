@@ -1,4 +1,5 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
+import { CommandOptions } from "../../../types";
 
 //const serverManager = require('../.././server-manager');
 module.exports = {
@@ -9,6 +10,8 @@ module.exports = {
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
+    data: new SlashCommandSubcommandBuilder(),
+    isCommand: true,
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         global.servers[message.guild.id].cekarnaPings.forEach(async element => {
@@ -22,4 +25,4 @@ module.exports = {
             }
         })
     }
-}
+} as CommandOptions

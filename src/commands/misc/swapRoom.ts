@@ -1,4 +1,5 @@
-import { Message, VoiceBasedChannel, VoiceChannel } from 'discord.js';
+import { ChannelType, Message, SlashCommandBuilder, VoiceBasedChannel, VoiceChannel } from 'discord.js';
+import { CommandOptions } from '../../types';
 
 module.exports = {
     commands: ['swaproom'],
@@ -6,6 +7,18 @@ module.exports = {
     permissionError: '',
     minArgs: 1,
     maxArgs: 3,
+    isCommand: true,
+    data: new SlashCommandBuilder().addChannelOption(option => {
+        return option.addChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice)
+            .setName("to-room").setNameLocalizations({ cs: "finální-roomka" })
+            .setDescription("To this room you will be moved").setDescriptionLocalizations({ cs: "Do této roomky budete přesunuti" })
+            .setRequired(true)
+    }).addChannelOption(option => {
+        return option.addChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice)
+            .setName("from-room").setNameLocalizations({ cs: "počáteční-roomka" })
+            .setDescription("From this room you will be moved").setDescriptionLocalizations({ cs: "Z této roomky budete přesunuti" })
+            .setRequired(false)
+    }),
     callback: async (message: Message, args: string[], text: string) => {
         const { bot, lang } = global
         if (!message.guild) { return; }
@@ -43,4 +56,4 @@ module.exports = {
     permissions: ['MOVE_MEMBERS'],
     requiredRoles: [],
     allowedIDs: [],
-}
+} as CommandOptions

@@ -1,10 +1,20 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder } from "discord.js";
+import { CommandOptions } from "../../types";
 
 module.exports = {
     commands: ['loop', 'l'],
     maxArgs: 1,
     minArgs: 0,
     requireChannelPerms: false,
+    expectedArgs: "",
+    isCommand: true,
+    data: new SlashCommandBuilder().addStringOption(option => {
+        return option.setRequired(false).setChoices({ name: "stop", value: "0" },
+            { name: "queue", value: "1" },
+            { name: "random", value: "2" },
+            { name: "track", value: "3" },
+        ).setName("loop-type").setDescription("Type of loop")
+    }),
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
@@ -48,4 +58,4 @@ module.exports = {
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
-}
+} as CommandOptions

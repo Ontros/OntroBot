@@ -1,4 +1,5 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder } from "discord.js";
+import { CommandOptions } from "../../types";
 
 //const serverManager = require('../.././server-manager');
 module.exports = {
@@ -9,6 +10,12 @@ module.exports = {
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
+    data: new SlashCommandBuilder().addIntegerOption(option => {
+        return option.setMinValue(0).setMaxValue(100).setRequired(false)
+            .setName("volume").setNameLocalizations({ "cs": "hlasitost" })
+            .setDescription("New volume in percents").setDescriptionLocalizations({ "cs": "Nová hlasitost v procentech" })
+    }),
+    isCommand: true,
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
@@ -33,4 +40,4 @@ module.exports = {
             global.serverManager(message.guild.id, true);
         }
     }
-}
+} as CommandOptions
