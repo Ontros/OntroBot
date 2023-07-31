@@ -1,7 +1,8 @@
 import { Server } from "./types";
+import fs from 'fs'
 
 //const fs = require('fs');
-module.exports = (id: string, change: boolean) => {
+export default (id: string, change?: boolean) => {
     try {
         if (change != null && change == true) {
             updateServerFile(id, global.servers[id]);
@@ -42,13 +43,9 @@ var checkOnLoad = ['steps', 'playlists', 'prefix']
 
 function checkServer(id: string) {
     //Existuje soubor?
-    if (!global.fs.existsSync('./data/' + id + '.json')) {
+    if (!fs.existsSync('./data/' + id + '.json')) {
         //Vytvoř ho
-        global.fs.writeFileSync('./data/' + id + '.json', JSON.stringify(defaultServer), (err: Error) => {
-            if (err) {
-                console.log(err);
-            }
-        });
+        fs.writeFileSync('./data/' + id + '.json', JSON.stringify(defaultServer));
         // console.log('WRITING NEW!');
     }
 }
@@ -63,11 +60,7 @@ function updateServerFile(id: string, server: Server) {
     localServer.player = undefined
     localServer.playing = false
     localServer.queue = []
-    global.fs.writeFileSync('./data/' + id + '.json', JSON.stringify(localServer), (err: Error) => {
-        if (err) {
-            console.log(err);
-        }
-    });
+    fs.writeFileSync('./data/' + id + '.json', JSON.stringify(localServer));
 }
 
 function readServer(id: string) {

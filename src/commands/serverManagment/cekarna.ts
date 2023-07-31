@@ -1,7 +1,7 @@
 import { Message, SlashCommandBuilder } from "discord.js";
 import { SubcommandContainerOptions } from "../../types";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder(),
     permissions: ['ADMINISTRATOR'],
     requiredRoles: [],

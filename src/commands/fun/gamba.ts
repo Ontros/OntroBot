@@ -24,7 +24,6 @@ module.exports = {
     }),
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
-        const { lang } = global;
         //Get player
         var user = message.author.id
         var amount = parseInt(args[0])

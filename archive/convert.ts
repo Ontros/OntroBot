@@ -46,7 +46,7 @@ module.exports = {
             spotifyApi.setAccessToken(ans.access_token)
             const spotifyToYoutube = global.SpotifyToYoutube(spotifyApi)
             videoNames = []
-            var botMessage = await message.channel.send(global.createEmbed(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, 'QUER_SPOTIFY'), []))
+            var botMessage = await message.channel.send(global.createEmbed(message, language(message, 'FINDING_MUSIC'), language(message, 'QUER_SPOTIFY'), []))
 
             //PLAYLIST
             if (matchPlaylist) {
@@ -68,7 +68,7 @@ module.exports = {
                     i++
                     if (Date.now() - lastStamp > 500) {
                         if (!message.guild) { return }
-                        var embed = global.progressBar(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, `QUER_SPOTIFY`) + `\n${i}/${length}`, i / length)
+                        var embed = global.progressBar(message, language(message, 'FINDING_MUSIC'), language(message, `QUER_SPOTIFY`) + `\n${i}/${length}`, i / length)
                         botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
                         botMessage.edit(embed)
                         lastStamp = Date.now()
@@ -96,7 +96,7 @@ module.exports = {
                     i++
                     if (Date.now() - lastStamp > 500) {
                         if (!message.guild) { return }
-                        var embed = global.progressBar(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, 'QUER_SPOTIFY') + `\n${i}/${length}`, i / length)
+                        var embed = global.progressBar(message, language(message, 'FINDING_MUSIC'), language(message, 'QUER_SPOTIFY') + `\n${i}/${length}`, i / length)
                         botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
                         botMessage.edit(embed)
                         lastStamp = Date.now()
@@ -124,7 +124,7 @@ module.exports = {
                     i++
                     if (Date.now() - lastStamp > 500) {
                         if (!message.guild) { return }
-                        var embed = global.progressBar(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, 'QUER_SPOTIFY') + `\n${i}/${length}`, i / length)
+                        var embed = global.progressBar(message, language(message, 'FINDING_MUSIC'), language(message, 'QUER_SPOTIFY') + `\n${i}/${length}`, i / length)
                         botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
                         botMessage.edit(embed)
                         lastStamp = Date.now()
@@ -146,7 +146,7 @@ module.exports = {
             }
         }
         else {
-            message.channel.send(lang(message.guild.id, 'URL_INV'))
+            message.channel.send(language(message, 'URL_INV'))
             return
         }
 
@@ -170,7 +170,7 @@ module.exports = {
 
                 //songa přidána do queue, už hraje bot
                 if (Date.now() - lastStamp > 500 && botMessage) {
-                    var embed = global.progressBar(message, lang(message.guild.id, 'FINDING_MUSIC'), lang(message.guild.id, 'QUER_YT') +
+                    var embed = global.progressBar(message, language(message, 'FINDING_MUSIC'), language(message, 'QUER_YT') +
                         `\n ${ij}/${videoNames.length}`, ij / videoNames.length)
                     botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
                     botMessage.edit(embed)
@@ -207,7 +207,7 @@ module.exports = {
         }
         // console.log(global.servers[message.guild.id].playlists)
         global.serverManager(message.guild.id, true)
-        botMessage.edit(lang(message.guild.id, 'LIST_SAVE_OK'))
+        botMessage.edit(language(message, 'LIST_SAVE_OK'))
         //playlist[]
     },
     permissions: [],

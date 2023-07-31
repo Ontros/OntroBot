@@ -1,26 +1,27 @@
 import { Message, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import camelToWords from "../../utils/camelToWords";
 import { CommandOptions } from "../../types";
+import language from "../../language";
 
 module.exports = {
     commands: ['help'],
     callback: async (message: Message, args: string[], text: string) => {
         //TODO change to selection??
         if (!message.guild) { return }
-        const { Discord, bot, lang } = global
-        if (!bot.user) { return }
-        const avatarURL = bot.user.avatarURL()
-        if (!avatarURL) { message.channel.send(lang(message.guild.id, 'ERR_AVATAR')); return }
+        if (!global.bot.user) { return }
+        const avatarURL = global.bot.user.avatarURL()
+        if (!avatarURL) { message.channel.send(language(message, 'ERR_AVATAR')); return }
         if (!args[0]) {
             //CATEGOTY LIST
             const embed = new EmbedBuilder()
             embed.setColor('#0099ff')
-                .setTitle(lang(message.guild.id, 'CAT_LIST'))
+                .setTitle(language(message, 'CAT_LIST'))
                 .setThumbnail(avatarURL)
-                .setDescription(global.lang(message.guild.id, "_HELP_CATEGORY_NAME"))
+                .setDescription(language(message, "_HELP_CATEGORY_NAME"))
             for (const categoryName in global.commands) {
                 const category = global.commands[categoryName]
-                embed.addFields({ name: category.name, value: global.lang(message.guild.id, `${categoryName.toUpperCase()}_DES`) })
+                //@ts-ignore
+                embed.addFields({ name: category.name, value: language(message, `${categoryName.toUpperCase()}_DES`) })
             }
             message.channel.send({ embeds: [embed] })
             return
@@ -31,12 +32,13 @@ module.exports = {
                 //Commands list
                 const embed = new EmbedBuilder()
                 embed.setColor('#0099ff')
-                    .setTitle(category.name + ` ${lang(message.guild.id, 'CMDS').toLowerCase()}:`)
+                    .setTitle(category.name + ` ${language(message, 'CMDS').toLowerCase()}:`)
                     .setThumbnail(avatarURL)
-                    .setDescription(global.lang(message.guild.id, "_HELP_COMMAND_NAME"))
+                    .setDescription(language(message, "_HELP_COMMAND_NAME"))
                 for (const commandName in category.commands) {
                     const command = category.commands[commandName]
-                    embed.addFields({ name: camelToWords(command.name), value: global.lang(message.guild.id, 'DES_' + commandName.toUpperCase() + '_SHORT') })
+                    //@ts-ignore
+                    embed.addFields({ name: camelToWords(command.name), value: language(message, 'DES_' + commandName.toUpperCase() + '_SHORT') })
                 }
                 message.channel.send({ embeds: [embed] })
                 return
@@ -49,15 +51,16 @@ module.exports = {
                     embed.setColor('#0099ff')
                         .setTitle(command.name.toUpperCase())
                         .setThumbnail(avatarURL)
-                        .addFields({ name: lang(message.guild.id, 'ALIASES'), value: command.aliases })
-                    if (command.args) { embed.addFields({ name: lang(message.guild.id, 'ARGS'), value: command.args }) }
-                    embed.addFields({ name: lang(message.guild.id, 'DESCR'), value: global.lang(message.guild.id, 'DES_' + commandName.toUpperCase() + '_LONG') })
+                        .addFields({ name: language(message, 'ALIASES'), value: command.aliases })
+                    if (command.args) { embed.addFields({ name: language(message, 'ARGS'), value: command.args }) }
+                    //@ts-ignore
+                    embed.addFields({ name: language(message, 'DESCR'), value: language(message, 'DES_' + commandName.toUpperCase() + '_LONG') })
                     message.channel.send({ embeds: [embed] })
                     return
                 }
             }
         }
-        message.channel.send(lang(message.guild.id, 'HELP_NOT_FOUND'))
+        message.channel.send(language(message, 'HELP_NOT_FOUND'))
     },
     minArgs: 0,
     maxArgs: null,

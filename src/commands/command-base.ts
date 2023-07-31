@@ -1,5 +1,8 @@
 import { Message, Role } from "discord.js";
 import { CommandOptions } from "../types";
+import languageDATA from "../languageDATA";
+import serverManager from "../server-manager";
+import language from "../language";
 
 // const prefix = '_';
 //const serverManager = require('.././server-manager');
@@ -46,7 +49,7 @@ const validatePermissions = (permissions: string[]) => {
 }
 
 
-module.exports = async (commandOptions: CommandOptions, file: string) => {
+export default async (commandOptions: CommandOptions, file: string) => {
     if (!commandOptions.callback) { console.log('error loading: '); console.log(file); return }
     let {
         commands,
@@ -97,16 +100,6 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
     const name = paths[paths.length - 1].split('.')[0]
     const catName = paths[paths.length - 2] //category name
 
-    // if (!global.commands[catName]) {
-    //     console.error('MISSING CATEGORY: ' + catName)
-    // }
-
-    // const category = global.commands[catName]
-    // console.log(category, name)
-
-    // if (!category.commands[name]) {
-    //     console.error('MISSING COMMAND: ' + name)
-    // }
 
     var catIgnore = ['remainders']
 
@@ -128,7 +121,7 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
                 commands: {}
             }
             //Test if lang for category exists
-            if (!global.langJ.translations[`${catName.toUpperCase()}_DES`]) {
+            if (!(languageDATA.translations as any)[`${catName.toUpperCase()}_DES`]) {
                 console.error(`No translation for ${catName} description`)
             }
         }
@@ -138,28 +131,21 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
             aliases: commandOptions.commands.toString(),
             args: commandOptions.expectedArgs,
         }
-        if (!global.langJ.translations[`DES_${name.toUpperCase()}_SHORT`] || !global.langJ.translations[`DES_${name.toUpperCase()}_LONG`]) {
+        if (!(languageDATA.translations as any)[`DES_${name.toUpperCase()}_SHORT`] || !(languageDATA.translations as any)[`DES_${name.toUpperCase()}_LONG`]) {
             console.error(`No translation for ${name} description`)
         }
     }
 
 
-    /*category.commands[name] = {
-        name,
-        aliases,
-        args: expectedArgs,
-        descriptionShort: "placeholder",
-        descriptionLong: "placeholder"
-    }*/
 
     global.bot.on('messageCreate', async (message: Message) => {
         const { member, content, guild, channel } = message
-        const { lang, bot } = global;
+        const { bot } = global;
         if (!guild || !message.guild || channel.isDMBased()) {
             return;
         }
         try {
-            global.serverManager(message.guild.id);
+            serverManager(message.guild.id);
         }
         catch (err) {
             console.log('ERROR WITH LOADING SERVER --> STOPPING COMMAND ', err)
@@ -170,7 +156,7 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
         // var prefix = "_"
 
         if (!member || !guild.client) {
-            message.channel.send(lang(guild.id, 'USR_ID_NOT'))
+            message.channel.send(language(message, 'USR_ID_NOT'))
             return;
         }
 
@@ -178,14 +164,14 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
             if (content.toLowerCase().split(/[ ]+/)[0] === `${prefix}${alias.toLowerCase()}`) {
                 for (const permission of commandOptions.permissions) {
                     if (!member.permissions.has(permission)) {
-                        message.reply(lang(guild.id, 'CMD_NO_PERM'))
+                        message.reply(language(message, 'CMD_NO_PERM'))
                         return
                     }
                 }
                 for (const requiredRole of commandOptions.requiredRoles) {
                     const role = (await guild.roles.fetch()).find((role: Role) => role.name == requiredRole);
                     if (!role || !member.roles.cache.has(role.id)) {
-                        message.reply(lang(guild.id, 'ROLE_RQR')[0] + requiredRole + lang(guild.id, 'ROLE_RQR')[0])
+                        message.reply(language(message, 'ROLE_RQR')[0] + requiredRole + language(message, 'ROLE_RQR')[0])
                         return
                     }
                 }
@@ -198,7 +184,7 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
                         }
                     }
                     if (!isAllowed) {
-                        message.reply(lang(guild.id, 'CMD_NO_PERM'))
+                        message.reply(language(message, 'CMD_NO_PERM'))
                         return;
                     }
                 }
@@ -213,7 +199,7 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
                 Arguments.shift()
 
                 if (Arguments.length < minArgs || (maxArgs != null && Arguments.length > maxArgs)) {
-                    message.reply(lang(guild.id, 'INC_FORM') + ': ' + prefix + alias + ' ' + expectedArgs);
+                    message.reply(language(message, 'INC_FORM') + ': ' + prefix + alias + ' ' + expectedArgs);
                     return;
                 }
 
@@ -228,46 +214,46 @@ module.exports = async (commandOptions: CommandOptions, file: string) => {
                 }
                 const botPermissionsIn = botMember.permissionsIn(channel);
                 if (!botPermissionsIn.has('SendMessages')) {
-                    member.user.send(lang(guild.id, 'NO_WRITE_PERM'));
+                    member.user.send(language(message, 'NO_WRITE_PERM'));
                     return;
                 }
 
                 if (!botPermissionsIn.has('EmbedLinks')) {
-                    channel.send(lang(guild.id, 'NO_EMBED_PERM'));
+                    channel.send(language(message, 'NO_EMBED_PERM'));
                     return;
                 }
 
                 if (!botPermissionsIn.has('ManageMessages')) {
-                    message.channel.send(lang(message.guild.id, 'NO_MANAGE_MESSAGES_PERM'))
+                    message.channel.send(language(message, 'NO_MANAGE_MESSAGES_PERM'))
                     return
                 }
 
                 if (!botPermissionsIn.has('AddReactions')) {
-                    message.channel.send(lang(message.guild.id, 'NO_ADD_REACTIONS_PERM'))
+                    message.channel.send(language(message, 'NO_ADD_REACTIONS_PERM'))
                     return
                 }
 
                 if (commandOptions.requireChannelPerms) {
                     if (!member.voice.channel) {
-                        message.channel.send(lang(guild.id, 'NOT_IN_VC'))
+                        message.channel.send(language(message, 'NOT_IN_VC'))
                         return
                     }
                     const permissionsInVoice = botMember.permissionsIn(member.voice.channel);
 
                     if (!permissionsInVoice.has('Connect')) {
-                        channel.send(lang(guild.id, 'NO_JOIN_PERM'));
+                        channel.send(language(message, 'NO_JOIN_PERM'));
                         return;
                     }
 
                     if (!permissionsInVoice.has('Speak')) {
-                        channel.send(lang(guild.id, 'NO_SPEAK_PERM'));
+                        channel.send(language(message, 'NO_SPEAK_PERM'));
                         return;
                     }
                 }
 
                 callback(message, Arguments, Arguments.join(' ')).catch((e: any) => {
                     console.log(e);
-                    message.channel.send(lang(guild.id, "UNKWN_ERR"))
+                    message.channel.send(language(message, "UNKWN_ERR"))
                 })
 
                 return;

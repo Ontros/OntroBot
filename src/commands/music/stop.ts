@@ -1,8 +1,9 @@
 import { Message, SlashCommandBuilder } from "discord.js";
 import disconnectBot from '../../utils/disconnectBot'
 import { CommandOptions } from "../../types";
+import language from "../../language";
 
-module.exports = {
+export default {
     commands: ['stop', 'leave'],
     permissions: [],
     expectedArgs: '',
@@ -16,9 +17,8 @@ module.exports = {
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
-        const { lang } = global;
         if (server.dispathcher == undefined) {
-            message.channel.send(lang(message.guild.id, "NO_PLAY"));
+            message.channel.send(language(message, "NO_PLAY"));
             return;
         }
         for (var i = server.queue.length - 1; i >= 0; i--) {
@@ -26,6 +26,6 @@ module.exports = {
         }
         // server.connection.disconnect();
         disconnectBot(message.guild.id)
-        message.channel.send(lang(message.guild.id, 'STOP'));
+        message.channel.send(language(message, 'STOP'));
     },
 } as CommandOptions

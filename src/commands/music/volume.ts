@@ -1,8 +1,9 @@
 import { Message, SlashCommandBuilder } from "discord.js";
 import { CommandOptions } from "../../types";
+import language from "../../language";
+import serverManager from "../../server-manager";
 
-//const serverManager = require('../.././server-manager');
-module.exports = {
+export default {
     commands: ['volume', 'vol', 'v'],
     expectedArgs: '<pocet procent>',
     minArgs: 0,
@@ -19,13 +20,12 @@ module.exports = {
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
-        const { lang } = global;
         if (!args[0]) {
-            message.channel.send(lang(message.guild.id, 'CURR_VOL') + ': ' + server.volume + '%')
+            message.channel.send(language(message, 'CURR_VOL') + ': ' + server.volume + '%')
         }
         else {
             if (isNaN(parseFloat(args[0]))) {
-                message.reply(lang(message.guild.id, 'VOL_NOT_NUM'));
+                message.reply(language(message, 'VOL_NOT_NUM'));
                 return;
             }
             server.volume = parseFloat(args[0])
@@ -36,8 +36,8 @@ module.exports = {
             else {
                 console.log("No audio Resource")
             }
-            message.channel.send(lang(message.guild.id, 'SET_VOL') + ': ' + server.volume + '%');
-            global.serverManager(message.guild.id, true);
+            message.channel.send(language(message, 'SET_VOL') + ': ' + server.volume + '%');
+            serverManager(message.guild.id, true);
         }
     }
 } as CommandOptions

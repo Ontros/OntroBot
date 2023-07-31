@@ -1,5 +1,6 @@
 import { Message, SlashCommandBuilder } from "discord.js";
 import { CommandOptions } from "../../types";
+import language from "../../language";
 
 module.exports = {
     commands: ['resume', 'unpause'],
@@ -15,17 +16,16 @@ module.exports = {
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
-        const { lang } = global;
         if (server.player == undefined) {
-            message.channel.send(lang(message.guild.id, "NO_PLAY"));
+            message.channel.send(language(message, "NO_PLAY"));
             return;
         }
         if (server.player.state.status === "paused") {
             server.player.unpause();
-            message.channel.send(lang(message.guild.id, 'RESUME'));
+            message.channel.send(language(message, 'RESUME'));
         }
         else {
-            message.channel.send(lang(message.guild.id, 'NOT_PAUSED'))
+            message.channel.send(language(message, 'NOT_PAUSED'))
         }
     },
 } as CommandOptions

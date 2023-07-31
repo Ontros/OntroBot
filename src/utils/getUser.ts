@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 
-module.exports = async (message: Message, input: string) => {
+export default async (message: Message, input: string) => {
     try {
         const id = input.replace('<', '').replace('>', '').replace('@', '')
         console.log(id)

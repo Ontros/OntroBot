@@ -1,5 +1,7 @@
 import { Message, SlashCommandBuilder } from "discord.js";
 import { CommandOptions } from "../../types";
+import language from "../../language";
+import getUser from "../../utils/getUser";
 
 module.exports = {
     commands: ['penys', 'pp'],
@@ -19,30 +21,29 @@ module.exports = {
 
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
-        const { lang } = global;
         //Get player
         var requestedPlayer = message.author
         if (args[0]) {
-            var user = await global.getUser(message, args[0])
+            var user = await getUser(message, args[0])
             if (!user) {
-                message.channel.send(lang(message.guild.id, 'INPUT_ERR_HALT')); return
+                message.channel.send(language(message, 'INPUT_ERR_HALT')); return
             }
             requestedPlayer = user.user
         }
         var rand = require('random-seed').create(requestedPlayer.id)
         var penysSize = 'ERROR'
         if (requestedPlayer.id === '255345748441432064') {
-            //message.channel.send(+lang(message.guild.id, 'PP_SIZE')+": 420 cm");
+            //message.channel.send(+language(message, 'PP_SIZE')+": 420 cm");
             penysSize = '30'
         }
         else if (requestedPlayer.id === '275639448299896833') {
-            //message.reply(lang(message.guild.id, 'PP_SIZE')+": "+(-69).toString() + " cm");
+            //message.reply(language(message, 'PP_SIZE')+": "+(-69).toString() + " cm");
             penysSize = '-69'
         }
         else {
             //message.reply();
             penysSize = (rand(2000) / 100).toString()
         }
-        message.channel.send(`<@!${requestedPlayer.id}>, ${lang(message.guild.id, 'PP_SIZE') + ": " + penysSize + " cm"}`)
+        message.channel.send(`<@!${requestedPlayer.id}>, ${language(message, 'PP_SIZE') + ": " + penysSize + " cm"}`)
     }
 } as CommandOptions

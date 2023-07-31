@@ -291,21 +291,21 @@ type Rules = {
     roleID: (Discord.Snowflake | null)
 }
 
-interface Global {
-    bot: Discord.Client;
-    YTDL: any;
-    YOUTUBE: any;
-    fs: any;
-    path: any;
-    serverManager: any;
-    langJ: any;
-    Package: any;
-    servers: Server[];
-    lang: any;
-    YouTube: any;
-    Discord: any;
-    getUser: GetUser;
-}
+// interface Global {
+//     bot: Discord.Client;
+//     YTDL: any;
+//     YOUTUBE: any;
+//     fs: any;
+//     path: any;
+//     serverManager: any;
+//     langJ: any;
+//     Package: any;
+//     servers: Server[];
+//     lang: any;
+//     YouTube: any;
+//     Discord: any;
+//     getUser: GetUser;
+// }
 
 type Step = {
     id: string;

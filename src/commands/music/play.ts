@@ -5,6 +5,8 @@ import { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberB
 import playDL from 'play-dl'
 import disconnectBot from "../../utils/disconnectBot";
 import shuffle from "../../utils/shuffle";
+import reactionForm from "../../utils/reactionForm";
+import language from "../../language";
 
 module.exports = {
     commands: ['play', 'p', 'search'],
@@ -68,7 +70,7 @@ module.exports = {
                         var oldSong: Song | undefined = server.queue.shift();
                         if (!oldSong) {
                             console.log("wtf play.ts queue end on loop 1 (SHOULD NOT HAPPEN!)")
-                            message.channel.send(lang(message.channel.id, "UNKWN_ERR"))
+                            message.channel.send(language(message, "UNKWN_ERR"))
                             return
                         }
                         server.queue.push(oldSong);
@@ -83,7 +85,7 @@ module.exports = {
                     console.log(Error)
                     console.log("dispatcher error");
                     if (!message.guild) { return }
-                    message.channel.send(lang(message.guild.id, 'UNKWN_ERR'))
+                    message.channel.send(language(message, 'UNKWN_ERR'))
                 });
             }
             catch (e) {
@@ -105,7 +107,7 @@ module.exports = {
                         return
                     }
                     catch (e) {
-                        message.channel.send(lang(message.guild.id, "UNKWN_ERR"))
+                        message.channel.send(language(message, "UNKWN_ERR"))
                         console.log(e)
                         return
 
@@ -143,15 +145,15 @@ module.exports = {
                                                 var callbacks: ReactionFormOption[] = []
                                                 videos = await YouTube.searchVideos(url, 10)
                                                 for (var video of videos) {
-                                                    callbacks.push({ callback: null, title: `${video.title} ${lang(message.guild.id, 'BY')} ${video.channel.title}` })
+                                                    callbacks.push({ callback: null, title: `${video.title} ${language(message, 'BY')} ${video.channel.title}` })
                                                 }
-                                                var output = await global.reactionForm(message, null, 'Search', 'What song do you want to play?', callbacks, true)
+                                                var output = await reactionForm(message, null, 'Search', 'What song do you want to play?', callbacks, true)
                                                 if (output.botMessage.deletable)
                                                     output.botMessage.delete()
                                                 var videos = [videos[output.id]]
                                             }
                                             catch (e) {
-                                                message.channel.send(lang(message.guild.id, "UNKWN_ERR"))
+                                                message.channel.send(language(message, "UNKWN_ERR"))
                                                 console.log(e)
                                                 return
                                             }
@@ -163,7 +165,7 @@ module.exports = {
                         }
                     }
                     catch {
-                        message.channel.send(lang(message.guild.id, "UNKWN_ERR"))
+                        message.channel.send(language(message, "UNKWN_ERR"))
                         return
                     }
                 }
@@ -180,7 +182,6 @@ module.exports = {
         }
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
-        const { lang } = global;
         var videoName = text
         // var songs: Video[] = []
         if (!message.guild) { return }
@@ -199,11 +200,11 @@ module.exports = {
         }
         // }
         if (!message.member?.voice.channel) {
-            message.channel.send(lang(message.guild.id, 'NOT_IN_VC'));
+            message.channel.send(language(message, 'NOT_IN_VC'));
             return;
         }
         if (playing) {
-            message.channel.send(lang(message.guild.id, 'QUEUE_ADD'))
+            message.channel.send(language(message, 'QUEUE_ADD'))
         }
         else {
             const connection = joinVoiceChannel({
@@ -212,7 +213,7 @@ module.exports = {
                 adapterCreator: message.guild.voiceAdapterCreator
             })
             play(connection, message);
-            message.channel.send(lang(message.guild.id, 'PLAY_START'));
+            message.channel.send(language(message, 'PLAY_START'));
         }
     }
 } as CommandOptions

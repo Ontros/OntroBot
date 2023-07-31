@@ -28,7 +28,7 @@ module.exports = {
             winLenght = parseInt(args[2])
         } 
         if (isNaN(xSize) || isNaN(ySize) || isNaN(winLenght)) {
-            global.lang(message.guild.id, 'INPUT_ERR_HALT')
+            language(message, 'INPUT_ERR_HALT')
         }
         const board: number[][] = emptyBoard
         

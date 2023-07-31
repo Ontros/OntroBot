@@ -1,5 +1,7 @@
 import { Message, SlashCommandBuilder } from "discord.js";
 import { CommandOptions } from "../../types";
+import progressBar from "../../utils/progressBar";
+import language from "../../language";
 
 module.exports = {
 	commands: ["np", "nowPlaying"],
@@ -11,11 +13,10 @@ module.exports = {
 	isCommand: true,
 	callback: async (message: Message, args: string[], text: string) => {
 		//TODO: when loop random uses queue[0]
-		const { bot, lang } = global;
 		if (!message.guild) { return }
 		var server = global.servers[message.guild.id];
 		if (!server.audioResource?.playbackDuration) {
-			message.channel.send(lang(message.guild.id, "NO_PLAY"))
+			message.channel.send(language(message, "NO_PLAY"))
 			return
 		}
 		const seconds = server.audioResource.playbackDuration / 1000;
@@ -29,9 +30,9 @@ module.exports = {
 			durationO.hours * 60 * 60 +
 			durationO.days * 60 * 60 * 24;
 		message.channel.send({
-			embeds: [global.progressBar(message,
-				lang(message.guild.id, "NOW_PLAY"),
-				`${server.queue[0].title}\n${lang(message.guild.id, "REQ_BY")}: ${server.queue[0].requestedBy
+			embeds: [progressBar(message,
+				language(message, "NOW_PLAY"),
+				`${server.queue[0].title}\n${language(message, "REQ_BY")}: ${server.queue[0].requestedBy
 				}\n${secondsToString(seconds)}/${secondsToString(duration)}`,
 				seconds / duration
 			)]
