@@ -2,7 +2,7 @@ import { Message, SlashCommandBuilder } from "discord.js";
 import { CommandOptions } from "../../types";
 import language from "../../language";
 
-module.exports = {
+export default {
     commands: ['resume', 'unpause'],
     permissions: [],
     requiredRoles: [],

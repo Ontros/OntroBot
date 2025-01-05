@@ -3,7 +3,7 @@ import { CommandOptions } from "../../types";
 import progressBar from "../../utils/progressBar";
 import language from "../../language";
 
-module.exports = {
+export default {
 	commands: ["np", "nowPlaying"],
 	expectedArgs: "<>",
 	permissionError: "",

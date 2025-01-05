@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
 import { GetCur_role } from "../../types";
 
-module.exports = {
+export default {
     commands: ['downgrade', 'd'],
     expectedArgs: '<id|mention>',
     permissionError: '',

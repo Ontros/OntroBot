@@ -1,7 +1,7 @@
 // import { Message, OverwriteResolvable, PermissionOverwriteOption, Role, Snowflake, TextChannel, VoiceChannel } from 'discord.js';
 // import { ReactionFormOption, ReactionFormOutput, Step } from '../../types';
 
-// module.exports = {
+// export default {
 //     commands: ['setup'],
 //     expectedArgs: '<>',
 //     permissionError: '',
@@ -312,31 +312,31 @@
 //if (!everyoneRuleChannelPerm) {console.error('failed to find everyone role in setup'); return}
 //rulesChannel.updateOverwrite(permissions)
 // if (output.id === 0) {
-            //     if (!steps) {
-            //         output = await reactionForm(message, output.botMessage, 'Setup - Rules channel', 'Should I create the role?', YES_NO)
-            //         if (output.id === 0) {
-            //             //CREATE ROLE
-            //             var textInputOutput = await textInput(message, output.botMessage, 'Setup - Rules channel', 'What should it be named?', null)
-            //             textInputOutput.inputMessage.delete()
-            //             ruleRole = await message.guild.roles.create({
-            //                 data: {
-            //                     name: textInputOutput.text
-            //                 }
-            //             })
-            //         }
-            //         else {
-            //             //Ping role
-            //             var textInputOutput = await textInput(message, output.botMessage, 'Setup - Rules channel', 'Mention the role or write ID', async (input) => { return !!await global.getRole(message, input) })
-            //             textInputOutput.inputMessage.delete()
-            //             while (true) {
-            //                 ruleRole = await global.getRole(message, textInputOutput.text)
-            //                 if (ruleRole) {
-            //                     break
-            //                 }
-            //                 var textInputOutput = await textInput(message, output.botMessage, 'Setup - Rules channel', 'Mention the role or write ID\nError, try again!', async (input) => { return !!await global.getRole(message, input) })
-            //                 textInputOutput.inputMessage.delete()
-            //             }
-            //     else {
-            //         //ruleRole = steps[0];
-            //     }
-            // }
+//     if (!steps) {
+//         output = await reactionForm(message, output.botMessage, 'Setup - Rules channel', 'Should I create the role?', YES_NO)
+//         if (output.id === 0) {
+//             //CREATE ROLE
+//             var textInputOutput = await textInput(message, output.botMessage, 'Setup - Rules channel', 'What should it be named?', null)
+//             textInputOutput.inputMessage.delete()
+//             ruleRole = await message.guild.roles.create({
+//                 data: {
+//                     name: textInputOutput.text
+//                 }
+//             })
+//         }
+//         else {
+//             //Ping role
+//             var textInputOutput = await textInput(message, output.botMessage, 'Setup - Rules channel', 'Mention the role or write ID', async (input) => { return !!await global.getRole(message, input) })
+//             textInputOutput.inputMessage.delete()
+//             while (true) {
+//                 ruleRole = await global.getRole(message, textInputOutput.text)
+//                 if (ruleRole) {
+//                     break
+//                 }
+//                 var textInputOutput = await textInput(message, output.botMessage, 'Setup - Rules channel', 'Mention the role or write ID\nError, try again!', async (input) => { return !!await global.getRole(message, input) })
+//                 textInputOutput.inputMessage.delete()
+//             }
+//     else {
+//         //ruleRole = steps[0];
+//     }
+// }

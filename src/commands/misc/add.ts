@@ -1,7 +1,7 @@
 import { Message, SlashCommandBuilder } from "discord.js";
 import { CommandOptions } from "../../types";
 
-module.exports = {
+export default {
     commands: ['add', 'addition'],
     expectedArgs: '<num1> <num2>',
     permissionError: '',

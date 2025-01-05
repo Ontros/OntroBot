@@ -1,7 +1,7 @@
 import { Message, SlashCommandBuilder } from "discord.js";
 import { CommandOptions } from "../../types";
 
-module.exports = {
+export default {
     commands: ['ping'],
     permissions: [],
     requiredRoles: [],

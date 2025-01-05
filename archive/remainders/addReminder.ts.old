@@ -30,7 +30,7 @@ import timeToDate from '../../src/utils/timeToDate';
 // ─────────────────────────────────────────────────────────────
 
 
-module.exports = {
+export default {
     commands: ['addReminder', 'addRem'],
     expectedArgs: '<>',
     permissionError: '',

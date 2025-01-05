@@ -4,7 +4,7 @@ import disconnectBot from "../../utils/disconnectBot";
 import { CommandOptions } from "../../types";
 import language from "../../language";
 
-module.exports = {
+export default {
     commands: ['shuffle'],
     permissions: [],
     requiredRoles: [],

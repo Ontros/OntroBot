@@ -3,7 +3,7 @@ import camelToWords from "../../utils/camelToWords";
 import { CommandOptions } from "../../types";
 import language from "../../language";
 
-module.exports = {
+export default {
     commands: ['help'],
     callback: async (message: Message, args: string[], text: string) => {
         //TODO change to selection??

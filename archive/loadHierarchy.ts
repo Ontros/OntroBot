@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
 import { Step } from "../../types";
 
-module.exports = {
+export default {
     commands: ['loadHierarchy'],
     expectedArgs: '<id|mention>',
     permissionError: '',

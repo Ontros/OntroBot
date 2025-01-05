@@ -4,7 +4,7 @@ import language from "../../language";
 import serverManager from "../../server-manager";
 import createEmbed from "../../utils/createEmbed";
 
-module.exports = {
+export default {
     commands: ['loop', 'l'],
     maxArgs: 1,
     minArgs: 0,

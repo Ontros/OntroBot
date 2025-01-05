@@ -2,7 +2,7 @@ import { Collection, Message, SlashCommandBuilder } from "discord.js";
 import fs from 'fs'
 import { CommandOptions } from "../../types";
 
-module.exports = {
+export default {
     commands: ['test'],
     expectedArgs: '',
     minArgs: 0,

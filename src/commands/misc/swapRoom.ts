@@ -3,7 +3,7 @@ import { CommandOptions } from '../../types';
 import getVoiceChannel from '../../utils/getVoiceChannel';
 import language from '../../language';
 
-module.exports = {
+export default {
     commands: ['swaproom'],
     expectedArgs: '(<#starting room>) <#destination room> (...<@ignoredUsers>)',
     permissionError: '',

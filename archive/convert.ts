@@ -2,7 +2,7 @@ import { Message } from 'discord.js';
 import { Playlist, Video } from '../../types';
 //import fs from 'fs'
 
-module.exports = {
+export default {
     commands: ['convert'],
     expectedArgs: '<url> <name>',
     permissionError: '',

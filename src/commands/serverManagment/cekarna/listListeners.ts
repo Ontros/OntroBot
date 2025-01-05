@@ -3,7 +3,7 @@ import { CommandOptions } from "../../../types";
 import getUser from "../../../utils/getUser";
 import language from "../../../language";
 
-module.exports = {
+export default {
     commands: ['listListeners'],
     expectedArgs: '',
     minArgs: 0,

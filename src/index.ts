@@ -33,6 +33,7 @@ declare global {
     }
 }
 
+dotenv.config({ path: path.join(__dirname + './../.env') });
 if (!process.env.SPOTIFY_OAUTH || !process.env.SPOTIFY_CLIENT) { throw new Error('SPOTIFY_OAUTH missing') }
 global.bot = new Discord.Client({ intents: 131071 });
 global.servers = {};
@@ -42,7 +43,6 @@ global.YouTube = new youtube(process.env.YT_TOKEN);
 global.SPOTIFY_OAUTH = process.env.SPOTIFY_OAUTH
 global.SPOTIFY_CLIENT = process.env.SPOTIFY_CLIENT
 const { bot } = global
-dotenv.config({ path: path.join(__dirname + './../.env') });
 
 const token = process.env.DJS_TOKEN;
 
@@ -66,7 +66,7 @@ bot.on('ready', () => {
             } else if (file != base_file) {
                 //Soubor
                 const option = require(path.join(__dirname, dir, file));
-                commandBase(option, loc);
+                commandBase.default(option.default, loc);
             }
         }
     }

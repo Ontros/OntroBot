@@ -3,7 +3,7 @@ import { CommandOptions } from "../../types";
 import language from "../../language";
 import getUser from "../../utils/getUser";
 
-module.exports = {
+export default {
     commands: ['penys', 'pp'],
     permissions: [],
     requiredRoles: [],
@@ -14,8 +14,8 @@ module.exports = {
     isCommand: true,
     data: new SlashCommandBuilder().addUserOption(option => option.setRequired(false)
         .setName("user")
-        .setDescription("Penys of user")
         .setNameLocalizations({ "cs": "uživatel" })
+        .setDescription("Penys of user")
         .setDescriptionLocalizations({ "cs": "Penys od uživatele" })
     ),
 

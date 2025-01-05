@@ -50,7 +50,8 @@ const validatePermissions = (permissions: string[]) => {
 
 
 export default async (commandOptions: CommandOptions, file: string) => {
-    if (!commandOptions.callback) { console.log('error loading: '); console.log(file); return }
+    if (!commandOptions) { console.log("null commandOptions"); return }
+    if (!commandOptions.callback) { console.log('error loading: ', file, commandOptions); return }
     let {
         commands,
         expectedArgs = '',
@@ -188,12 +189,6 @@ export default async (commandOptions: CommandOptions, file: string) => {
                         return;
                     }
                 }
-
-
-                // if (commandOptions.allowedServer != guild.id.toString() && commandOptions.allowedServer != '') {
-                //     //console.log('not allowed server');
-                //     //return;
-                // }
 
                 const Arguments = content.split(/[ ]+/)
                 Arguments.shift()

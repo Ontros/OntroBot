@@ -4,7 +4,7 @@ import language from "../../../language";
 import serverManager from "../../../server-manager";
 import getUser from "../../../utils/getUser";
 
-module.exports = {
+export default {
     commands: ['addListener'],
     expectedArgs: '<listenerID>',
     minArgs: 1,

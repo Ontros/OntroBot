@@ -2,7 +2,7 @@ import { time } from "console";
 import { Message, SlashCommandBuilder } from "discord.js";
 import { CommandOptions } from "../../types";
 
-module.exports = {
+export default {
     commands: ['gamba', 'g'],
     permissions: [],
     requiredRoles: [],

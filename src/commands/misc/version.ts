@@ -3,7 +3,7 @@ import { CommandOptions } from "../../types";
 import language from "../../language";
 const Package = require('../../../package.json')
 
-module.exports = {
+export default {
     commands: ['version', 'ver'],
     permissions: [],
     requiredRoles: [],

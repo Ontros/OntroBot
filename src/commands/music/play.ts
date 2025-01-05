@@ -8,7 +8,7 @@ import shuffle from "../../utils/shuffle";
 import reactionForm from "../../utils/reactionForm";
 import language from "../../language";
 
-module.exports = {
+export default {
     commands: ['play', 'p', 'search'],
     expectedArgs: '<url>',
     minArgs: 1,
