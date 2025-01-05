@@ -1,7 +1,7 @@
 import console from "console";
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions, ReactionFormOption, Song, Video } from "../../types";
-import { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection } from "@discordjs/voice";
+import { createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection } from "@discordjs/voice";
 import playDL from 'play-dl'
 import disconnectBot from "../../utils/disconnectBot";
 import shuffle from "../../utils/shuffle";
@@ -38,7 +38,7 @@ export default {
                     server.queue[newSongIndex] = newSong
                 }
                 if (!newSong.url) {
-                    message.channel.send("Missing song url")
+                    (message.channel as TextChannel).send("Missing song url")
                     disconnectBot(message.guild.id)
                     return
                 }
@@ -69,8 +69,8 @@ export default {
                         //move song to end of queue
                         var oldSong: Song | undefined = server.queue.shift();
                         if (!oldSong) {
-                            console.log("wtf play.ts queue end on loop 1 (SHOULD NOT HAPPEN!)")
-                            message.channel.send(language(message, "UNKWN_ERR"))
+                            console.log("wtf play.ts queue end on loop 1 (SHOULD NOT HAPPEN!)");
+                            (message.channel as TextChannel).send(language(message, "UNKWN_ERR"))
                             return
                         }
                         server.queue.push(oldSong);
@@ -85,7 +85,7 @@ export default {
                     console.log(Error)
                     console.log("dispatcher error");
                     if (!message.guild) { return }
-                    message.channel.send(language(message, 'UNKWN_ERR'))
+                    (message.channel as TextChannel).send(language(message, 'UNKWN_ERR'))
                 });
             }
             catch (e) {
@@ -107,7 +107,7 @@ export default {
                         return
                     }
                     catch (e) {
-                        message.channel.send(language(message, "UNKWN_ERR"))
+                        (message.channel as TextChannel).send(language(message, "UNKWN_ERR"))
                         console.log(e)
                         return
 
@@ -153,7 +153,7 @@ export default {
                                                 var videos = [videos[output.id]]
                                             }
                                             catch (e) {
-                                                message.channel.send(language(message, "UNKWN_ERR"))
+                                                (message.channel as TextChannel).send(language(message, "UNKWN_ERR"))
                                                 console.log(e)
                                                 return
                                             }
@@ -165,7 +165,7 @@ export default {
                         }
                     }
                     catch {
-                        message.channel.send(language(message, "UNKWN_ERR"))
+                        (message.channel as TextChannel).send(language(message, "UNKWN_ERR"))
                         return
                     }
                 }
@@ -200,20 +200,20 @@ export default {
         }
         // }
         if (!message.member?.voice.channel) {
-            message.channel.send(language(message, 'NOT_IN_VC'));
+            (message.channel as TextChannel).send(language(message, 'NOT_IN_VC'));
             return;
         }
         if (playing) {
-            message.channel.send(language(message, 'QUEUE_ADD'))
+            (message.channel as TextChannel).send(language(message, 'QUEUE_ADD'))
         }
         else {
             const connection = joinVoiceChannel({
                 channelId: message.member.voice.channel.id,
                 guildId: message.guild.id,
-                adapterCreator: message.guild.voiceAdapterCreator
+                adapterCreator: message.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator
             })
             play(connection, message);
-            message.channel.send(language(message, 'PLAY_START'));
+            (message.channel as TextChannel).send(language(message, 'PLAY_START'));
         }
     }
 } as CommandOptions

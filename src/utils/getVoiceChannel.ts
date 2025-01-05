@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import language from "../language";
 
 export default async (message: Message, input: string) => {
@@ -9,7 +9,7 @@ export default async (message: Message, input: string) => {
         return null
     }
     if (!message.guild) { return }
-    var channel = await global.bot.channels.fetch(input).catch(() => { if (message.guild) { message.channel.send(language(message, 'UNKWN_ERR')) }; return null; });
+    var channel = await global.bot.channels.fetch(input).catch(() => { if (message.guild) { (message.channel as TextChannel).send(language(message, 'UNKWN_ERR')) }; return null; });
     if (!channel || !channel.isVoiceBased()) {
         return null;
     }

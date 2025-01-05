@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
 import progressBar from "../../utils/progressBar";
 import language from "../../language";
@@ -16,7 +16,7 @@ export default {
 		if (!message.guild) { return }
 		var server = global.servers[message.guild.id];
 		if (!server.audioResource?.playbackDuration) {
-			message.channel.send(language(message, "NO_PLAY"))
+			(message.channel as TextChannel).send(language(message, "NO_PLAY"))
 			return
 		}
 		const seconds = server.audioResource.playbackDuration / 1000;
@@ -29,7 +29,7 @@ export default {
 			durationO.minutes * 60 +
 			durationO.hours * 60 * 60 +
 			durationO.days * 60 * 60 * 24;
-		message.channel.send({
+		(message.channel as TextChannel).send({
 			embeds: [progressBar(message,
 				language(message, "NOW_PLAY"),
 				`${server.queue[0].title}\n${language(message, "REQ_BY")}: ${server.queue[0].requestedBy

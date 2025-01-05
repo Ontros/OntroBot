@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
 import language from "../../language";
 import getUser from "../../utils/getUser";
@@ -26,14 +26,14 @@ export default {
         if (args[0]) {
             var user = await getUser(message, args[0])
             if (!user) {
-                message.channel.send(language(message, 'INPUT_ERR_HALT')); return
+                (message.channel as TextChannel).send(language(message, 'INPUT_ERR_HALT')); return
             }
             requestedPlayer = user.user
         }
         var rand = require('random-seed').create(requestedPlayer.id)
         var penysSize = 'ERROR'
         if (requestedPlayer.id === '255345748441432064') {
-            //message.channel.send(+language(message, 'PP_SIZE')+": 420 cm");
+            //(message.channel as TextChannel).send(+language(message, 'PP_SIZE')+": 420 cm");
             penysSize = '30'
         }
         else if (requestedPlayer.id === '275639448299896833') {
@@ -44,6 +44,6 @@ export default {
             //message.reply();
             penysSize = (rand(2000) / 100).toString()
         }
-        message.channel.send(`<@!${requestedPlayer.id}>, ${language(message, 'PP_SIZE') + ": " + penysSize + " cm"}`)
+        (message.channel as TextChannel).send(`<@!${requestedPlayer.id}>, ${language(message, 'PP_SIZE') + ": " + penysSize + " cm"}`)
     }
 } as CommandOptions

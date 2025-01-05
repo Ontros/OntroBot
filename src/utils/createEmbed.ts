@@ -1,4 +1,4 @@
-import { EmbedField, Message, Embed, EmbedBuilder } from "discord.js";
+import { EmbedField, Message, Embed, EmbedBuilder, TextChannel } from "discord.js";
 
 export default (message: Message, title: string, description: (string | null), fields: EmbedField[], imageURL?: (string | null)) => {
     const { bot } = global
@@ -13,6 +13,6 @@ export default (message: Message, title: string, description: (string | null), f
         embed.setThumbnail(imageURL)
     }
     if (description) { embed.setDescription(description) }
-    message.channel.send({ embeds: [embed] })
+    (message.channel as TextChannel).send({ embeds: [embed] })
     return embed
 }

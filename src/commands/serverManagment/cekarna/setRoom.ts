@@ -1,4 +1,4 @@
-import { ChannelType, Message, SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
+import { ChannelType, Message, SlashCommandBuilder, SlashCommandSubcommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../../types";
 import serverManager from "../../../server-manager";
 import language from "../../../language";
@@ -21,11 +21,11 @@ export default {
         var server = global.servers[message.guild.id];
         const channel = message.guild.channels.cache.get(args[0])
         if (!channel || !channel.isVoiceBased()) {
-            message.channel.send(language(message, 'CHAN_ID_NOT'));
+            (message.channel as TextChannel).send(language(message, 'CHAN_ID_NOT'));
             return
         }
         server.cekarnaChannel = args[0];
-        message.channel.send(language(message, 'ROOM_SET') + ': ' + args[0]);
+        (message.channel as TextChannel).send(language(message, 'ROOM_SET') + ': ' + args[0]);
         serverManager(message.guild.id, true);
     }
 } as CommandOptions

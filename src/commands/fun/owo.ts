@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
 
 export default {
@@ -7,7 +7,7 @@ export default {
     requiredRoles: [],
     allowedIDs: [],
     callback: async (message: Message, args: string[], text: string) => {
-        message.channel.send("UwU!");
+        (message.channel as TextChannel).send("UwU!");
     },
     minArgs: 0,
     maxArgs: 0,

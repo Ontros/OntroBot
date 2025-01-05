@@ -1,4 +1,4 @@
-import { CollectorFilter, EmbedField, Message, MessageReaction, PartialMessageReaction, PartialUser, User } from "discord.js"
+import { CollectorFilter, EmbedField, Message, MessageReaction, PartialMessageReaction, PartialUser, TextChannel, User } from "discord.js"
 import { ReactionFormOption, ReactionFormOutput } from "../types"
 import language from "../language";
 import createEmbed from "./createEmbed";
@@ -8,7 +8,7 @@ export default async (userMessage: Message, botMessage: (Message | null), title:
     return new Promise(async (resolve, reject) => {
         if (!global.bot.user) { reject(); return }
         const avatarURL = global.bot.user.avatarURL()
-        if (!avatarURL) { userMessage.channel.send(language(userMessage, 'ERR_AVATAR')); return }
+        if (!avatarURL) { (userMessage.channel as TextChannel).send(language(userMessage, 'ERR_AVATAR')); return }
         if (question.length > 256) {
             console.error('Question too long ' + question)
             reject()
@@ -30,7 +30,7 @@ export default async (userMessage: Message, botMessage: (Message | null), title:
 
         //send/edit embed:
         if (!botMessage) {
-            botMessage = await userMessage.channel.send({ embeds: [embed] })
+            botMessage = await (userMessage.channel as TextChannel).send({ embeds: [embed] })
             if (!botMessage) { console.error('message sending'); reject(); return }
         }
         else {

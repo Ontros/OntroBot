@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
 
 export default {
@@ -12,7 +12,7 @@ export default {
     isCommand: true,
     data: new SlashCommandBuilder(),
     callback: async (message: Message, args: string[], text: string) => {
-        message.channel.send("Pinging...").then(m => {
+        (message.channel as TextChannel).send("Pinging...").then(m => {
             var ping = m.createdTimestamp - message.createdTimestamp;
             m.edit(`**:ping_pong: Pong! Your Ping Is:-**\n  ${ping}ms`);
         });

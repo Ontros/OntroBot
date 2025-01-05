@@ -1,4 +1,4 @@
-import { Message, Role } from "discord.js";
+import { Message, Role, TextChannel } from "discord.js";
 import { CommandOptions } from "../types";
 import languageDATA from "../languageDATA";
 import serverManager from "../server-manager";
@@ -157,7 +157,7 @@ export default async (commandOptions: CommandOptions, file: string) => {
         // var prefix = "_"
 
         if (!member || !guild.client) {
-            message.channel.send(language(message, 'USR_ID_NOT'))
+            (message.channel as TextChannel).send(language(message, 'USR_ID_NOT'))
             return;
         }
 
@@ -219,18 +219,18 @@ export default async (commandOptions: CommandOptions, file: string) => {
                 }
 
                 if (!botPermissionsIn.has('ManageMessages')) {
-                    message.channel.send(language(message, 'NO_MANAGE_MESSAGES_PERM'))
+                    (message.channel as TextChannel).send(language(message, 'NO_MANAGE_MESSAGES_PERM'))
                     return
                 }
 
                 if (!botPermissionsIn.has('AddReactions')) {
-                    message.channel.send(language(message, 'NO_ADD_REACTIONS_PERM'))
+                    (message.channel as TextChannel).send(language(message, 'NO_ADD_REACTIONS_PERM'))
                     return
                 }
 
                 if (commandOptions.requireChannelPerms) {
                     if (!member.voice.channel) {
-                        message.channel.send(language(message, 'NOT_IN_VC'))
+                        (message.channel as TextChannel).send(language(message, 'NOT_IN_VC'))
                         return
                     }
                     const permissionsInVoice = botMember.permissionsIn(member.voice.channel);
@@ -248,7 +248,7 @@ export default async (commandOptions: CommandOptions, file: string) => {
 
                 callback(message, Arguments, Arguments.join(' ')).catch((e: any) => {
                     console.log(e);
-                    message.channel.send(language(message, "UNKWN_ERR"))
+                    (message.channel as TextChannel).send(language(message, "UNKWN_ERR"))
                 })
 
                 return;

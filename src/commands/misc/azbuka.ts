@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
 
 export default {
@@ -11,7 +11,7 @@ export default {
     isCommand: true,
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return; }
-        message.channel.send(TextToAzbuka(text))
+        (message.channel as TextChannel).send(TextToAzbuka(text))
     },
     permissions: [],
     requiredRoles: [],

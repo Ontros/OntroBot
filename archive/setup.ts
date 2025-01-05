@@ -9,7 +9,7 @@
 //     maxArgs: 0,
 //     callback: async (message: Message, args: string[], text: string) => {
 //         if (!message.guild) { return; }
-//         message.channel.send(language(message, 'SETUP_FUTURE'))
+//         (message.channel as TextChannel).send(language(message, 'SETUP_FUTURE'))
 //         // //todo check permissions lolmao
 //         // //TODO: mozna po text inputu se vezme output z obycejneho outputu ne z text outputu
 //         // const { bot, lang, reactionForm, textInput, buttonForm } = global
@@ -72,7 +72,7 @@
 //         //         output = await reactionForm(message, output.botMessage, 'Setup', 'I do not have permission to manage channels! Give me it and react to this message.', YES_NO)
 //         //         if (output.id === 1) {
 //         //             output.botMessage.delete()
-//         //             message.channel.send('Ok, exiting')
+//         //             (message.channel as TextChannel).send('Ok, exiting')
 //         //             return
 //         //         }
 //         //     }
@@ -81,7 +81,7 @@
 //         //         output = await reactionForm(message, output.botMessage, 'Setup', 'I do not have permission to manage roles! Give me it and react to this message.', YES_NO)
 //         //         if (output.id === 1) {
 //         //             output.botMessage.delete()
-//         //             message.channel.send('Ok, exiting')
+//         //             (message.channel as TextChannel).send('Ok, exiting')
 //         //             return
 //         //         }
 //         //     }
@@ -102,14 +102,14 @@
 //         //             roomsString += room.name + '\n'
 //         //         }
 
-//         //         var roomsMessage = await message.channel.send(roomsString).catch((e: any) => {
+//         //         var roomsMessage = await (message.channel as TextChannel).send(roomsString).catch((e: any) => {
 //         //             console.log(e);
 //         //             if (!message.guild) { return 404 }
-//         //             message.channel.send(language(message, "UNKWN_ERR"))
+//         //             (message.channel as TextChannel).send(language(message, "UNKWN_ERR"))
 //         //             output.botMessage.delete()
 //         //             return 404
 //         //         })
-//         //         if (roomsMessage === 404 || typeof roomsMessage === 'number') { message.channel.send(language(message, 'UNKWN_ERR')); output.botMessage.delete(); return }
+//         //         if (roomsMessage === 404 || typeof roomsMessage === 'number') { (message.channel as TextChannel).send(language(message, 'UNKWN_ERR')); output.botMessage.delete(); return }
 //         //         output = await reactionForm(message, output.botMessage, 'Setup', 'Are the rooms in the message bellow all of the rooms on the server?', YES_NO)
 //         //         roomsMessage.delete()
 //         //         if (output.id === 0) {
@@ -122,7 +122,7 @@
 
 
 
-//         // // if (!steps) { message.channel.send(language(message, 'UNKWN_ERR')); return }
+//         // // if (!steps) { (message.channel as TextChannel).send(language(message, 'UNKWN_ERR')); return }
 //         // // global.servers[message.guild.id].steps = steps;
 
 //         // //RULES CHANNEL?

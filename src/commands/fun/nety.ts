@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
 
 export default {
@@ -20,10 +20,10 @@ export default {
     callback: async (message: Message, args: string[], text: string) => {
         //var server = servers[message.guild.id];
         if (!text) {
-            message.channel.send("NE TY!")
+            (message.channel as TextChannel).send("NE TY!")
         }
         else {
-            message.channel.send(text + ", ne ty!")
+            (message.channel as TextChannel).send(text + ", ne ty!")
         }
         message.delete();
     }

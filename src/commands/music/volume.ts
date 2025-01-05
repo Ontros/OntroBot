@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
 import language from "../../language";
 import serverManager from "../../server-manager";
@@ -21,7 +21,7 @@ export default {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
         if (!args[0]) {
-            message.channel.send(language(message, 'CURR_VOL') + ': ' + server.volume + '%')
+            (message.channel as TextChannel).send(language(message, 'CURR_VOL') + ': ' + server.volume + '%')
         }
         else {
             if (isNaN(parseFloat(args[0]))) {
@@ -36,7 +36,7 @@ export default {
             else {
                 console.log("No audio Resource")
             }
-            message.channel.send(language(message, 'SET_VOL') + ': ' + server.volume + '%');
+            (message.channel as TextChannel).send(language(message, 'SET_VOL') + ': ' + server.volume + '%');
             serverManager(message.guild.id, true);
         }
     }

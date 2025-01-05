@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
 import language from "../../language";
 
@@ -17,15 +17,15 @@ export default {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
         if (server.player == undefined) {
-            message.channel.send(language(message, "NO_PLAY"));
+            (message.channel as TextChannel).send(language(message, "NO_PLAY"));
             return;
         }
         if (server.player.state.status === "paused") {
             server.player.unpause();
-            message.channel.send(language(message, 'RESUME'));
+            (message.channel as TextChannel).send(language(message, 'RESUME'));
         }
         else {
-            message.channel.send(language(message, 'NOT_PAUSED'))
+            (message.channel as TextChannel).send(language(message, 'NOT_PAUSED'))
         }
     },
 } as CommandOptions

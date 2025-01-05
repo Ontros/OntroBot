@@ -1,4 +1,4 @@
-import { ChannelType, Message, SlashCommandBuilder, VoiceBasedChannel, VoiceChannel } from 'discord.js';
+import { ChannelType, Message, SlashCommandBuilder, TextChannel, VoiceBasedChannel, VoiceChannel } from 'discord.js';
 import { CommandOptions } from '../../types';
 import getVoiceChannel from '../../utils/getVoiceChannel';
 import language from '../../language';
@@ -39,11 +39,11 @@ export default {
             var startRoom = message.member?.voice.channel
             destinationRoom = await getVoiceChannel(message, args[0])
             if (!startRoom) {
-                message.channel.send(language(message, 'NOT_IN_VC'))
+                (message.channel as TextChannel).send(language(message, 'NOT_IN_VC'))
             }
         }
         if (!startRoom || !destinationRoom) {
-            message.channel.send(language(message, 'INPUT_ERR_HALT'))
+            (message.channel as TextChannel).send(language(message, 'INPUT_ERR_HALT'))
             //throw new Error('Could not found voice channel')
             return;
         }

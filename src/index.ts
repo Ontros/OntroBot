@@ -1,4 +1,4 @@
-import Discord from 'discord.js'
+import Discord, { Events, TextChannel, VoiceBasedChannel } from 'discord.js'
 const youtube = require('simple-youtube-api');
 import { Client, Guild, GuildMember, Message, VoiceChannel, VoiceState } from "discord.js";
 import { Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
@@ -75,22 +75,23 @@ bot.on('ready', () => {
     console.log('This bot is online!')
 })
 
-bot.on('raw', packet => {
-    if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
-    const channel = bot.channels.cache.get(packet.d.channel_id);
-    if (!channel) { console.log('No channel found (index.tx)'); return }
-    if (!channel.isTextBased()) { return }
-    if (channel.messages.cache.has(packet.d.message_id)) return;
-    channel.messages.fetch(packet.d.message_id).then((message: Message) => {
-        const emoji = packet.d.emoji.id ? `${packet.d.emoji.name}:${packet.d.emoji.id}` : packet.d.emoji.name;
-        const reaction = message.reactions.cache.get(emoji);
-        if (!reaction) { console.log('Reaction not found (index.ts)'); return }
-        const user = bot.users.cache.get(packet.d.user_id)
-        if (!user) { console.log('User not found (index.ts)'); return }
-        if (packet.t === 'MESSAGE_REACTION_ADD') { bot.emit('messageReactionAdd', reaction, user); }
-        if (packet.t === 'MESSAGE_REACTION_REMOVE') { bot.emit('messageReactionRemove', reaction, user); }
-    });
-});
+//TODO: add back
+// bot.on('raw', packet => {
+//     if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
+//     const channel = bot.channels.cache.get(packet.d.channel_id);
+//     if (!channel) { console.log('No channel found (index.tx)'); return }
+//     if (!channel.isTextBased()) { return }
+//     if (channel.messages.cache.has(packet.d.message_id)) return;
+//     channel.messages.fetch(packet.d.message_id).then((message: Message) => {
+//         const emoji = packet.d.emoji.id ? `${packet.d.emoji.name}:${packet.d.emoji.id}` : packet.d.emoji.name;
+//         const reaction = message.reactions.cache.get(emoji);
+//         if (!reaction) { console.log('Reaction not found (index.ts)'); return }
+//         const user = bot.users.cache.get(packet.d.user_id)
+//         if (!user) { console.log('User not found (index.ts)'); return }
+//         if (packet.t as string === 'MESSAGE_REACTION_ADD') { bot.emit(Events.MessageReactionAdd, reaction, user); }
+//         if (packet.t as string === 'MESSAGE_REACTION_REMOVE') { bot.emit(Events.MessageReactionRemove, reaction, user); }
+//     });
+// });
 
 
 bot.on('voiceStateUpdate', async (oldMember: VoiceState, newMember: VoiceState) => {
@@ -162,11 +163,9 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
                 }
                 const channel = await bot.channels.fetch(process.env.LOGGING_CHANNEL, { cache: false })
                 if (channel && channel.isTextBased()) {
-                    //@ts-expect-error
-                    var member: GuildMember = newState.member || oldState.member
-                    //@ts-expect-error
-                    var voiceChannel: VoiceChannel = oldState.channel || newState.channel
-                    channel.send(`${member.nickname || member.user.username} has ${logOrDis} ${voiceChannel.name}`)
+                    var member: GuildMember | null = newState.member || oldState.member
+                    var voiceChannel: VoiceBasedChannel | null = oldState.channel || newState.channel;
+                    (channel as TextChannel).send(`${member?.nickname || member?.user.username} has ${logOrDis} ${voiceChannel?.name}`)
                 }
                 else {
                     console.log("logging channel isnt text")

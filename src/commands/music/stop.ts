@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import disconnectBot from '../../utils/disconnectBot'
 import { CommandOptions } from "../../types";
 import language from "../../language";
@@ -18,14 +18,14 @@ export default {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
         if (server.dispathcher == undefined) {
-            message.channel.send(language(message, "NO_PLAY"));
+            (message.channel as TextChannel).send(language(message, "NO_PLAY"));
             return;
         }
         for (var i = server.queue.length - 1; i >= 0; i--) {
             server.queue.splice(i, 1);
         }
         // server.connection.disconnect();
-        disconnectBot(message.guild.id)
-        message.channel.send(language(message, 'STOP'));
+        disconnectBot(message.guild.id);
+        (message.channel as TextChannel).send(language(message, 'STOP'));
     },
 } as CommandOptions

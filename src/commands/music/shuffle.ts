@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import shuffle from "../../utils/shuffle";
 import disconnectBot from "../../utils/disconnectBot";
 import { CommandOptions } from "../../types";
@@ -19,15 +19,15 @@ export default {
         if (!message.guild) { return }
         const server = global.servers[message.guild.id];
         if (server.queue.length < 2) {
-            message.channel.send(language(message, 'NO_TO_SHUFFEL'));
+            (message.channel as TextChannel).send(language(message, 'NO_TO_SHUFFEL'));
             return
         }
         if (server.dispathcher == undefined || !server.queue) {
-            message.channel.send(language(message, "NO_PLAY"));
+            (message.channel as TextChannel).send(language(message, "NO_PLAY"));
             return
         }
         server.queue = shuffle(server.queue)
         server.dispathcher.player.stop();
-        message.channel.send(language(message, 'SHUFFLED'));
+        (message.channel as TextChannel).send(language(message, 'SHUFFLED'));
     },
 } as CommandOptions

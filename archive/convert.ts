@@ -46,7 +46,7 @@ export default {
             spotifyApi.setAccessToken(ans.access_token)
             const spotifyToYoutube = global.SpotifyToYoutube(spotifyApi)
             videoNames = []
-            var botMessage = await message.channel.send(global.createEmbed(message, language(message, 'FINDING_MUSIC'), language(message, 'QUER_SPOTIFY'), []))
+            var botMessage = await (message.channel as TextChannel).send(global.createEmbed(message, language(message, 'FINDING_MUSIC'), language(message, 'QUER_SPOTIFY'), []))
 
             //PLAYLIST
             if (matchPlaylist) {
@@ -69,7 +69,7 @@ export default {
                     if (Date.now() - lastStamp > 500) {
                         if (!message.guild) { return }
                         var embed = global.progressBar(message, language(message, 'FINDING_MUSIC'), language(message, `QUER_SPOTIFY`) + `\n${i}/${length}`, i / length)
-                        botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
+                        botMessage.fetch().catch(async () => { botMessage = await (message.channel as TextChannel).send(embed) })
                         botMessage.edit(embed)
                         lastStamp = Date.now()
                     }
@@ -97,7 +97,7 @@ export default {
                     if (Date.now() - lastStamp > 500) {
                         if (!message.guild) { return }
                         var embed = global.progressBar(message, language(message, 'FINDING_MUSIC'), language(message, 'QUER_SPOTIFY') + `\n${i}/${length}`, i / length)
-                        botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
+                        botMessage.fetch().catch(async () => { botMessage = await (message.channel as TextChannel).send(embed) })
                         botMessage.edit(embed)
                         lastStamp = Date.now()
                     }
@@ -125,7 +125,7 @@ export default {
                     if (Date.now() - lastStamp > 500) {
                         if (!message.guild) { return }
                         var embed = global.progressBar(message, language(message, 'FINDING_MUSIC'), language(message, 'QUER_SPOTIFY') + `\n${i}/${length}`, i / length)
-                        botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
+                        botMessage.fetch().catch(async () => { botMessage = await (message.channel as TextChannel).send(embed) })
                         botMessage.edit(embed)
                         lastStamp = Date.now()
                     }
@@ -146,7 +146,7 @@ export default {
             }
         }
         else {
-            message.channel.send(language(message, 'URL_INV'))
+            (message.channel as TextChannel).send(language(message, 'URL_INV'))
             return
         }
 
@@ -172,7 +172,7 @@ export default {
                 if (Date.now() - lastStamp > 500 && botMessage) {
                     var embed = global.progressBar(message, language(message, 'FINDING_MUSIC'), language(message, 'QUER_YT') +
                         `\n ${ij}/${videoNames.length}`, ij / videoNames.length)
-                    botMessage.fetch().catch(async () => { botMessage = await message.channel.send(embed) })
+                    botMessage.fetch().catch(async () => { botMessage = await (message.channel as TextChannel).send(embed) })
                     botMessage.edit(embed)
                     lastStamp = Date.now()
                 }

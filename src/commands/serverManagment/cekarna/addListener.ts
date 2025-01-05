@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, SlashCommandSubcommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../../types";
 import language from "../../../language";
 import serverManager from "../../../server-manager";
@@ -22,14 +22,14 @@ export default {
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
-        const user = await getUser(message, args[0]); if (!user) { message.channel.send(language(message, 'USR_ID_NOT')); return; }
+        const user = await getUser(message, args[0]); if (!user) { (message.channel as TextChannel).send(language(message, 'USR_ID_NOT')); return; }
         if (!server.cekarnaPings.includes(user.id)) {
             server.cekarnaPings.push(user.id);
-            message.channel.send(language(message, 'LIST_ADD') + ': ' + user.displayName);
+            (message.channel as TextChannel).send(language(message, 'LIST_ADD') + ': ' + user.displayName);
             serverManager(message.guild.id, true);
         }
         else {
-            message.channel.send(language(message, 'LIST_EXISTS'));
+            (message.channel as TextChannel).send(language(message, 'LIST_EXISTS'));
         }
     }
 } as CommandOptions

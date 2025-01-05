@@ -1,4 +1,4 @@
-import { EmbedBuilder, Message, SlashCommandBuilder } from "discord.js";
+import { EmbedBuilder, Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions, Languages } from "../../types";
 import languageDATA from "../../languageDATA";
 import language from "../../language";
@@ -26,7 +26,7 @@ export default {
                 })
                 if (arg) {
                     global.servers[message.guild.id].language = arg;
-                    message.channel.send(language(message, 'LANG_SET') + ': ' + arg);
+                    (message.channel as TextChannel).send(language(message, 'LANG_SET') + ': ' + arg);
                     serverManager(message.guild.id, true);
                 }
                 else {
@@ -49,11 +49,11 @@ export default {
                 if (avatarURL) {
                     Embed.setFooter({ text: language(message, 'LANG_LIST_REQ_BY') + ': ' + message.author.username, iconURL: avatarURL })
                 }
-                message.channel.send({ embeds: [Embed] });
+                (message.channel as TextChannel).send({ embeds: [Embed] });
             }
         }
         else {
-            message.channel.send(language(message, 'CURR_LANG_IS') + ': ' + global.servers[message.guild.id].language)
+            (message.channel as TextChannel).send(language(message, 'CURR_LANG_IS') + ': ' + global.servers[message.guild.id].language)
         }
     }
 } as CommandOptions

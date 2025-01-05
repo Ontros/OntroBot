@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
 import language from "../../language";
 const Package = require('../../../package.json')
@@ -15,6 +15,6 @@ export default {
     data: new SlashCommandBuilder(),
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
-        message.channel.send(language(message, 'CUR_VER') + ": " + Package.version);
+        (message.channel as TextChannel).send(language(message, 'CUR_VER') + ": " + Package.version);
     }
 } as CommandOptions

@@ -1,4 +1,4 @@
-import { EmbedBuilder, Message, SlashCommandBuilder } from "discord.js";
+import { EmbedBuilder, Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
 import language from "../../language";
 
@@ -29,7 +29,7 @@ export default {
         if (args[0]) {
             var page = parseInt(args[0]) - 1 //input
             if (isNaN(page) || page > pageMax - 1 || page < 0) {
-                message.channel.send(language(message, 'INPUT_ERR_HALT'))
+                (message.channel as TextChannel).send(language(message, 'INPUT_ERR_HALT'))
                 return
             }
         }
@@ -49,6 +49,6 @@ export default {
             exampleEmbed
                 .setFooter({ text: language(message, 'QUEUE_LIST_REQ_BY') + ': ' + message.author.username, iconURL: avatarURL })
         }
-        message.channel.send({ embeds: [exampleEmbed] });
+        (message.channel as TextChannel).send({ embeds: [exampleEmbed] });
     },
 } as CommandOptions

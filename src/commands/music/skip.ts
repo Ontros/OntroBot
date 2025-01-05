@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import disconnectBot from "../../utils/disconnectBot";
 import { CommandOptions } from "../../types";
 import language from "../../language";
@@ -20,18 +20,18 @@ export default {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
         if (server.queue.length < 2) {
-            message.channel.send(language(message, 'NO_TO_SKIP'));
+            (message.channel as TextChannel).send(language(message, 'NO_TO_SKIP'));
             return
         }
         if (server.dispathcher == undefined) {
-            message.channel.send(language(message, "NO_PLAY"));
+            (message.channel as TextChannel).send(language(message, "NO_PLAY"));
             return
         }
         var skipAmount = 1
         if (args[0]) {
             skipAmount = parseInt(args[0])
             if (isNaN(skipAmount) && skipAmount > 0 && skipAmount < server.queue.length - 1) {
-                message.channel.send(language(message, 'INPUT_ERR_HALT'))
+                (message.channel as TextChannel).send(language(message, 'INPUT_ERR_HALT'))
                 return
             }
         }
@@ -59,6 +59,6 @@ export default {
             //If 2/3 do nothing
         }
         server.dispathcher.player.stop();
-        message.channel.send(language(message, 'SKIP'));
+        (message.channel as TextChannel).send(language(message, 'SKIP'));
     },
 } as CommandOptions

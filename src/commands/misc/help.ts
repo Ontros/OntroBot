@@ -1,4 +1,4 @@
-import { Message, EmbedBuilder, SlashCommandBuilder } from "discord.js";
+import { Message, EmbedBuilder, SlashCommandBuilder, TextChannel } from "discord.js";
 import camelToWords from "../../utils/camelToWords";
 import { CommandOptions } from "../../types";
 import language from "../../language";
@@ -10,7 +10,7 @@ export default {
         if (!message.guild) { return }
         if (!global.bot.user) { return }
         const avatarURL = global.bot.user.avatarURL()
-        if (!avatarURL) { message.channel.send(language(message, 'ERR_AVATAR')); return }
+        if (!avatarURL) { (message.channel as TextChannel).send(language(message, 'ERR_AVATAR')); return }
         if (!args[0]) {
             //CATEGOTY LIST
             const embed = new EmbedBuilder()
@@ -23,7 +23,7 @@ export default {
                 //@ts-ignore
                 embed.addFields({ name: category.name, value: language(message, `${categoryName.toUpperCase()}_DES`) })
             }
-            message.channel.send({ embeds: [embed] })
+            (message.channel as TextChannel).send({ embeds: [embed] })
             return
         }
         for (const categoryName in global.commands) {
@@ -40,7 +40,7 @@ export default {
                     //@ts-ignore
                     embed.addFields({ name: camelToWords(command.name), value: language(message, 'DES_' + commandName.toUpperCase() + '_SHORT') })
                 }
-                message.channel.send({ embeds: [embed] })
+                (message.channel as TextChannel).send({ embeds: [embed] })
                 return
             }
             for (const commandName in category.commands) {
@@ -55,12 +55,12 @@ export default {
                     if (command.args) { embed.addFields({ name: language(message, 'ARGS'), value: command.args }) }
                     //@ts-ignore
                     embed.addFields({ name: language(message, 'DESCR'), value: language(message, 'DES_' + commandName.toUpperCase() + '_LONG') })
-                    message.channel.send({ embeds: [embed] })
+                        (message.channel as TextChannel).send({ embeds: [embed] })
                     return
                 }
             }
         }
-        message.channel.send(language(message, 'HELP_NOT_FOUND'))
+        (message.channel as TextChannel).send(language(message, 'HELP_NOT_FOUND'))
     },
     minArgs: 0,
     maxArgs: null,

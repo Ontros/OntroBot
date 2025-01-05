@@ -1,4 +1,4 @@
-import { Message } from "discord.js"
+import { Message, TextChannel } from "discord.js"
 import language from "../language"
 import createEmbed from "./createEmbed"
 
@@ -9,7 +9,7 @@ const textInput = async (userMessage: Message, botMessage: (Message), title: str
 
         //send/edit embed:
         if (!botMessage) {
-            botMessage = await userMessage.channel.send({ embeds: [embed] })
+            botMessage = await (userMessage.channel as TextChannel).send({ embeds: [embed] })
             if (!botMessage) { console.error('message sending'); reject(undefined); return }
         }
         else {
@@ -22,7 +22,7 @@ const textInput = async (userMessage: Message, botMessage: (Message), title: str
         // }
         // const collection = await userMessage.channel.awaitMessages(collectorFilter, { max: 1 })
         // const inputMessage = collection.first()
-        const inputMessage = userMessage.channel.lastMessage
+        const inputMessage = (userMessage.channel as TextChannel).lastMessage
         if (!inputMessage) { console.log("mess error"); reject(undefined); return }
         if (filter) {
             if (!filter(inputMessage.content)) {
