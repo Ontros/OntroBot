@@ -14,4 +14,7 @@ export default {
     callback: async (message: Message, args: string[], text: string) => {
         message.reply('pong!');
     },
+    execute: async (interaction) => {
+        await interaction.reply('pong!')
+    }
 } as CommandOptions

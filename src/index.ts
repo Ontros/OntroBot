@@ -1,7 +1,7 @@
-import Discord, { Events, TextChannel, VoiceBasedChannel } from 'discord.js'
+import Discord, { Collection, Events, IntentsBitField, MessageFlags, TextChannel, VoiceBasedChannel } from 'discord.js'
 const youtube = require('simple-youtube-api');
-import { Client, Guild, GuildMember, Message, VoiceChannel, VoiceState } from "discord.js";
-import { Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
+import { Client, Guild, GuildMember, Message, VoiceChannel, VoiceState, GatewayIntentBits } from "discord.js";
+import { CommandOptions, Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
 import schedule from "node-schedule"
 const emojiDic = require("emoji-dictionary")
 import path from 'path';
@@ -10,6 +10,7 @@ import fs from 'fs'
 import serverManager from './server-manager'
 import createEmbed from './utils/createEmbed';
 import language from './language';
+import readAllCommands from './utils/readAllCommands';
 
 type Servers = {
     [index: string]: Server;
@@ -29,13 +30,14 @@ declare global {
             YouTube: any;
             SPOTIFY_OAUTH: string;
             SPOTIFY_CLIENT: string;
+            slashCommands: Discord.Collection<string, CommandOptions>;
         }
     }
 }
 
 dotenv.config({ path: path.join(__dirname + './../.env') });
 if (!process.env.SPOTIFY_OAUTH || !process.env.SPOTIFY_CLIENT) { throw new Error('SPOTIFY_OAUTH missing') }
-global.bot = new Discord.Client({ intents: 131071 });
+global.bot = new Discord.Client({ intents: new IntentsBitField(53608447) });
 global.servers = {};
 global.userBalance = {};
 global.commands = {}
@@ -45,6 +47,8 @@ global.SPOTIFY_CLIENT = process.env.SPOTIFY_CLIENT
 const { bot } = global
 
 const token = process.env.DJS_TOKEN;
+
+global.slashCommands = new Collection();
 
 bot.on('ready', () => {
     if (process.env.STATUS) {
@@ -74,6 +78,36 @@ bot.on('ready', () => {
     readCommands('commands');
     console.log('This bot is online!')
 })
+readAllCommands(__dirname)
+
+
+bot.on('interactionCreate', async interaction => {
+    if (!interaction.isChatInputCommand()) return;
+    const command = global.slashCommands.get(interaction.commandName)
+
+    if (!command) {
+        console.error(`No command matching ${interaction.commandName} was found.`);
+        return;
+    }
+    try {
+        if (command.execute)
+            await command.execute(interaction);
+        else {
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({ content: 'Command not defined', flags: MessageFlags.Ephemeral });
+            } else {
+                await interaction.reply({ content: 'Command not defined', flags: MessageFlags.Ephemeral });
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+        } else {
+            await interaction.reply({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+        }
+    }
+});
 
 //TODO: add back
 // bot.on('raw', packet => {

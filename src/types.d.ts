@@ -199,6 +199,7 @@ type CommandOptions = {
     requireChannelPerms?: boolean;
     data: Omit<(SlashCommandBuilder | SlashCommandSubcommandBuilder), any>;
     isCommand: true;
+    execute?: (interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>) => Promise<void>;
 };
 
 interface Command extends CommandOptions {
