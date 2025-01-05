@@ -74,17 +74,64 @@ export default {
             else {
                 (message.channel as TextChannel).send(".5")
             }
-            // else if (rand < .5) {
-            //     global.userBalance[user] += amount * 2.5
-            //     if (times === 1)
-            //         (message.channel as TextChannel).send(`${message.author.username} won ${amount * 2.5}; You now have ${global.userBalance[user]} OnCoins`)
-            // }
-            // else {
-            //     global.userBalance[user] += amount * .25
-            //     if (times === 1)
-            //         (message.channel as TextChannel).send(`${message.author.username} won ${amount * .25}; You now have ${global.userBalance[user]} OnCoins`)
-            // }
         }
         (message.channel as TextChannel).send(`${message.author.username} has ${global.userBalance[user]} OnCoins; Won ${won}x, Lost ${lost}x`)
+    },
+    execute: async (interaction) => {
+        //Get player
+        if (!interaction.guild || !interaction.channel) return;
+        var user = interaction.user.id
+        var amount: number = interaction.options.get('money')?.value as number
+        var times: number = interaction.options.get('repetetion')?.value as number
+        if (!amount) {
+            interaction.reply("kokote")
+            return;
+        }
+        if (!times) {
+            times = 1
+        }
+        try {
+            if (global.userBalance[user] === undefined) {
+                global.userBalance[user] = 1000000
+            }
+        }
+        catch {
+            global.userBalance[user] = 1000000
+        }
+        let isAll = 0
+        if (amount === 0) {
+            amount = global.userBalance[user] / 2
+            isAll = 1
+        }
+        if (global.userBalance[user] < amount) {
+            interaction.reply(`ur broke, lmao ratiod`)
+            return
+        }
+        var lost = 0
+        var won = 0
+        for (var i = times; i--; i > 0) {
+            var rand = Math.random()
+            if (isAll) {
+                amount = global.userBalance[user] / 2
+            }
+            global.userBalance[user] -= amount
+            if (rand < .5) {
+                lost++
+                global.userBalance[user] += amount * 0
+                if (times === 1)
+                    interaction.reply(`${interaction.user.username} won ${amount * 0}; You now have ${global.userBalance[user]} OnCoins`)
+            }
+            else if (rand > .5) {
+                won++
+                global.userBalance[user] += amount * 3
+                if (times === 1)
+                    interaction.reply(`${interaction.user.username} won ${amount * 2}; You now have ${global.userBalance[user]} OnCoins`)
+            }
+            else {
+                interaction.reply(".5 ty lucky mrdko")
+            }
+        }
+        interaction.reply(`${interaction.user.username} has ${global.userBalance[user]} OnCoins; Won ${won}x, Lost ${lost}x`)
+        interaction.reply("Done")
     }
 } as CommandOptions
