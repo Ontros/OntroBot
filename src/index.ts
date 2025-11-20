@@ -50,7 +50,7 @@ const token = process.env.DJS_TOKEN;
 
 global.slashCommands = new Collection();
 
-bot.on('ready', () => {
+bot.on('clientReady', () => {
     if (process.env.STATUS) {
         if (bot.user) {
             bot.user.setActivity(process.env.STATUS)

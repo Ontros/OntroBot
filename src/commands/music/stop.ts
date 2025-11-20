@@ -4,7 +4,7 @@ import { CommandOptions } from "../../types";
 import language from "../../language";
 
 export default {
-    commands: ['stop', 'leave'],
+    commands: ['stop', 'leave', 'disconnect'],
     permissions: [],
     expectedArgs: '',
     minArgs: 0,
@@ -17,14 +17,9 @@ export default {
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
-        if (server.dispathcher == undefined) {
-            (message.channel as TextChannel).send(language(message, "NO_PLAY"));
-            return;
-        }
         for (var i = server.queue.length - 1; i >= 0; i--) {
             server.queue.splice(i, 1);
         }
-        // server.connection.disconnect();
         disconnectBot(message.guild.id);
         (message.channel as TextChannel).send(language(message, 'STOP'));
     },

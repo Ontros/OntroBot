@@ -1,7 +1,7 @@
 import { Message, EmbedBuilder, SlashCommandBuilder, TextChannel } from "discord.js";
 import camelToWords from "../../utils/camelToWords";
 import { CommandOptions } from "../../types";
-import language from "../../language";
+import language, { languageI } from "../../language";
 
 export default {
     commands: ['help'],
@@ -73,6 +73,62 @@ export default {
             .setName("name").setNameLocalizations({ "cs": "název" }).setRequired(false)
             .setDescription("Name of command or category").setDescriptionLocalizations({ "cs": "Název příkazu nebo kategorie" })
     }),
+    execute: async (interaction) => {
+        if (!global.bot.user) { return }
+        const avatarURL = global.bot.user.avatarURL()
+        if (!avatarURL) { interaction.reply(languageI(interaction, 'ERR_AVATAR')); return }
+        const name = interaction.options.get('name')?.value as string
+        if (!name) {
+            //CATEGOTY LIST
+            const embed = new EmbedBuilder()
+            embed.setColor('#0099ff')
+                .setTitle(languageI(interaction, 'CAT_LIST'))
+                .setThumbnail(avatarURL)
+                .setDescription(languageI(interaction, "_HELP_CATEGORY_NAME"))
+            for (const categoryName in global.commands) {
+                const category = global.commands[categoryName]
+                //@ts-ignore
+                embed.addFields({ name: category.name, value: languageI(interaction, `${categoryName.toUpperCase()}_DES`) })
+            }
+            interaction.reply({ embeds: [embed] })
+            return
+        }
+        for (const categoryName in global.commands) {
+            const category = global.commands[categoryName]
+            if (categoryName.toLocaleLowerCase() === camelize(name).toLocaleLowerCase() || category.name === name.toLowerCase()) {
+                //Commands list
+                const embed = new EmbedBuilder()
+                embed.setColor('#0099ff')
+                    .setTitle(category.name + ` ${languageI(interaction, 'CMDS').toLowerCase()}:`)
+                    .setThumbnail(avatarURL)
+                    .setDescription(languageI(interaction, "_HELP_COMMAND_NAME"))
+                for (const commandName in category.commands) {
+                    const command = category.commands[commandName]
+                    //@ts-ignore
+                    embed.addFields({ name: camelToWords(command.name), value: languageI(interaction, 'DES_' + commandName.toUpperCase() + '_SHORT') })
+                }
+                interaction.reply({ embeds: [embed] })
+                return
+            }
+            for (const commandName in category.commands) {
+                if (camelize(name).toLocaleLowerCase() === commandName.toLocaleLowerCase()) {
+                    //COMMAND DETAILS:
+                    const command = category.commands[commandName]
+                    const embed = new EmbedBuilder()
+                    embed.setColor('#0099ff')
+                        .setTitle(command.name.toUpperCase())
+                        .setThumbnail(avatarURL)
+                        .addFields({ name: languageI(interaction, 'ALIASES'), value: command.aliases })
+                    if (command.args) { embed.addFields({ name: languageI(interaction, 'ARGS'), value: command.args }) }
+                    //@ts-ignore
+                    embed.addFields({ name: language(message, 'DESCR'), value: languageI(interaction, 'DES_' + commandName.toUpperCase() + '_LONG') });
+                    interaction.reply({ embeds: [embed] })
+                    return
+                }
+            }
+        }
+        interaction.reply(languageI(interaction, 'HELP_NOT_FOUND'))
+    },
     isCommand: true
 } as CommandOptions
 

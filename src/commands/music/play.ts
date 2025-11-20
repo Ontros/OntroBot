@@ -33,8 +33,7 @@ export default {
                 var newSongIndex = 0
                 var newSong: Song = server.queue[newSongIndex]
                 if (!newSong.duration) {
-                    //@ts-ignore
-                    newSong = await FindVideo(newSong.id, message, true)
+                    newSong = (await FindVideo(newSong.id, message, true))[0]
                     server.queue[newSongIndex] = newSong
                 }
                 if (!newSong.url) {
@@ -42,6 +41,7 @@ export default {
                     disconnectBot(message.guild.id)
                     return
                 }
+                console.log("NEEEW SOGN URL:", newSong.url)
                 const stream = await playDL.stream(newSong.url)
                 const audioResource = createAudioResource(stream.stream, { inputType: stream.type, inlineVolume: true })
                 audioResource.volume?.setVolume(server.volume / 100)

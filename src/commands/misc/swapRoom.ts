@@ -1,4 +1,4 @@
-import { ChannelType, Message, SlashCommandBuilder, TextChannel, VoiceBasedChannel, VoiceChannel } from 'discord.js';
+import { BaseGuildVoiceChannel, ChannelType, GuildMember, Message, SlashCommandBuilder, TextChannel, VoiceBasedChannel, VoiceChannel } from 'discord.js';
 import { CommandOptions } from '../../types';
 import getVoiceChannel from '../../utils/getVoiceChannel';
 import language from '../../language';
@@ -12,14 +12,14 @@ export default {
     isCommand: true,
     data: new SlashCommandBuilder().addChannelOption(option => {
         return option.addChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice)
-            .setName("to-room").setNameLocalizations({ cs: "finální-roomka" })
-            .setDescription("To this room you will be moved").setDescriptionLocalizations({ cs: "Do této roomky budete přesunuti" })
+            .setName("from-room").setNameLocalizations({ cs: "počáteční-roomka" })
+            .setDescription("From this room you will be moved").setDescriptionLocalizations({ cs: "Z této roomky budete přesunuti" })
             .setRequired(true)
     }).addChannelOption(option => {
         return option.addChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice)
-            .setName("from-room").setNameLocalizations({ cs: "počáteční-roomka" })
-            .setDescription("From this room you will be moved").setDescriptionLocalizations({ cs: "Z této roomky budete přesunuti" })
-            .setRequired(false)
+            .setName("to-room").setNameLocalizations({ cs: "finální-roomka" })
+            .setDescription("To this room you will be moved").setDescriptionLocalizations({ cs: "Do této roomky budete přesunuti" })
+            .setRequired(true)
     }),
     callback: async (message: Message, args: string[], text: string) => {
         const { bot } = global
@@ -54,6 +54,22 @@ export default {
                 member.voice.setChannel((destinationRoom as VoiceBasedChannel))
             }
         })
+    },
+    execute: async (interaction) => {
+        var from = interaction.options.get('from-room')?.channel as VoiceBasedChannel
+        var to = interaction.options.get('to-room')?.channel as VoiceBasedChannel
+
+        if (!from || !to) {
+            interaction.reply("Tak ses kokot?!")
+            return;
+        }
+        await interaction.reply("Začínám!");
+
+        var members = from.members.map((val) => { return val })
+        members.forEach(member => {
+            member.voice.setChannel(to);
+        })
+        interaction.editReply("Přesunuto!");
     },
     permissions: ['MOVE_MEMBERS'],
     requiredRoles: [],

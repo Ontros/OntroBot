@@ -1,6 +1,6 @@
 import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
-import language from "../../language";
+import language, { languageI } from "../../language";
 
 export default {
     commands: ['rng'],
@@ -24,6 +24,13 @@ export default {
         var max = parseInt(args[1], 10)
         if (isNaN(min) || isNaN(max)) { (message.channel as TextChannel).send(language(message, 'INPUT_ERR_HALT')); return }
         (message.channel as TextChannel).send(language(message, 'RANDNUM_IS') + getRandomInt(min, max))
+    },
+    execute: async (interaction) => {
+        if (!interaction.guild) { return; }
+        var min = interaction.options.get('minimum')?.value as number
+        var max = interaction.options.get('maximum')?.value as number
+        if (min === undefined || max === undefined) { interaction.reply(languageI(interaction, 'INPUT_ERR_HALT')); return }
+        interaction.reply(languageI(interaction, 'RANDNUM_IS') + getRandomInt(min, max))
     },
     permissions: [],
     requiredRoles: [],
