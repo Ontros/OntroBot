@@ -15,6 +15,9 @@ export default {
     },
     permissions: [],
     requiredRoles: [],
+    execute: async (interaction) => {
+        interaction.reply(TextToAzbuka(interaction.options.get('text')?.value as string))
+    },
     allowedIDs: [],
 } as CommandOptions
 

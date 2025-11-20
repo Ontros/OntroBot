@@ -26,5 +26,14 @@ export default {
             (message.channel as TextChannel).send(text + ", ne ty!")
         }
         message.delete();
-    }
+    },
+    execute: async (interaction) => {
+        var user = interaction.options.get('user')?.user
+        if (!user) {
+            interaction.reply("NE TY!")
+        }
+        else {
+            interaction.reply(user.displayName + ", ne ty!")
+        }
+    },
 } as CommandOptions

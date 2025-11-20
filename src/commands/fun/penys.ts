@@ -1,6 +1,7 @@
 import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
 import language from "../../language";
+import { languageI } from "../../language";
 import getUser from "../../utils/getUser";
 
 export default {
@@ -33,17 +34,33 @@ export default {
         var rand = require('random-seed').create(requestedPlayer.id)
         var penysSize = 'ERROR'
         if (requestedPlayer.id === '255345748441432064') {
-            //(message.channel as TextChannel).send(+language(message, 'PP_SIZE')+": 420 cm");
             penysSize = '30'
         }
         else if (requestedPlayer.id === '275639448299896833') {
-            //message.reply(language(message, 'PP_SIZE')+": "+(-69).toString() + " cm");
             penysSize = '-69'
         }
         else {
-            //message.reply();
             penysSize = (rand(2000) / 100).toString()
         }
         (message.channel as TextChannel).send(`<@!${requestedPlayer.id}>, ${language(message, 'PP_SIZE') + ": " + penysSize + " cm"}`)
-    }
+    },
+    execute: async (interaction) => {
+        var requestedPlayer = interaction.user
+        var argumentPlayer = interaction.options.get('user')?.user
+        if (argumentPlayer) {
+            requestedPlayer = argumentPlayer
+        }
+        var rand = require('random-seed').create(requestedPlayer.id)
+        var penysSize = 'ERROR'
+        if (requestedPlayer.id === '255345748441432064') {
+            penysSize = '30'
+        }
+        else if (requestedPlayer.id === '275639448299896833') {
+            penysSize = '-69'
+        }
+        else {
+            penysSize = (rand(2000) / 100).toString()
+        }
+        interaction.reply(`<@!${requestedPlayer.id}>, ${languageI(interaction, 'PP_SIZE') + ": " + penysSize + " cm"}`)
+    },
 } as CommandOptions

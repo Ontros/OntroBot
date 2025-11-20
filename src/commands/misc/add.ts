@@ -18,5 +18,14 @@ export default {
     }).addNumberOption(option => {
         return option.setName("second-number").setNameLocalizations({ "cs": "druhé-číslo" }).setRequired(true).setDescription("Second number").setDescriptionLocalizations({ "cs": "Druhé číslo" })
     }),
+    execute: async (interaction) => {
+        var num1 = interaction.options.get('first-number')?.value as number
+        var num2 = interaction.options.get('second-number')?.value as number
+        if (num1 === undefined || num2 == undefined) {
+            interaction.reply("Zadej 2 čísla, kreténe")
+            return
+        }
+        interaction.reply((num1 + num2).toString())
+    },
     isCommand: true
 } as CommandOptions

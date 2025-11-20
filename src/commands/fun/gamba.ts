@@ -1,5 +1,5 @@
 import { time } from "console";
-import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
+import { Message, MessageFlags, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../types";
 
 export default {
@@ -15,7 +15,7 @@ export default {
         return option.setRequired(true)
             .setMinValue(0)
             .setName("money").setNameLocalizations({ "cs": "peníze" })
-            .setDescription("Amount to gamba (0=all)").setDescriptionLocalizations({ "cs": "Množtví na gambu (0=all)" })
+            .setDescription("Amount to gamba (0=all)").setDescriptionLocalizations({ "cs": "Množtví na gambu" })
     }).addIntegerOption(option => {
         return option.setRequired(false)
             .setMinValue(1)
@@ -69,7 +69,7 @@ export default {
                 won++
                 global.userBalance[user] += amount * 3
                 if (times === 1)
-                    (message.channel as TextChannel).send(`${message.author.username} won ${amount * 2}; You now have ${global.userBalance[user]} OnCoins`)
+                    (message.channel as TextChannel).send(`${message.author.username} won ${amount * 3}; You now have ${global.userBalance[user]} OnCoins`)
             }
             else {
                 (message.channel as TextChannel).send(".5")
@@ -83,8 +83,9 @@ export default {
         var user = interaction.user.id
         var amount: number = interaction.options.get('money')?.value as number
         var times: number = interaction.options.get('repetetion')?.value as number
+        await interaction.reply("Zacinam gambu")
         if (!amount) {
-            interaction.reply("kokote")
+            interaction.editReply("kokote")
             return;
         }
         if (!times) {
@@ -104,7 +105,7 @@ export default {
             isAll = 1
         }
         if (global.userBalance[user] < amount) {
-            interaction.reply(`ur broke, lmao ratiod`)
+            interaction.editReply(`ur broke, lmao ratiod`)
             return
         }
         var lost = 0
@@ -118,20 +119,15 @@ export default {
             if (rand < .5) {
                 lost++
                 global.userBalance[user] += amount * 0
-                if (times === 1)
-                    interaction.reply(`${interaction.user.username} won ${amount * 0}; You now have ${global.userBalance[user]} OnCoins`)
             }
             else if (rand > .5) {
                 won++
-                global.userBalance[user] += amount * 3
-                if (times === 1)
-                    interaction.reply(`${interaction.user.username} won ${amount * 2}; You now have ${global.userBalance[user]} OnCoins`)
+                global.userBalance[user] += amount * 2
             }
             else {
-                interaction.reply(".5 ty lucky mrdko")
+                await interaction.followUp(".5 ty lucky mrdko")
             }
         }
-        interaction.reply(`${interaction.user.username} has ${global.userBalance[user]} OnCoins; Won ${won}x, Lost ${lost}x`)
-        interaction.reply("Done")
+        interaction.editReply(`${interaction.user.username} has ${global.userBalance[user]} OnCoins; Won ${won}x, Lost ${lost}x`)
     }
 } as CommandOptions

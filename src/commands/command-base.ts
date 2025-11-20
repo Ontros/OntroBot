@@ -51,7 +51,7 @@ const validatePermissions = (permissions: string[]) => {
 
 export default async (commandOptions: CommandOptions, file: string) => {
     if (!commandOptions) { console.log("null commandOptions"); return }
-    if (!commandOptions.callback) { console.log('error loading: ', file, commandOptions); return }
+    if (!commandOptions.callback) { if (commandOptions.isCommand) { console.log('error loading: ', file, commandOptions); }; return }
     let {
         commands,
         expectedArgs = '',

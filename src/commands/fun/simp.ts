@@ -13,5 +13,8 @@ export default {
     maxArgs: 0,
     expectedArgs: "",
     isCommand: true,
+    execute: async (interaction) => {
+        await interaction.reply('Ne ty!')
+    },
     data: new SlashCommandBuilder()
 } as CommandOptions

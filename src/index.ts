@@ -90,8 +90,10 @@ bot.on('interactionCreate', async interaction => {
         return;
     }
     try {
-        if (command.execute)
+        if (command.execute) {
+            serverManager(interaction.guildId ?? "", false);
             await command.execute(interaction);
+        }
         else {
             if (interaction.replied || interaction.deferred) {
                 await interaction.followUp({ content: 'Command not defined', flags: MessageFlags.Ephemeral });
