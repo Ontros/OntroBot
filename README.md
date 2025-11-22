@@ -8,7 +8,7 @@ STATUS=(status under name)
 SPOTIFY_OAUTH=(spotify refresh token)
 SPOTIFY_CLIENT=(spotify client id)
 ```
-And then do these commands:
+And then do these commands (you must have Node.js installed):
 ```
 npm install
 tsc
