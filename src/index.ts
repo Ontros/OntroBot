@@ -1,5 +1,4 @@
 import Discord, { Collection, Events, IntentsBitField, MessageFlags, TextChannel, VoiceBasedChannel } from 'discord.js'
-const youtube = require('simple-youtube-api');
 import { Client, Guild, GuildMember, Message, VoiceChannel, VoiceState, GatewayIntentBits } from "discord.js";
 import { CommandOptions, Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
 import schedule from "node-schedule"
@@ -27,7 +26,6 @@ declare global {
             servers: Servers;
             userBalance: UserBalance;
             commands: Commands;
-            YouTube: any;
             SPOTIFY_OAUTH: string;
             SPOTIFY_CLIENT: string;
             slashCommands: Discord.Collection<string, CommandOptions>;
@@ -41,7 +39,6 @@ global.bot = new Discord.Client({ intents: new IntentsBitField(53608447) });
 global.servers = {};
 global.userBalance = {};
 global.commands = {}
-global.YouTube = new youtube(process.env.YT_TOKEN);
 global.SPOTIFY_OAUTH = process.env.SPOTIFY_OAUTH
 global.SPOTIFY_CLIENT = process.env.SPOTIFY_CLIENT
 const { bot } = global
