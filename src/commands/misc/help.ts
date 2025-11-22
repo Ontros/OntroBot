@@ -1,27 +1,29 @@
-import { Message, EmbedBuilder } from "discord.js";
+import { Message, EmbedBuilder, SlashCommandBuilder, TextChannel } from "discord.js";
 import camelToWords from "../../utils/camelToWords";
+import { CommandOptions } from "../../types";
+import language, { languageI } from "../../language";
 
-module.exports = {
+export default {
     commands: ['help'],
     callback: async (message: Message, args: string[], text: string) => {
         //TODO change to selection??
         if (!message.guild) { return }
-        const { Discord, bot, lang } = global
-        if (!bot.user) { return }
-        const avatarURL = bot.user.avatarURL()
-        if (!avatarURL) { message.channel.send(lang(message.guild.id, 'ERR_AVATAR')); return }
+        if (!global.bot.user) { return }
+        const avatarURL = global.bot.user.avatarURL()
+        if (!avatarURL) { (message.channel as TextChannel).send(language(message, 'ERR_AVATAR')); return }
         if (!args[0]) {
             //CATEGOTY LIST
             const embed = new EmbedBuilder()
             embed.setColor('#0099ff')
-                .setTitle(lang(message.guild.id, 'CAT_LIST'))
+                .setTitle(language(message, 'CAT_LIST'))
                 .setThumbnail(avatarURL)
-                .setDescription(global.lang(message.guild.id, "_HELP_CATEGORY_NAME"))
+                .setDescription(language(message, "_HELP_CATEGORY_NAME"))
             for (const categoryName in global.commands) {
                 const category = global.commands[categoryName]
-                embed.addFields({ name: category.name, value: global.lang(message.guild.id, `${categoryName.toUpperCase()}_DES`) })
+                //@ts-ignore
+                embed.addFields({ name: category.name, value: language(message, `${categoryName.toUpperCase()}_DES`) })
             }
-            message.channel.send({ embeds: [embed] })
+            (message.channel as TextChannel).send({ embeds: [embed] })
             return
         }
         for (const categoryName in global.commands) {
@@ -30,14 +32,15 @@ module.exports = {
                 //Commands list
                 const embed = new EmbedBuilder()
                 embed.setColor('#0099ff')
-                    .setTitle(category.name + ` ${lang(message.guild.id, 'CMDS').toLowerCase()}:`)
+                    .setTitle(category.name + ` ${language(message, 'CMDS').toLowerCase()}:`)
                     .setThumbnail(avatarURL)
-                    .setDescription(global.lang(message.guild.id, "_HELP_COMMAND_NAME"))
+                    .setDescription(language(message, "_HELP_COMMAND_NAME"))
                 for (const commandName in category.commands) {
                     const command = category.commands[commandName]
-                    embed.addFields({ name: camelToWords(command.name), value: global.lang(message.guild.id, 'DES_' + commandName.toUpperCase() + '_SHORT') })
+                    //@ts-ignore
+                    embed.addFields({ name: camelToWords(command.name), value: language(message, 'DES_' + commandName.toUpperCase() + '_SHORT') })
                 }
-                message.channel.send({ embeds: [embed] })
+                (message.channel as TextChannel).send({ embeds: [embed] })
                 return
             }
             for (const commandName in category.commands) {
@@ -48,15 +51,16 @@ module.exports = {
                     embed.setColor('#0099ff')
                         .setTitle(command.name.toUpperCase())
                         .setThumbnail(avatarURL)
-                        .addFields({ name: lang(message.guild.id, 'ALIASES'), value: command.aliases })
-                    if (command.args) { embed.addFields({ name: lang(message.guild.id, 'ARGS'), value: command.args }) }
-                    embed.addFields({ name: lang(message.guild.id, 'DESCR'), value: global.lang(message.guild.id, 'DES_' + commandName.toUpperCase() + '_LONG') })
-                    message.channel.send({ embeds: [embed] })
+                        .addFields({ name: language(message, 'ALIASES'), value: command.aliases })
+                    if (command.args) { embed.addFields({ name: language(message, 'ARGS'), value: command.args }) }
+                    //@ts-ignore
+                    embed.addFields({ name: language(message, 'DESCR'), value: language(message, 'DES_' + commandName.toUpperCase() + '_LONG') })
+                        (message.channel as TextChannel).send({ embeds: [embed] })
                     return
                 }
             }
         }
-        message.channel.send(lang(message.guild.id, 'HELP_NOT_FOUND'))
+        (message.channel as TextChannel).send(language(message, 'HELP_NOT_FOUND'))
     },
     minArgs: 0,
     maxArgs: null,
@@ -64,7 +68,69 @@ module.exports = {
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
-}
+    data: new SlashCommandBuilder().addStringOption(option => {
+        return option
+            .setName("name").setNameLocalizations({ "cs": "název" }).setRequired(false)
+            .setDescription("Name of command or category").setDescriptionLocalizations({ "cs": "Název příkazu nebo kategorie" })
+    }),
+    execute: async (interaction) => {
+        if (!global.bot.user) { return }
+        const avatarURL = global.bot.user.avatarURL()
+        if (!avatarURL) { interaction.reply(languageI(interaction, 'ERR_AVATAR')); return }
+        const name = interaction.options.get('name')?.value as string
+        if (!name) {
+            //CATEGOTY LIST
+            const embed = new EmbedBuilder()
+            embed.setColor('#0099ff')
+                .setTitle(languageI(interaction, 'CAT_LIST'))
+                .setThumbnail(avatarURL)
+                .setDescription(languageI(interaction, "_HELP_CATEGORY_NAME"))
+            for (const categoryName in global.commands) {
+                const category = global.commands[categoryName]
+                //@ts-ignore
+                embed.addFields({ name: category.name, value: languageI(interaction, `${categoryName.toUpperCase()}_DES`) })
+            }
+            interaction.reply({ embeds: [embed] })
+            return
+        }
+        for (const categoryName in global.commands) {
+            const category = global.commands[categoryName]
+            if (categoryName.toLocaleLowerCase() === camelize(name).toLocaleLowerCase() || category.name === name.toLowerCase()) {
+                //Commands list
+                const embed = new EmbedBuilder()
+                embed.setColor('#0099ff')
+                    .setTitle(category.name + ` ${languageI(interaction, 'CMDS').toLowerCase()}:`)
+                    .setThumbnail(avatarURL)
+                    .setDescription(languageI(interaction, "_HELP_COMMAND_NAME"))
+                for (const commandName in category.commands) {
+                    const command = category.commands[commandName]
+                    //@ts-ignore
+                    embed.addFields({ name: camelToWords(command.name), value: languageI(interaction, 'DES_' + commandName.toUpperCase() + '_SHORT') })
+                }
+                interaction.reply({ embeds: [embed] })
+                return
+            }
+            for (const commandName in category.commands) {
+                if (camelize(name).toLocaleLowerCase() === commandName.toLocaleLowerCase()) {
+                    //COMMAND DETAILS:
+                    const command = category.commands[commandName]
+                    const embed = new EmbedBuilder()
+                    embed.setColor('#0099ff')
+                        .setTitle(command.name.toUpperCase())
+                        .setThumbnail(avatarURL)
+                        .addFields({ name: languageI(interaction, 'ALIASES'), value: command.aliases })
+                    if (command.args) { embed.addFields({ name: languageI(interaction, 'ARGS'), value: command.args }) }
+                    //@ts-ignore
+                    embed.addFields({ name: language(message, 'DESCR'), value: languageI(interaction, 'DES_' + commandName.toUpperCase() + '_LONG') });
+                    interaction.reply({ embeds: [embed] })
+                    return
+                }
+            }
+        }
+        interaction.reply(languageI(interaction, 'HELP_NOT_FOUND'))
+    },
+    isCommand: true
+} as CommandOptions
 
 
 

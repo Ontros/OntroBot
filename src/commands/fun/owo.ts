@@ -1,11 +1,20 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
+import { CommandOptions } from "../../types";
 
-module.exports = {
+export default {
     commands: ['owo', 'owo!', 'owo?'],
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
     callback: async (message: Message, args: string[], text: string) => {
-        message.channel.send("UwU!");
-    }
-}
+        (message.channel as TextChannel).send("UwU!");
+    },
+    minArgs: 0,
+    maxArgs: 0,
+    expectedArgs: "",
+    isCommand: true,
+    execute: async (interaction) => {
+        await interaction.reply('UwU!')
+    },
+    data: new SlashCommandBuilder()
+} as CommandOptions

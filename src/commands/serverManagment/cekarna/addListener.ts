@@ -1,9 +1,10 @@
-import { Message, SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder, SlashCommandSubcommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../../types";
+import language, { languageI } from "../../../language";
+import serverManager from "../../../server-manager";
+import getUser from "../../../utils/getUser";
 
-
-//const serverManager = require('../.././server-manager');
-module.exports = {
+export default {
     commands: ['addListener'],
     expectedArgs: '<listenerID>',
     minArgs: 1,
@@ -13,24 +14,40 @@ module.exports = {
     allowedIDs: [],
     data: new SlashCommandSubcommandBuilder()
         .addUserOption((option) => option
-            // .setNameLocalizations({ "cs": "Posluchac", "en-GB": "User" })
-            .setDescriptionLocalizations({ "cs": "Uzivatel, ktereho chcete pridat", "en-GB": "The user you want to add" })
-            .setName("user")
-            .setDescription("the user you want to add")
+            .setName("listener").setNameLocalizations({ "cs": "posluchac" })
+            .setDescription("The listener you want to add").setDescriptionLocalizations({ "cs": "Uzivatel, ktereho chcete pridat" })
             .setRequired(true))
     ,
-    callback: async (message: Message, args: string[], text: string) => {
-        if (!message.guild) { return }
-        const { lang } = global
-        var server = global.servers[message.guild.id];
-        const user = await global.getUser(message, args[0]); if (!user) { message.channel.send(global.lang(message.guild.id, 'USR_ID_NOT')); return; }
+    isCommand: true,
+    execute: async (interaction) => {
+        if (!interaction.guild) { return }
+        var server = global.servers[interaction.guild.id];
+        const user = interaction.options.get("listener")?.user;
+        if (!user) {
+            interaction.reply(languageI(interaction, 'USR_ID_NOT'))
+            return;
+        }
+
         if (!server.cekarnaPings.includes(user.id)) {
             server.cekarnaPings.push(user.id);
-            message.channel.send(lang(message.guild.id, 'LIST_ADD') + ': ' + user.displayName);
-            global.serverManager(message.guild.id, true);
+            interaction.reply(languageI(interaction, 'LIST_ADD') + ': ' + user.displayName);
+            serverManager(interaction.guild.id, true);
         }
         else {
-            message.channel.send(lang(message.guild.id, 'LIST_EXISTS'));
+            interaction.reply(languageI(interaction, 'LIST_EXISTS'));
+        }
+    },
+    callback: async (message: Message, args: string[], text: string) => {
+        if (!message.guild) { return }
+        var server = global.servers[message.guild.id];
+        const user = await getUser(message, args[0]); if (!user) { (message.channel as TextChannel).send(language(message, 'USR_ID_NOT')); return; }
+        if (!server.cekarnaPings.includes(user.id)) {
+            server.cekarnaPings.push(user.id);
+            (message.channel as TextChannel).send(language(message, 'LIST_ADD') + ': ' + user.displayName);
+            serverManager(message.guild.id, true);
+        }
+        else {
+            (message.channel as TextChannel).send(language(message, 'LIST_EXISTS'));
         }
     }
 } as CommandOptions

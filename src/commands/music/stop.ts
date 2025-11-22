@@ -1,25 +1,30 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
 import disconnectBot from '../../utils/disconnectBot'
+import { CommandOptions } from "../../types";
+import language from "../../language";
 
-module.exports = {
-    commands: ['stop', 'leave'],
+export default {
+    commands: ['stop', 'leave', 'disconnect'],
     permissions: [],
+    expectedArgs: '',
+    minArgs: 0,
+    maxArgs: 0,
     requiredRoles: [],
     allowedIDs: [],
+    isCommand: true,
+    data: new SlashCommandBuilder(),
     requireChannelPerms: false,
-    callback: async (message: Message, args: string[], text: string) => {
-        if (!message.guild) { return }
-        var server = global.servers[message.guild.id];
-        const { lang } = global;
-        if (server.dispathcher == undefined) {
-            message.channel.send(lang(message.guild.id, "NO_PLAY"));
-            return;
-        }
-        for (var i = server.queue.length - 1; i >= 0; i--) {
-            server.queue.splice(i, 1);
-        }
-        // server.connection.disconnect();
-        disconnectBot(message.guild.id)
-        message.channel.send(lang(message.guild.id, 'STOP'));
+    execute: async (interaction) => {
+        interaction.reply("Deprecated lol");
     },
-}
+    callback: async (message: Message, args: string[], text: string) => {
+        (message.channel as TextChannel).send("Deprecated lol");
+        // if (!message.guild) { return }
+        // var server = global.servers[message.guild.id];
+        // for (var i = server.queue.length - 1; i >= 0; i--) {
+        //     server.queue.splice(i, 1);
+        // }
+        // disconnectBot(message.guild.id);
+        // (message.channel as TextChannel).send(language(message, 'STOP'));
+    },
+} as CommandOptions

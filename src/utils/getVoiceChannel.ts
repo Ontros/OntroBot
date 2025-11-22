@@ -1,6 +1,7 @@
-import { Message } from "discord.js";
+import { Message, TextChannel } from "discord.js";
+import language from "../language";
 
-module.exports = async (message: Message, input: string) => {
+export default async (message: Message, input: string) => {
     if (input[0] === '<') {
         input = input.substring(2, input.length - 1)
     }

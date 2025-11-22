@@ -1,12 +1,20 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder } from "discord.js";
+import { CommandOptions } from "../../types";
 
-module.exports = {
+export default {
     commands: ['simp', 'simp?'],
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
-    allowedServer: ['699609602685272074'],
     callback: async (message: Message, args: string[], text: string) => {
         message.reply("Ne ty!");
-    }
-}
+    },
+    minArgs: 0,
+    maxArgs: 0,
+    expectedArgs: "",
+    isCommand: true,
+    execute: async (interaction) => {
+        await interaction.reply('Ne ty!')
+    },
+    data: new SlashCommandBuilder()
+} as CommandOptions

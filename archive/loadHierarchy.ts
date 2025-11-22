@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
 import { Step } from "../../types";
 
-module.exports = {
+export default {
     commands: ['loadHierarchy'],
     expectedArgs: '<id|mention>',
     permissionError: '',
@@ -15,12 +15,12 @@ module.exports = {
                 //Not directly ID
                 id = id.substring(3, args[0].length - 1)
                 if (!message.guild.roles.cache.get(id)) {
-                    message.reply(global.lang(message.guild.id, 'ROLE_ID_NOT'));
+                    message.reply(language(message, 'ROLE_ID_NOT'));
                     return
                 }
             }
             const Role = await message.guild.roles.fetch(id)
-            if (!Role) { message.reply(global.lang(message.guild.id, 'ROLE_ID_NOT')); return }
+            if (!Role) { message.reply(language(message, 'ROLE_ID_NOT')); return }
             var step: Step = {
                 id,
                 name: Role.name,

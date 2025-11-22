@@ -1,22 +1,41 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
+import { CommandOptions } from "../../types";
+import language, { languageI } from "../../language";
 
-module.exports = {
+export default {
     commands: ['rng'],
     expectedArgs: '<minNumber> <maxNumber>',
     permissionError: '',
     minArgs: 2,
     maxArgs: 2,
+    data: new SlashCommandBuilder().addIntegerOption((option) => {
+        return option.setRequired(true)
+            .setName("minimum")
+            .setDescription("Minimal value (inclusive)").setDescriptionLocalizations({ "cs": "Minimální celá hodnota (včetně)" })
+    }).addIntegerOption((option) => {
+        return option.setRequired(true)
+            .setName("maximum")
+            .setDescription("Maximal value (inclusive)").setDescriptionLocalizations({ "cs": "Maximální celá hodnota (včetně)" })
+    }),
+    isCommand: true,
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return; }
         var min = parseInt(args[0], 10)
         var max = parseInt(args[1], 10)
-        if (isNaN(min) || isNaN(max)) { message.channel.send(global.lang(message.guild.id, 'INPUT_ERR_HALT')); return }
-        message.channel.send(global.lang(message.guild.id, 'RANDNUM_IS') + getRandomInt(min, max))
+        if (isNaN(min) || isNaN(max)) { (message.channel as TextChannel).send(language(message, 'INPUT_ERR_HALT')); return }
+        (message.channel as TextChannel).send(language(message, 'RANDNUM_IS') + getRandomInt(min, max))
+    },
+    execute: async (interaction) => {
+        if (!interaction.guild) { return; }
+        var min = interaction.options.get('minimum')?.value as number
+        var max = interaction.options.get('maximum')?.value as number
+        if (min === undefined || max === undefined) { interaction.reply(languageI(interaction, 'INPUT_ERR_HALT')); return }
+        interaction.reply(languageI(interaction, 'RANDNUM_IS') + getRandomInt(min, max))
     },
     permissions: [],
     requiredRoles: [],
     allowedIDs: [],
-}
+} as CommandOptions
 
 function getRandomInt(min: number, max: number) {
     min = Math.ceil(min);

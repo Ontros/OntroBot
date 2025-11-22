@@ -1,16 +1,9 @@
-import { EmbedField, Message, Embed, EmbedBuilder } from "discord.js";
+import { EmbedField, Message, Embed, EmbedBuilder, TextChannel } from "discord.js";
 
-module.exports = (message: Message, title: string, description: (string | null), fields: EmbedField[], imageURL?: (string | null)) => {
-    const { Discord, bot, lang } = global
-    if (!bot.user) { return }
-    //reference progressBar.ts
-    if (!imageURL) {
+export default (message: Message, title: string, description: (string | null), fields: EmbedField[], imageURL?: (string | null)) => {
+    const { bot } = global
+    if (!imageURL && bot.user) {
         imageURL = bot.user.avatarURL()
-        // if (message) {
-        //     if (!message.guild) { return }
-        //     //if (!imageURL) { message.channel.send(lang(message.guild.id, 'ERR_AVATAR')); return }
-        // }
-        // if (!imageURL) { return }
     }
     const embed = new EmbedBuilder()
     embed.setColor('#0099ff')
@@ -20,5 +13,6 @@ module.exports = (message: Message, title: string, description: (string | null),
         embed.setThumbnail(imageURL)
     }
     if (description) { embed.setDescription(description) }
+    (message.channel as TextChannel).send({ embeds: [embed] })
     return embed
 }

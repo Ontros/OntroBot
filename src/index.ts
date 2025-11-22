@@ -1,8 +1,16 @@
-import { Client, Guild, GuildMember, Message, VoiceChannel, VoiceState } from "discord.js";
-import { Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
+import Discord, { Collection, Events, IntentsBitField, MessageFlags, TextChannel, VoiceBasedChannel } from 'discord.js'
+const youtube = require('simple-youtube-api');
+import { Client, Guild, GuildMember, Message, VoiceChannel, VoiceState, GatewayIntentBits } from "discord.js";
+import { CommandOptions, Commands, CreateEmbed, GetRole, GetTextChannel, GetUser, GetVoiceChannel, Lang, LangJ, ProgressBar, ReactionForm, Server, ServerManager, TextInput } from "./types";
 import schedule from "node-schedule"
 const emojiDic = require("emoji-dictionary")
-
+import path from 'path';
+import dotenv from 'dotenv'
+import fs from 'fs'
+import serverManager from './server-manager'
+import createEmbed from './utils/createEmbed';
+import language from './language';
+import readAllCommands from './utils/readAllCommands';
 
 type Servers = {
     [index: string]: Server;
@@ -16,76 +24,33 @@ declare global {
     namespace NodeJS {
         interface Global {
             bot: Client;
-            YTDL: any;
-            YOUTUBE: any;
-            fs: any;
-            path: any;
-            serverManager: ServerManager;
-            langJ: LangJ;
-            Package: any;
             servers: Servers;
-            lang: Lang;
-            YouTube: any;
-            Discord: typeof Discord;
-            getUser: GetUser;
+            userBalance: UserBalance;
             commands: Commands;
-            reactionForm: ReactionForm;
-            createEmbed: CreateEmbed;
-            textInput: TextInput;
-            getTextChannel: GetTextChannel;
-            getRole: GetRole;
-            getVoiceChannel: GetVoiceChannel;
-            fetch: any;
+            YouTube: any;
             SPOTIFY_OAUTH: string;
             SPOTIFY_CLIENT: string;
-            SpotifyToYoutube: any;
-            SpotifyWebApi: any;
-            progressBar: ProgressBar;
-            schedule: typeof schedule;
-            userBalance: UserBalance;
+            slashCommands: Discord.Collection<string, CommandOptions>;
         }
     }
 }
 
-
-
-import Discord from 'discord.js'
-global.Discord = Discord;
-global.YTDL = require('ytdl-core');
-const youtube = require('simple-youtube-api');
-global.fs = require('fs');
-global.path = require('path');
-// let intents = new Intents(Intents.ALL);
-global.bot = new global.Discord.Client({ intents: 131071 });
-const { Console } = require('console');
-global.serverManager = require('././server-manager');
-global.langJ = require('./../language.json');
-global.Package = require('./../package.json');;
+dotenv.config({ path: path.join(__dirname + './../.env') });
+if (!process.env.SPOTIFY_OAUTH || !process.env.SPOTIFY_CLIENT) { throw new Error('SPOTIFY_OAUTH missing') }
+global.bot = new Discord.Client({ intents: new IntentsBitField(53608447) });
 global.servers = {};
 global.userBalance = {};
-global.lang = require('./language.js');
-global.getUser = require('./utils/getUser')
-// global.commands = require('./../commands.json')
 global.commands = {}
-global.reactionForm = require('./utils/reactionForm')
-global.createEmbed = require('./utils/createEmbed')
-global.textInput = require('./utils/textInput')
-global.getTextChannel = require('./utils/getTextChannel')
-global.getVoiceChannel = require('./utils/getVoiceChannel')
-global.getRole = require('./utils/getRole')
-const { fs, bot, path, serverManager } = global
-require('dotenv').config({ path: path.join(__dirname + './../.env') });
-global.fetch = require('node-fetch')
-if (!process.env.SPOTIFY_OAUTH || !process.env.SPOTIFY_CLIENT) { throw new Error('SPOTIFY_OAUTH missing') }
+global.YouTube = new youtube(process.env.YT_TOKEN);
 global.SPOTIFY_OAUTH = process.env.SPOTIFY_OAUTH
 global.SPOTIFY_CLIENT = process.env.SPOTIFY_CLIENT
-global.progressBar = require('./utils/progressBar')
-global.schedule = schedule
+const { bot } = global
 
 const token = process.env.DJS_TOKEN;
-global.YouTube = new youtube(process.env.YT_TOKEN);
 
-bot.on('ready', () => {
+global.slashCommands = new Collection();
+
+bot.on('clientReady', () => {
     if (process.env.STATUS) {
         if (bot.user) {
             bot.user.setActivity(process.env.STATUS)
@@ -94,7 +59,7 @@ bot.on('ready', () => {
     const base_file = 'command-base.js'
     const commandBase = require(`./commands/${base_file}`)
 
-    const readCommands = (dir: String) => {
+    const readCommands = (dir: string) => {
         const files = fs.readdirSync(path.join(__dirname, dir));
         for (const file of files) {
             const loc = path.join(__dirname, dir, file);
@@ -105,7 +70,7 @@ bot.on('ready', () => {
             } else if (file != base_file) {
                 //Soubor
                 const option = require(path.join(__dirname, dir, file));
-                commandBase(option, loc);
+                commandBase.default(option.default, loc);
             }
         }
     }
@@ -113,23 +78,64 @@ bot.on('ready', () => {
     readCommands('commands');
     console.log('This bot is online!')
 })
+readAllCommands(__dirname)
 
-bot.on('raw', packet => {
-    if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
-    const channel = bot.channels.cache.get(packet.d.channel_id);
-    if (!channel) { console.log('No channel found (index.tx)'); return }
-    if (!channel.isTextBased()) { return }
-    if (channel.messages.cache.has(packet.d.message_id)) return;
-    channel.messages.fetch(packet.d.message_id).then((message: Message) => {
-        const emoji = packet.d.emoji.id ? `${packet.d.emoji.name}:${packet.d.emoji.id}` : packet.d.emoji.name;
-        const reaction = message.reactions.cache.get(emoji);
-        if (!reaction) { console.log('Reaction not found (index.ts)'); return }
-        const user = bot.users.cache.get(packet.d.user_id)
-        if (!user) { console.log('User not found (index.ts)'); return }
-        if (packet.t === 'MESSAGE_REACTION_ADD') { bot.emit('messageReactionAdd', reaction, user); }
-        if (packet.t === 'MESSAGE_REACTION_REMOVE') { bot.emit('messageReactionRemove', reaction, user); }
-    });
+
+bot.on('interactionCreate', async interaction => {
+    console.log(interaction)
+    if (!interaction.isChatInputCommand()) return;
+    var command = global.slashCommands.get(interaction.commandName)
+
+    if (!command) {
+        const subCommand = global.slashCommands.get(interaction.options.getSubcommand())
+        if (subCommand) {
+            command = subCommand
+        }
+        else {
+            console.error(`No command matching ${interaction.commandName} was found.`);
+            interaction.reply("Neznamy command, idk jaks to udelal g")
+            return;
+        }
+    }
+    try {
+        if (command.execute) {
+            serverManager(interaction.guildId ?? "", false);
+            await command.execute(interaction);
+        }
+        else {
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({ content: 'Command not defined', flags: MessageFlags.Ephemeral });
+            } else {
+                await interaction.reply({ content: 'Command not defined', flags: MessageFlags.Ephemeral });
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+        } else {
+            await interaction.reply({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+        }
+    }
 });
+
+//TODO: add back
+// bot.on('raw', packet => {
+//     if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
+//     const channel = bot.channels.cache.get(packet.d.channel_id);
+//     if (!channel) { console.log('No channel found (index.tx)'); return }
+//     if (!channel.isTextBased()) { return }
+//     if (channel.messages.cache.has(packet.d.message_id)) return;
+//     channel.messages.fetch(packet.d.message_id).then((message: Message) => {
+//         const emoji = packet.d.emoji.id ? `${packet.d.emoji.name}:${packet.d.emoji.id}` : packet.d.emoji.name;
+//         const reaction = message.reactions.cache.get(emoji);
+//         if (!reaction) { console.log('Reaction not found (index.ts)'); return }
+//         const user = bot.users.cache.get(packet.d.user_id)
+//         if (!user) { console.log('User not found (index.ts)'); return }
+//         if (packet.t as string === 'MESSAGE_REACTION_ADD') { bot.emit(Events.MessageReactionAdd, reaction, user); }
+//         if (packet.t as string === 'MESSAGE_REACTION_REMOVE') { bot.emit(Events.MessageReactionRemove, reaction, user); }
+//     });
+// });
 
 
 bot.on('voiceStateUpdate', async (oldMember: VoiceState, newMember: VoiceState) => {
@@ -157,14 +163,16 @@ bot.on('voiceStateUpdate', async (oldMember: VoiceState, newMember: VoiceState) 
                     if (user.voice.channelId) {
                         //je ve voice channelu
                         //user.user.send("ČEKÁRNA!");
-                        user.user.send(global.createEmbed(
-                            //@ts-ignore
-                            null,
-                            "Čekárna",
-                            newMember.member?.nickname,
-                            [],
-                            newMember.member?.user.avatarURL()
-                        ))
+                        user.user.send({
+                            embeds: [createEmbed(
+                                //@ts-ignore
+                                null,
+                                "Čekárna",
+                                newMember.member?.nickname,
+                                [],
+                                newMember.member?.user.avatarURL()
+                            )]
+                        })
                     }
                 });
             }
@@ -199,11 +207,9 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
                 }
                 const channel = await bot.channels.fetch(process.env.LOGGING_CHANNEL, { cache: false })
                 if (channel && channel.isTextBased()) {
-                    //@ts-expect-error
-                    var member: GuildMember = newState.member || oldState.member
-                    //@ts-expect-error
-                    var voiceChannel: VoiceChannel = oldState.channel || newState.channel
-                    channel.send(`${member.nickname || member.user.username} has ${logOrDis} ${voiceChannel.name}`)
+                    var member: GuildMember | null = newState.member || oldState.member
+                    var voiceChannel: VoiceBasedChannel | null = oldState.channel || newState.channel;
+                    (channel as TextChannel).send(`${member?.nickname || member?.user.username} has ${logOrDis} ${voiceChannel?.name}`)
                 }
                 else {
                     console.log("logging channel isnt text")
@@ -247,16 +253,16 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
 })
 process.on("unhandledRejection", (e) => { console.log(e, "unhandled promise rejection") })
 bot.on("messageReactionRemove", async (reaction, user) => {
-    const { lang } = global;
     if (user.bot) { return }
     if (user.partial) { user = await user.fetch() }
     if (!reaction.message.guild) { return; }
-    global.serverManager(reaction.message.guild.id)
+    serverManager(reaction.message.guild.id)
     var server = global.servers[reaction.message.guild.id]
     if (!server.roleGiver) { return }
     if (server.roleGiver.messageID !== reaction.message.id) { return }
     const member = reaction.message.guild.members.cache.get(user.id)
-    if (!member) { console.log('reaction no member (index.ts)'); user.send(lang(reaction.message.guild.id, 'UNKWN_ERR_HALT')); return }
+    //@ts-ignore
+    if (!member) { console.log('reaction no member (index.ts)'); user.send(language(reaction.message.guild.id, 'UNKWN_ERR_HALT')); return }
     var emojiString: string = emojiDic.getName(reaction.emoji.toString())
 
     var roleIndex = server.roleGiver.roleReactions.findIndex((value) => {
@@ -274,16 +280,16 @@ bot.on("messageReactionRemove", async (reaction, user) => {
 
 //Rule reaction
 bot.on("messageReactionAdd", async (reaction, user) => {
-    const { lang } = global;
     if (user.bot) { return }
     if (user.partial) { user = await user.fetch() }
     if (!reaction.message.guild) { return; }
-    global.serverManager(reaction.message.guild.id)
+    serverManager(reaction.message.guild.id)
     var server = global.servers[reaction.message.guild.id]
     if (!server.roleGiver) { return }
     if (server.roleGiver.messageID !== reaction.message.id) { return }
     const member = reaction.message.guild.members.cache.get(user.id)
-    if (!member) { console.log('reaction no member (index.ts)'); user.send(lang(reaction.message.guild.id, 'UNKWN_ERR_HALT')); return }
+    //@ts-ignore
+    if (!member) { console.log('reaction no member (index.ts)'); user.send(language(reaction.message.guild.id, 'UNKWN_ERR_HALT')); return }
     var emojiString: string = emojiDic.getName(reaction.emoji.toString())
 
     var roleIndex = server.roleGiver.roleReactions.findIndex((value) => {

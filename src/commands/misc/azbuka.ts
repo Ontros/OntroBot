@@ -1,19 +1,25 @@
-import { Message } from "discord.js";
+import { Message, SlashCommandBuilder, TextChannel } from "discord.js";
+import { CommandOptions } from "../../types";
 
-module.exports = {
+export default {
     commands: ['azbuka'],
     expectedArgs: '<text>',
     permissionError: '',
     minArgs: 1,
     maxArgs: null,
+    data: new SlashCommandBuilder().addStringOption(option => { return option.setRequired(true).setName("text").setNameLocalizations({ "cs": "text" }).setDescription("Text to be converted") }),
+    isCommand: true,
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return; }
-        message.channel.send(TextToAzbuka(text))
+        (message.channel as TextChannel).send(TextToAzbuka(text))
     },
     permissions: [],
     requiredRoles: [],
+    execute: async (interaction) => {
+        interaction.reply(TextToAzbuka(interaction.options.get('text')?.value as string))
+    },
     allowedIDs: [],
-}
+} as CommandOptions
 
 function TextToAzbuka(text: string) {
     var output = ''

@@ -1,17 +1,24 @@
-import { Collection, Message } from "discord.js";
+import { Collection, Message, SlashCommandBuilder } from "discord.js";
 import fs from 'fs'
+import { CommandOptions } from "../../types";
+import deployCommands from "../../deployCommands";
 
-module.exports = {
+export default {
     commands: ['test'],
     expectedArgs: '',
     minArgs: 0,
-    maxArgs: 1,
+    maxArgs: 10,
     permissions: [],
     requiredRoles: [],
+    isCommand: true,
+    data: new SlashCommandBuilder(),
     callback: async (message: Message, Arguments: string[], text: string) => {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
         message.reply("toast")
+        if (Arguments[0] == "deploy") {
+            deployCommands();
+        }
         // let startFrom = Arguments[0]
         // let globalMessages: (Collection<string, Message<true>> | Collection<string, Message<false>>)[] = []
         // while (true) {
@@ -55,4 +62,4 @@ module.exports = {
         // fs.writeFile("out.txt", data, () => { })
     },
     allowedIDs: ['255345748441432064', '275639448299896833', '468845827352166430', '630088178774179871', '275626532507090944']
-}
+} as CommandOptions
