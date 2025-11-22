@@ -15,19 +15,23 @@ export default {
     data: new SlashCommandBuilder(),
     isCommand: true,
     allowedIDs: [],
+    execute: async (interaction) => {
+        interaction.editReply("Deprecated lol");
+    },
     callback: async (message: Message, args: string[], text: string) => {
-        if (!message.guild) { return }
-        const server = global.servers[message.guild.id];
-        if (server.queue.length < 2) {
-            (message.channel as TextChannel).send(language(message, 'NO_TO_SHUFFEL'));
-            return
-        }
-        if (server.dispathcher == undefined || !server.queue) {
-            (message.channel as TextChannel).send(language(message, "NO_PLAY"));
-            return
-        }
-        server.queue = shuffle(server.queue)
-        server.dispathcher.player.stop();
-        (message.channel as TextChannel).send(language(message, 'SHUFFLED'));
+        (message.channel as TextChannel).send("Deprecated lol");
+        // if (!message.guild) { return }
+        // const server = global.servers[message.guild.id];
+        // if (server.queue.length < 2) {
+        //     (message.channel as TextChannel).send(language(message, 'NO_TO_SHUFFEL'));
+        //     return
+        // }
+        // if (server.dispathcher == undefined || !server.queue) {
+        //     (message.channel as TextChannel).send(language(message, "NO_PLAY"));
+        //     return
+        // }
+        // server.queue = shuffle(server.queue)
+        // server.dispathcher.player.stop();
+        // (message.channel as TextChannel).send(language(message, 'SHUFFLED'));
     },
 } as CommandOptions

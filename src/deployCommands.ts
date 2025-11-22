@@ -36,9 +36,9 @@ const rest = new REST({ version: '10' }).setToken(config.token);
     try {
         console.log(`Started refreshing ${commands.length} application (/) commands.`);
         //TODO: add name and description to data!!!!!!!!!!!!!!!!
-        console.log(commands)
+        // console.log(commands)
         const dataJSONs = commands.map((command) => { return (command.data as SlashCommandBuilder).toJSON() })
-        console.log(dataJSONs)
+        // console.log(dataJSONs)
 
         // The put method is used to fully refresh all commands in the guild with the current set
         const data: any = await rest.put(

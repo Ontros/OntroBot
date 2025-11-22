@@ -26,11 +26,11 @@ export default (baseDir: string) => {
                 }
                 //@ts-expect-error
                 const translations = languageDATA.translations[`DES_${file.split('.')[0].toUpperCase()}_SHORT`];
-                console.log(translations, file.toUpperCase());
+                // console.log(translations, file.toUpperCase());
                 (option.data as SlashCommandBuilder).setName(camelToWords(file.split('.')[0]).toLowerCase().replace(".", "").replace(" ", ""))
                     .setDescription(translations['english'])
                 // .setDescriptionLocalizations({ "cs": translations['czech'], "en-GB": translations['english'] })
-                console.log(option.isCommand)
+                // console.log(option.isCommand)
                 if (option.isCommand) {
                     //Command
                     console.log("adding :", (option.data as SlashCommandBuilder).name);
@@ -39,7 +39,7 @@ export default (baseDir: string) => {
                 }
                 else if (!option.isCommand) {
                     //Subcommand container
-                    console.log(option.isCommand)
+                    // console.log(option.isCommand)
                     const subcommands = fs.readdirSync(path.join(baseDir, dir, file.split('.')[0]))
                     const command: SubcommandContainerOptions = (option as SubcommandContainerOptions)
                     for (const subcommandName of subcommands) {

@@ -1,6 +1,6 @@
 import { Message, SlashCommandBuilder, TextChannel } from 'discord.js';
 import { CommandOptions } from '../../types';
-import language from '../../language';
+import language, { languageI } from '../../language';
 import serverManager from '../../server-manager';
 
 export default {
@@ -15,6 +15,19 @@ export default {
             .setDescription("New prefix value").setDescriptionLocalizations({ "cs": "Nová hodnota prefixu" })
     }),
     isCommand: true,
+    execute: async (interaction) => {
+        if (!interaction.guildId) { return; }
+        const newPrefix = interaction.options.get("new-prefix")?.value
+        if (!newPrefix || typeof newPrefix != "string") {
+            interaction.reply(languageI(interaction, 'CUR_PREF') + global.servers[interaction.guildId].prefix)
+            return
+        }
+        else {
+            global.servers[interaction.guildId].prefix = newPrefix
+            serverManager(interaction.guildId, true);
+            interaction.reply(languageI(interaction, 'SET_PREF') + newPrefix)
+        }
+    },
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return; }
         if (!args[0]) {

@@ -9,7 +9,6 @@ export default (message: Message, textId: Translations): string => {
         console.log("Missing guild id"); return "NO TRANSLATION"
     }
     var server = global.servers[message.guildId]
-    console.log(server, message.guildId)
     if (!languageDATA.translations[textId]) {
         throw new Error(`Unknown text ID "${textId}"`)
     }
@@ -32,7 +31,6 @@ export function languageI(interaction: Interaction, textId: Translations): strin
         throw new Error(`Unknown text ID "${textId}"`)
     }
 
-    console.log(server, interaction.guildId)
     if (server.language == 'dev' && !(languageDATA.translations[textId] as { english: string; czech: string; dev: string }).dev) {
         return languageDATA.translations[textId].czech as string
     }

@@ -1,7 +1,7 @@
 import { Message, SlashCommandBuilder, SlashCommandSubcommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../../types";
-import getUser from "../../../utils/getUser";
-import language from "../../../language";
+import getUser, { getUserI } from "../../../utils/getUser";
+import language, { languageI } from "../../../language";
 
 export default {
     commands: ['listListeners'],
@@ -13,6 +13,24 @@ export default {
     allowedIDs: [],
     data: new SlashCommandSubcommandBuilder(),
     isCommand: true,
+    execute: async (interaction) => {
+        if (!interaction.guild) { return }
+        var out = ""
+        global.servers[interaction.guild.id].cekarnaPings.forEach(async element => {
+            if (!interaction.guild) { return }
+            const user = await getUserI(interaction, element);
+            if (!user) { out += (languageI(interaction, 'USR_ID_NOT')) + "\n"; }
+            else {
+                try {
+                    out += (user.user.username) + "\n"
+                }
+                catch {
+                    out += (element) + "\n"
+                }
+            }
+        })
+        interaction.reply(out)
+    },
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         global.servers[message.guild.id].cekarnaPings.forEach(async element => {

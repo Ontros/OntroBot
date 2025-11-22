@@ -12,31 +12,34 @@ export default {
 	data: new SlashCommandBuilder(),
 	isCommand: true,
 	callback: async (message: Message, args: string[], text: string) => {
-		//TODO: when loop random uses queue[0]
-		if (!message.guild) { return }
-		var server = global.servers[message.guild.id];
-		if (!server.audioResource?.playbackDuration) {
-			(message.channel as TextChannel).send(language(message, "NO_PLAY"))
-			return
-		}
-		const seconds = server.audioResource.playbackDuration / 1000;
-		const durationO = server.queue[0].duration;
-		if (!durationO) {
-			throw Error("np.ts 17 WTFFFFFFFFFFFFFF")
-		}
-		const duration =
-			durationO.seconds +
-			durationO.minutes * 60 +
-			durationO.hours * 60 * 60 +
-			durationO.days * 60 * 60 * 24;
-		(message.channel as TextChannel).send({
-			embeds: [progressBar(message,
-				language(message, "NOW_PLAY"),
-				`${server.queue[0].title}\n${language(message, "REQ_BY")}: ${server.queue[0].requestedBy
-				}\n${secondsToString(seconds)}/${secondsToString(duration)}`,
-				seconds / duration
-			)]
-		});
+		(message.channel as TextChannel).send("Deprecated lol");
+		// if (!message.guild) { return }
+		// var server = global.servers[message.guild.id];
+		// if (!server.audioResource?.playbackDuration) {
+		// 	(message.channel as TextChannel).send(language(message, "NO_PLAY"))
+		// 	return
+		// }
+		// const seconds = server.audioResource.playbackDuration / 1000;
+		// const durationO = server.queue[0].duration;
+		// if (!durationO) {
+		// 	throw Error("np.ts 17 WTFFFFFFFFFFFFFF")
+		// }
+		// const duration =
+		// 	durationO.seconds +
+		// 	durationO.minutes * 60 +
+		// 	durationO.hours * 60 * 60 +
+		// 	durationO.days * 60 * 60 * 24;
+		// (message.channel as TextChannel).send({
+		// 	embeds: [progressBar(message,
+		// 		language(message, "NOW_PLAY"),
+		// 		`${server.queue[0].title}\n${language(message, "REQ_BY")}: ${server.queue[0].requestedBy
+		// 		}\n${secondsToString(seconds)}/${secondsToString(duration)}`,
+		// 		seconds / duration
+		// 	)]
+		// });
+	},
+	execute: async (interaction) => {
+		interaction.editReply("Deprecated lol");
 	},
 	permissions: [],
 	requiredRoles: [],

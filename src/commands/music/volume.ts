@@ -17,27 +17,31 @@ export default {
             .setDescription("New volume in percents").setDescriptionLocalizations({ "cs": "Nová hlasitost v procentech" })
     }),
     isCommand: true,
+    execute: async (interaction) => {
+        interaction.editReply("Deprecated lol");
+    },
     callback: async (message: Message, args: string[], text: string) => {
-        if (!message.guild) { return }
-        var server = global.servers[message.guild.id];
-        if (!args[0]) {
-            (message.channel as TextChannel).send(language(message, 'CURR_VOL') + ': ' + server.volume + '%')
-        }
-        else {
-            if (isNaN(parseFloat(args[0]))) {
-                message.reply(language(message, 'VOL_NOT_NUM'));
-                return;
-            }
-            server.volume = parseFloat(args[0])
+        (message.channel as TextChannel).send("Deprecated lol");
+        // if (!message.guild) { return }
+        // var server = global.servers[message.guild.id];
+        // if (!args[0]) {
+        //     (message.channel as TextChannel).send(language(message, 'CURR_VOL') + ': ' + server.volume + '%')
+        // }
+        // else {
+        //     if (isNaN(parseFloat(args[0]))) {
+        //         message.reply(language(message, 'VOL_NOT_NUM'));
+        //         return;
+        //     }
+        //     server.volume = parseFloat(args[0])
 
-            if (server.audioResource?.volume) {
-                server.audioResource.volume.setVolume(server.volume / 100);
-            }
-            else {
-                console.log("No audio Resource")
-            }
-            (message.channel as TextChannel).send(language(message, 'SET_VOL') + ': ' + server.volume + '%');
-            serverManager(message.guild.id, true);
-        }
+        //     if (server.audioResource?.volume) {
+        //         server.audioResource.volume.setVolume(server.volume / 100);
+        //     }
+        //     else {
+        //         console.log("No audio Resource")
+        //     }
+        //     (message.channel as TextChannel).send(language(message, 'SET_VOL') + ': ' + server.volume + '%');
+        //     serverManager(message.guild.id, true);
+        // }
     }
 } as CommandOptions

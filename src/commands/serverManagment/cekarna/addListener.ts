@@ -1,6 +1,6 @@
 import { Message, SlashCommandBuilder, SlashCommandSubcommandBuilder, TextChannel } from "discord.js";
 import { CommandOptions } from "../../../types";
-import language from "../../../language";
+import language, { languageI } from "../../../language";
 import serverManager from "../../../server-manager";
 import getUser from "../../../utils/getUser";
 
@@ -19,6 +19,24 @@ export default {
             .setRequired(true))
     ,
     isCommand: true,
+    execute: async (interaction) => {
+        if (!interaction.guild) { return }
+        var server = global.servers[interaction.guild.id];
+        const user = interaction.options.get("listener")?.user;
+        if (!user) {
+            interaction.reply(languageI(interaction, 'USR_ID_NOT'))
+            return;
+        }
+
+        if (!server.cekarnaPings.includes(user.id)) {
+            server.cekarnaPings.push(user.id);
+            interaction.reply(languageI(interaction, 'LIST_ADD') + ': ' + user.displayName);
+            serverManager(interaction.guild.id, true);
+        }
+        else {
+            interaction.reply(languageI(interaction, 'LIST_EXISTS'));
+        }
+    },
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
