@@ -1,6 +1,7 @@
 import { Collection, Message, SlashCommandBuilder } from "discord.js";
 import fs from 'fs'
 import { CommandOptions } from "../../types";
+import deployCommands from "../../deployCommands";
 
 export default {
     commands: ['test'],
@@ -15,6 +16,9 @@ export default {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
         message.reply("toast")
+        if (Arguments[0] == "deploy") {
+            deployCommands();
+        }
         // let startFrom = Arguments[0]
         // let globalMessages: (Collection<string, Message<true>> | Collection<string, Message<false>>)[] = []
         // while (true) {

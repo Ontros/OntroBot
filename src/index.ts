@@ -82,12 +82,20 @@ readAllCommands(__dirname)
 
 
 bot.on('interactionCreate', async interaction => {
+    console.log(interaction)
     if (!interaction.isChatInputCommand()) return;
-    const command = global.slashCommands.get(interaction.commandName)
+    var command = global.slashCommands.get(interaction.commandName)
 
     if (!command) {
-        console.error(`No command matching ${interaction.commandName} was found.`);
-        return;
+        const subCommand = global.slashCommands.get(interaction.options.getSubcommand())
+        if (subCommand) {
+            command = subCommand
+        }
+        else {
+            console.error(`No command matching ${interaction.commandName} was found.`);
+            interaction.reply("Neznamy command, idk jaks to udelal g")
+            return;
+        }
     }
     try {
         if (command.execute) {

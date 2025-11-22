@@ -16,7 +16,7 @@ export default {
         return option.setRequired(false).setMinValue(1).setName("page-number").setNameLocalizations({ "cs": "strana-seznamu" }).setDescription("Page number that will be shown").setDescriptionLocalizations({ cs: "Strana, která bude zobrazena" })
     }),
     execute: async (interaction) => {
-        interaction.editReply("Deprecated lol");
+        interaction.reply("Deprecated lol");
     },
     callback: async (message: Message, args: string[], text: string) => {
         (message.channel as TextChannel).send("Deprecated lol");

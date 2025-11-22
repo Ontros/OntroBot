@@ -32,7 +32,7 @@ const commands = readAllCommands(__dirname)
 const rest = new REST({ version: '10' }).setToken(config.token);
 
 // and deploy your commands!
-(async () => {
+export default async () => {
     try {
         console.log(`Started refreshing ${commands.length} application (/) commands.`);
         //TODO: add name and description to data!!!!!!!!!!!!!!!!
@@ -51,4 +51,4 @@ const rest = new REST({ version: '10' }).setToken(config.token);
         // And of course, make sure you catch and log any errors!
         console.error(error);
     }
-})();
+}

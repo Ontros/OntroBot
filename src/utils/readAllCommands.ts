@@ -20,7 +20,7 @@ export default (baseDir: string) => {
             } else if (file != base_file) {
                 //File
                 const option: CommandOptions | SubcommandContainerOptions = require(path.join(baseDir, dir, file)).default;
-                if (!option.data) {
+                if (!option?.data) {
                     //If is not defined continue
                     continue
                 }

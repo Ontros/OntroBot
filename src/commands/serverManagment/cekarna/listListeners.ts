@@ -14,10 +14,10 @@ export default {
     data: new SlashCommandSubcommandBuilder(),
     isCommand: true,
     execute: async (interaction) => {
-        if (!interaction.guild) { return }
-        var out = ""
-        global.servers[interaction.guild.id].cekarnaPings.forEach(async element => {
-            if (!interaction.guild) { return }
+        if (!interaction.guildId) { return }
+        let out = "List:\n"
+        for (const element of global.servers[interaction.guildId].cekarnaPings) {
+            if (!interaction.guildId) { return }
             const user = await getUserI(interaction, element);
             if (!user) { out += (languageI(interaction, 'USR_ID_NOT')) + "\n"; }
             else {
@@ -28,7 +28,7 @@ export default {
                     out += (element) + "\n"
                 }
             }
-        })
+        }
         interaction.reply(out)
     },
     callback: async (message: Message, args: string[], text: string) => {

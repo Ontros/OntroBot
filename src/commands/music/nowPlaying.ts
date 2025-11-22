@@ -39,7 +39,7 @@ export default {
 		// });
 	},
 	execute: async (interaction) => {
-		interaction.editReply("Deprecated lol");
+		interaction.reply("Deprecated lol");
 	},
 	permissions: [],
 	requiredRoles: [],
