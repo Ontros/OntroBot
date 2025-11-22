@@ -141,7 +141,7 @@ export default async (commandOptions: CommandOptions, file: string) => {
 
     global.bot.on('messageCreate', async (message: Message) => {
         const { member, content, guild, channel } = message
-        const { lang, bot } = global;
+        const { bot } = global;
         if (!guild || !message.guild || channel.isDMBased() || message.author.bot) {
             return;
         }
@@ -165,10 +165,10 @@ export default async (commandOptions: CommandOptions, file: string) => {
             if (content.toLowerCase().split(/[ ]+/)[0] === `${prefix}${alias.toLowerCase()}`) {
                 //TODO: redeploy
                 //for (const permission of commandOptions.permissions) {
-                    //if (!member.permissions.has(permission)) {
-                    //    message.reply(lang(guild.id, 'CMD_NO_PERM'))
-                    //    return
-                    //}
+                //if (!member.permissions.has(permission)) {
+                //    message.reply(lang(guild.id, 'CMD_NO_PERM'))
+                //    return
+                //}
                 //}
                 //for (const requiredRole of commandOptions.requiredRoles) {
                 //    const role = (await guild.roles.fetch()).find((role: Role) => role.name == requiredRole);
