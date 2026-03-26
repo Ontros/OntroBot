@@ -181,30 +181,42 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
     try {
       if (oldState.channelId !== newState.channelId) {
         serverManager(newState.guild.id, false)
-        if (!global.servers[newState.guild.id].logServer) {
-          return
-        }
         var logOrDis = ""
         if (!newState.channelId) {
           //disconnect
-          logOrDis = "disconnected from"
+          logOrDis = "disconnected"
         }
         else {
           //connect
-          logOrDis = "connected to"
+          logOrDis = "connected"
         }
-        if (!process.env.LOGGING_CHANNEL) {
-          console.log("missing ENV LOGGING CHANNEL")
-          return
-        }
-        const channel = await bot.channels.fetch(process.env.LOGGING_CHANNEL, { cache: false })
-        if (channel && channel.isTextBased()) {
-          var member: GuildMember | null = newState.member || oldState.member
-          var voiceChannel: VoiceBasedChannel | null = oldState.channel || newState.channel;
-          (channel as TextChannel).send(`${member?.nickname || member?.user.username} has ${logOrDis} ${voiceChannel?.name}`)
+
+        var member: GuildMember | null = newState.member || oldState.member
+        var voiceChannel: VoiceBasedChannel | null = oldState.channel || newState.channel;
+
+        // Existing logging to LOGGING_CHANNEL
+        if (process.env.LOGGING_CHANNEL) {
+          const channel = await bot.channels.fetch(process.env.LOGGING_CHANNEL, { cache: false })
+          if (channel && channel.isTextBased()) {
+            (channel as TextChannel).send(`${member?.nickname || member?.user.username} has ${logOrDis} ${voiceChannel?.name}`)
+          }
+          else {
+            console.log("logging channel isnt text")
+          }
         }
         else {
-          console.log("logging channel isnt text")
+          console.log("missing ENV LOGGING CHANNEL")
+        }
+
+        // Raw logging to LOGGING_CHANNEL_RAW
+        if (process.env.LOGGING_CHANNEL_RAW) {
+          const rawChannel = await bot.channels.fetch(process.env.LOGGING_CHANNEL_RAW, { cache: false })
+          if (rawChannel && rawChannel.isTextBased()) {
+            const userId: string = member?.id || newState.member?.id || oldState.member?.id || "unknown"
+            const channelId: string = voiceChannel?.id || "unknown"
+            const logMessage: string = `${newState.guild.id},${channelId},${userId},${logOrDis}`
+            await (rawChannel as TextChannel).send(logMessage)
+          }
         }
       }
 
