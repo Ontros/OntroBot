@@ -30,16 +30,12 @@ type Guild = {
 };
 
 type Server = {
-    queue: Song[];
-    dispathcher?: Dispatcher;
-    loop: boolean;
-    connection?: VoiceConnection;
-    playing: boolean;
-    volume: number;
     language: string;
     cekarnaChannel: string;
     cekarnaPings: string[];
     steps: Step[];
+    prefix: string;
+    logServer: boolean;
 };
 
 type Channels = {
@@ -48,27 +44,6 @@ type Channels = {
 
 type ChannelsCaches = {
     get: (arg0: ((arg1: Channel) => boolean)|string) => Channel;
-};
-
-type Song = {
-    title: string;
-    id: string;
-    url: string;
-    requestedBy: string;
-};
-
-type VoiceConnection = {
-    play: (arg0: any) => Dispatcher;
-    disconnect: () => void;
-};
-
-type Dispatcher = {
-    setVolume: (vol: number) => void;
-    destroy: () => void;
-    resume: () => void;
-    on: (arg0: string, call: Function) => void;
-    pause: () => void;
-    end: () => void;
 };
 
 var send = () => { };
@@ -97,7 +72,6 @@ type CommandOptions = {
     allowedIDs: string[];
     allowedServer: string;
     callback: Function;
-    requireChannelPerms: boolean;
 };
 
 type Message = {
@@ -219,22 +193,13 @@ type SubcommandContainerOptions = {
 import { AudioPlayer, AudioResource, createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, joinVoiceChannel, NoSubscriberBehavior, PlayerSubscription, VoiceConnection } from "@discordjs/voice";
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
 type Server = {
-    queue: Song[];
-    dispathcher?: PlayerSubscription | undefined;
-    audioResource: AudioResource<null> | undefined;
-    player: AudioPlayer | undefined;
-    loop: (0 | 1 | 2 | 3);
-    connection?: VoiceConnection;
-    playing: boolean;
-    volume: number;
     language: Languages;
     cekarnaChannel: string;
     cekarnaPings: string[];
     steps: Step[];
-    playlists: (Playlists | undefined)
     prefix: string;
-    roleGiver?: RoleGiver;
     logServer: boolean;
+    roleGiver?: RoleGiver;
 };
 
 type RoleGiver = {
@@ -313,20 +278,6 @@ type Step = {
     name: string;
     emoji: string;
 }
-
-type Song = {
-    title: string;
-    id: string;
-    url: string;
-    requestedBy: Discord.User;
-    duration: ({
-        days: number;
-        hours: number;
-        minutes: number;
-        seconds: number;
-    } | undefined)
-    // duration: any
-};
 
 type ServerManager = (id: string, change?: boolean) => void
 type Lang = (id: string, textId: string) => string
