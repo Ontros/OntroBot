@@ -9,3 +9,4 @@ ticTacToe.js
 .vscode
 oauth2.keys.json
 servers.db
+data.bak/*
