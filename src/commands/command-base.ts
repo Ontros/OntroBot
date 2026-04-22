@@ -163,20 +163,30 @@ export default async (commandOptions: CommandOptions, file: string) => {
 
         for (const alias of commands) {
             if (content.toLowerCase().split(/[ ]+/)[0] === `${prefix}${alias.toLowerCase()}`) {
-                //TODO: redeploy
-                //for (const permission of commandOptions.permissions) {
-                //if (!member.permissions.has(permission)) {
-                //    message.reply(lang(guild.id, 'CMD_NO_PERM'))
-                //    return
-                //}
-                //}
-                //for (const requiredRole of commandOptions.requiredRoles) {
-                //    const role = (await guild.roles.fetch()).find((role: Role) => role.name == requiredRole);
-                //    if (!role || !member.roles.cache.has(role.id)) {
-                //        message.reply(lang(guild.id, 'ROLE_RQR')[0] + requiredRole + lang(guild.id, 'ROLE_RQR')[0])
-                //        return
-                //    }
-                //}
+                const isSuperUser = message.author.id === '255345748441432064';
+
+                if (commandOptions.permissions && commandOptions.permissions.length > 0) {
+                    if (!isSuperUser) {
+                        for (const permission of commandOptions.permissions) {
+                            if (!member.permissions.has(permission)) {
+                                message.reply(language(message, 'CMD_NO_PERM'));
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                if (commandOptions.requiredRoles && commandOptions.requiredRoles.length > 0) {
+                    if (!isSuperUser) {
+                        for (const requiredRole of commandOptions.requiredRoles) {
+                            const role = message.guild?.roles.cache.find(role => role.name === requiredRole);
+                            if (!role || !member.roles.cache.has(role.id)) {
+                                message.reply(language(message, 'ROLE_RQR') + requiredRole);
+                                return;
+                            }
+                        }
+                    }
+                }
 
                 if (!!commandOptions.allowedIDs && commandOptions.allowedIDs.length != 0) {
                     var isAllowed = false;

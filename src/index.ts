@@ -8,7 +8,7 @@ import dotenv from 'dotenv'
 import fs from 'fs'
 import serverManager, { logVoiceAction } from './server-manager'
 import createEmbed from './utils/createEmbed';
-import language from './language';
+import language, { languageI } from './language';
 import readAllCommands from './utils/readAllCommands';
 import { handleWordFootball } from './utils/wordFootball';
 
@@ -92,6 +92,23 @@ bot.on('interactionCreate', async interaction => {
   }
   try {
     if (command.execute) {
+      const isSuperUser = interaction.user.id === '255345748441432064';
+
+      if (command.permissions && command.permissions.length > 0 && !isSuperUser) {
+        const member = interaction.member as Discord.GuildMember;
+
+        if (!member || !member.permissions) {
+          await interaction.reply({ content: "This command can only be used in a server.", flags: MessageFlags.Ephemeral });
+          return;
+        }
+
+        for (const permission of command.permissions) {
+          if (!member.permissions.has(permission)) {
+            await interaction.reply({ content: languageI(interaction, 'CMD_NO_PERM'), flags: MessageFlags.Ephemeral });
+            return;
+          }
+        }
+      }
       serverManager(interaction.guildId ?? "", false);
       await command.execute(interaction);
     }
