@@ -719,6 +719,46 @@ export default {
     "SET_PREF": {
       "english": "Prefix set to: ",
       "czech": "Prefix nastaven na: "
+    },
+    "DES_SLOVNIFOTBAL_SHORT": {
+      "english": "Setup word football channel",
+      "czech": "Nastaví kanál pro slovní fotbal"
+    },
+    "DES_SLOVNIFOTBAL_LONG": {
+      "english": "Sets up the channel for the word football game.",
+      "czech": "Nastaví kanál pro hru slovní fotbal."
+    },
+    "WF_CHANNEL_SET": {
+      "english": "Word football channel set to",
+      "czech": "Kanál pro slovní fotbal byl nastaven na"
+    },
+    "WF_STREAK_BROKEN": {
+      "english": "broke the streak! Reason:",
+      "czech": "rozbil(a) streak! Důvod:"
+    },
+    "WF_RESET": {
+      "english": "The game has been reset. Start with any new word!",
+      "czech": "Hra byla restartována. Začni jakýmkoliv novým slovem!"
+    },
+    "WF_ERR_SINGLE": {
+      "english": "Not a valid single word.",
+      "czech": "Není to platné jedno slovo."
+    },
+    "WF_ERR_TWICE": {
+      "english": "Cannot play twice in a row.",
+      "czech": "Nemůžeš hrát dvakrát po sobě."
+    },
+    "WF_ERR_START": {
+      "english": "Word must start with",
+      "czech": "Slovo musí začínat na"
+    },
+    "WF_ERR_USED": {
+      "english": "Word already used.",
+      "czech": "Slovo už bylo použito."
+    },
+    "WF_ERR_DICT": {
+      "english": "Word not in dictionary.",
+      "czech": "Slovo není ve slovníku."
     }
   }
 }

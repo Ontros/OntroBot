@@ -1,5 +1,5 @@
-import Database from 'better-sqlite3';
 import { Server } from "./types";
+import db from "./database";
 
 const defaultServer: Server = {
     language: "english",
@@ -10,31 +10,8 @@ const defaultServer: Server = {
     logServer: false
 }
 
-const db = new Database('./servers.db');
-
-db.exec(`CREATE TABLE IF NOT EXISTS servers (
-    id TEXT PRIMARY KEY,
-    language TEXT DEFAULT 'english',
-    cekarnaChannel TEXT DEFAULT '',
-    cekarnaPings TEXT DEFAULT '[]',
-    steps TEXT DEFAULT '[]',
-    prefix TEXT DEFAULT '_',
-    logServer INTEGER DEFAULT 0
-)`);
-
-db.exec(`CREATE TABLE IF NOT EXISTS voice_logs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    guild_id TEXT,
-    user_id TEXT,
-    channel_id TEXT,
-    action TEXT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-)`);
-
 const insertOrReplace = db.prepare(`INSERT OR REPLACE INTO servers (id, language, cekarnaChannel, cekarnaPings, steps, prefix, logServer) VALUES (?, ?, ?, ?, ?, ?, ?)`);
-
 const selectServer = db.prepare(`SELECT * FROM servers WHERE id = ?`);
-
 const insertVoiceLog = db.prepare(`INSERT INTO voice_logs (guild_id, user_id, channel_id, action) VALUES (?, ?, ?, ?)`);
 
 export default (id: string, change?: boolean) => {
@@ -64,7 +41,7 @@ function readServerDB(id: string) {
     const row = selectServer.get(id) as any;
     if (row) {
         global.servers[id] = {
-            language: row.language,
+            language: row.language as any,
             cekarnaChannel: row.cekarnaChannel,
             cekarnaPings: JSON.parse(row.cekarnaPings),
             steps: JSON.parse(row.steps),

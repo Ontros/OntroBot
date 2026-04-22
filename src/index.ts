@@ -10,6 +10,7 @@ import serverManager, { logVoiceAction } from './server-manager'
 import createEmbed from './utils/createEmbed';
 import language from './language';
 import readAllCommands from './utils/readAllCommands';
+import { handleWordFootball } from './utils/wordFootball';
 
 type Servers = {
   [index: string]: Server;
@@ -296,6 +297,10 @@ bot.on("messageReactionAdd", async (reaction, user) => {
   }
 
 })
+
+bot.on('messageCreate', async (message: Message) => {
+  await handleWordFootball(message);
+});
 //@ts-ignore
 global.bot.setMaxListeners(0)
 
