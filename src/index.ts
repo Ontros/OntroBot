@@ -6,7 +6,7 @@ const emojiDic = require("emoji-dictionary")
 import path from 'path';
 import dotenv from 'dotenv'
 import fs from 'fs'
-import serverManager from './server-manager'
+import serverManager, { logVoiceAction } from './server-manager'
 import createEmbed from './utils/createEmbed';
 import language from './language';
 import readAllCommands from './utils/readAllCommands';
@@ -200,6 +200,9 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
 
     const userName = member.nickname || member.user.username;
     const channelIdStr = targetChannel?.id || "unknown";
+    const rawActionStr = action.split(" ")[0];
+
+    logVoiceAction(newState.guild.id, member.id, channelIdStr, rawActionStr);
 
     const getLogChannel = async (channelId: string | undefined) => {
       if (!channelId) return null;
@@ -224,7 +227,7 @@ bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) =>
     if (process.env.LOGGING_CHANNEL_RAW) {
       const rawChannel = await getLogChannel(process.env.LOGGING_CHANNEL_RAW);
       if (rawChannel) {
-        const logMessage = `${newState.guild.id},${channelIdStr},${member.id},${action.split(" ")[0]}`;
+        const logMessage = `${newState.guild.id},${channelIdStr},${member.id},${rawActionStr}`;
         await rawChannel.send(logMessage);
       } else {
         console.warn("LOGGING_CHANNEL_RAW is missing access or is not a text channel.");
