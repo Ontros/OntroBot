@@ -177,56 +177,64 @@ bot.on('voiceStateUpdate', async (oldMember: VoiceState, newMember: VoiceState) 
 
 bot.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) => {
   try {
-    //Logging
-    try {
-      if (oldState.channelId !== newState.channelId) {
-        serverManager(newState.guild.id, false)
-        var logOrDis = ""
-        if (!newState.channelId) {
-          //disconnect
-          logOrDis = "disconnected"
-        }
-        else {
-          //connect
-          logOrDis = "connected"
-        }
+    if (oldState.channelId === newState.channelId) return;
 
-        var member: GuildMember | null = newState.member || oldState.member
-        var voiceChannel: VoiceBasedChannel | null = oldState.channel || newState.channel;
+    serverManager(newState.guild.id, false);
 
-        // Existing logging to LOGGING_CHANNEL
-        if (process.env.LOGGING_CHANNEL) {
-          const channel = await bot.channels.fetch(process.env.LOGGING_CHANNEL, { cache: false })
-          if (channel && channel.isTextBased()) {
-            (channel as TextChannel).send(`${member?.nickname || member?.user.username} has ${logOrDis} ${voiceChannel?.name}`)
-          }
-          else {
-            console.log("logging channel isnt text")
-          }
-        }
-        else {
-          console.log("missing ENV LOGGING CHANNEL")
-        }
+    const member = newState.member || oldState.member;
+    if (!member) return;
 
-        // Raw logging to LOGGING_CHANNEL_RAW
-        if (process.env.LOGGING_CHANNEL_RAW) {
-          const rawChannel = await bot.channels.fetch(process.env.LOGGING_CHANNEL_RAW, { cache: false })
-          if (rawChannel && rawChannel.isTextBased()) {
-            const userId: string = member?.id || newState.member?.id || oldState.member?.id || "unknown"
-            const channelId: string = voiceChannel?.id || "unknown"
-            const logMessage: string = `${newState.guild.id},${channelId},${userId},${logOrDis}`
-            await (rawChannel as TextChannel).send(logMessage)
-          }
-        }
-      }
+    let action = "";
+    let targetChannel: VoiceBasedChannel | null = null;
 
+    if (!oldState.channelId && newState.channelId) {
+      action = "connected to";
+      targetChannel = newState.channel;
+    } else if (oldState.channelId && !newState.channelId) {
+      action = "disconnected from";
+      targetChannel = oldState.channel;
+    } else if (oldState.channelId && newState.channelId) {
+      action = "moved to";
+      targetChannel = newState.channel;
     }
-    catch { console.log("error logging") }
+
+    const userName = member.nickname || member.user.username;
+    const channelIdStr = targetChannel?.id || "unknown";
+
+    const getLogChannel = async (channelId: string | undefined) => {
+      if (!channelId) return null;
+      let channel = bot.channels.cache.get(channelId);
+      if (!channel) {
+        channel = await bot.channels.fetch(channelId) ?? undefined;
+      }
+      return channel?.isTextBased() ? (channel as TextChannel) : null;
+    };
+
+    if (process.env.LOGGING_CHANNEL) {
+      const channel = await getLogChannel(process.env.LOGGING_CHANNEL);
+      if (channel) {
+        await channel.send(`${userName} has ${action} ${targetChannel?.name || "an unknown channel"}`);
+      } else {
+        console.warn("LOGGING_CHANNEL is missing access or is not a text channel.");
+      }
+    } else {
+      console.warn("Missing ENV: LOGGING_CHANNEL");
+    }
+
+    if (process.env.LOGGING_CHANNEL_RAW) {
+      const rawChannel = await getLogChannel(process.env.LOGGING_CHANNEL_RAW);
+      if (rawChannel) {
+        const logMessage = `${newState.guild.id},${channelIdStr},${member.id},${action.split(" ")[0]}`;
+        await rawChannel.send(logMessage);
+      } else {
+        console.warn("LOGGING_CHANNEL_RAW is missing access or is not a text channel.");
+      }
+    }
+
+  } catch (error) {
+    console.error("Error in voiceStateUpdate logging:", error);
   }
-  catch {
-    console.log('index js 216 error')
-  }
-})
+});
 process.on("unhandledRejection", (e) => { console.log(e, "unhandled promise rejection") })
 bot.on("messageReactionRemove", async (reaction, user) => {
   if (user.bot) { return }
