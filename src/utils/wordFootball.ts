@@ -10,12 +10,14 @@ const checkWord = db.prepare(`SELECT 1 FROM dictionary WHERE word = ? COLLATE NO
 export const handleWordFootball = async (message: Message) => {
     if (!message.guildId || message.author.bot) return;
 
+    // Check if the message is in a configured word football channel
     const state = getState.get(message.guildId, message.channel.id) as any;
     if (!state) return;
 
     const word = message.content.trim().toLowerCase();
 
-    const isSingleWord = /^[a-záčďéěíňóřšťúůýž]+$/i.test(word);
+    // Strict pattern matching to ensure it's a single word holding standard Czech alphabet
+    const isSingleWord = /^[a-záčďéěíňóřšťúůýžäĺľôŕ]+$/i.test(word);
     const usedWords = JSON.parse(state.used_words || '[]');
 
     let isValid = true;
@@ -60,8 +62,24 @@ export const handleWordFootball = async (message: Message) => {
         const userRef = `<@${message.author.id}>`;
         const brokeText = language(message, 'WF_STREAK_BROKEN');
         const resetText = language(message, 'WF_RESET');
+        let timeoutText = "";
+
+        if (message.member) {
+            try {
+                // .moderatable checks permissions AND role hierarchy safely
+                if (message.member.moderatable) {
+                    await message.member.timeout(60 * 1000, language(message, 'WF_TIMEOUT_MESSAGE'));
+                    timeoutText = language(message, 'WF_TIMEOUT_SUCCESS');
+                } else {
+                    timeoutText = language(message, 'WF_TIMEOUT_FAIL');
+                }
+            } catch (error) {
+                console.error("Failed to timeout member:", error);
+                timeoutText = language(message, 'WF_TIMEOUT_FAIL');
+            }
+        }
 
         //@ts-ignore
-        message.channel.send(`${userRef} ${brokeText} ${failReason}\n${resetText}`);
+        message.channel.send(`${userRef} ${brokeText} ${failReason}\n${timeoutText}\n${resetText}`);
     }
 };

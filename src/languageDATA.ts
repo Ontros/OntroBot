@@ -742,7 +742,7 @@ export default {
     },
     "WF_ERR_SINGLE": {
       "english": "Not a valid single word.",
-      "czech": "Není to platné jedno slovo."
+      "czech": "Není to platné slovo."
     },
     "WF_ERR_TWICE": {
       "english": "Cannot play twice in a row.",
@@ -750,7 +750,7 @@ export default {
     },
     "WF_ERR_START": {
       "english": "Word must start with",
-      "czech": "Slovo musí začínat na"
+      "czech": "Slovo musí začít na"
     },
     "WF_ERR_USED": {
       "english": "Word already used.",
@@ -759,6 +759,17 @@ export default {
     "WF_ERR_DICT": {
       "english": "Word not in dictionary.",
       "czech": "Slovo není ve slovníku."
+    },
+    "WF_TIMEOUT_SUCCESS": {
+      "english": "You have been timed out for 1 minute to think about your mistake.",
+      "czech": "Dostáváš timeout na 1 minutu, abys mohl přemýšlet o své chybě."
+    },
+    "WF_TIMEOUT_FAIL": {
+      "english": "I tried to time you out, but I don't have the permissions. Consider yourself lucky!",
+      "czech": "Chtěl jsem ti dát timeout, ale nemám na tebe práva. Máš štěstí!"
+    }, "WF_TIMEOUT_MESSAGE": {
+      "english": "Broke the word football streak",
+      "czech": "Zlomil sérii slovního fotbalu"
     }
   }
 }
