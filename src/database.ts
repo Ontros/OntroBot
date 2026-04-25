@@ -35,4 +35,13 @@ db.exec(`CREATE TABLE IF NOT EXISTS dictionary (
     word TEXT PRIMARY KEY
 )`);
 
+db.exec(`CREATE INDEX IF NOT EXISTS idx_dictionary_word ON dictionary(word COLLATE NOCASE)`);
+
+db.exec(`CREATE TABLE IF NOT EXISTS user_wf_stats (
+    user_id TEXT PRIMARY KEY,
+    successful_words INTEGER DEFAULT 0,
+    total_word_length INTEGER DEFAULT 0,
+    streaks_broken INTEGER DEFAULT 0
+)`);
+
 export default db;

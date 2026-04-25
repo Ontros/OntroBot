@@ -770,6 +770,10 @@ export default {
     }, "WF_TIMEOUT_MESSAGE": {
       "english": "Broke the word football streak",
       "czech": "Zlomil sérii slovního fotbalu"
-    }
+    },
+    "WF_ONE_WORD_ONLY": {
+      "english": "You can only type one word at a time in the word football channel! Your message was deleted.",
+      "czech": "Do kanálu se slovním fotbalem smíš napsat pouze jedno slovo! Tvoje zpráva byla smazána."
+    },
   }
 }
