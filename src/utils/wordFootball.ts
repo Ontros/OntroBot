@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
 import db from "../database";
 import language from "../language";
+import serverManager from "../server-manager";
 
 const getState = db.prepare(`SELECT * FROM word_football_state WHERE guild_id = ? AND channel_id = ?`);
 const updateState = db.prepare(`UPDATE word_football_state SET last_word = ?, last_user = ?, used_words = ? WHERE guild_id = ?`);
@@ -9,6 +10,8 @@ const checkWord = db.prepare(`SELECT 1 FROM dictionary WHERE word = ? COLLATE NO
 
 export const handleWordFootball = async (message: Message) => {
     if (!message.guildId || message.author.bot) return;
+
+    serverManager(message.guildId);
 
     // Check if the message is in a configured word football channel
     const state = getState.get(message.guildId, message.channel.id) as any;
@@ -66,7 +69,6 @@ export const handleWordFootball = async (message: Message) => {
 
         if (message.member) {
             try {
-                // .moderatable checks permissions AND role hierarchy safely
                 if (message.member.moderatable) {
                     await message.member.timeout(60 * 1000, language(message, 'WF_TIMEOUT_MESSAGE'));
                     timeoutText = language(message, 'WF_TIMEOUT_SUCCESS');
