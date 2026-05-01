@@ -10,3 +10,5 @@ ticTacToe.js
 oauth2.keys.json
 servers.db
 data.bak/*
+*.txt
+*.py

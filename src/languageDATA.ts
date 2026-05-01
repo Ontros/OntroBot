@@ -775,5 +775,45 @@ export default {
       "english": "You can only type one word at a time in the word football channel! Your message was deleted.",
       "czech": "Do kanálu se slovním fotbalem smíš napsat pouze jedno slovo! Tvoje zpráva byla smazána."
     },
+    "WF_REPEAT_WORD": {
+      "english": "This word was already used in this game! Your message was deleted.",
+      "czech": "Toto slovo bylo v této hře již použito! Tvoje zpráva byla smazána."
+    },
+    "WF_BROKEN_TITLE": {
+      "english": "Streak Broken!",
+      "czech": "Série rozbita!"
+    },
+    "WF_DICT_ADD_TITLE": {
+      "english": "Word Added to Dictionary!",
+      "czech": "Slovo přidáno do slovníku!"
+    },
+    "WF_DICT_ADD": {
+      "english": "was added to the global dictionary by community vote!",
+      "czech": "bylo přidáno do globálního slovníku hlasováním komunity!"
+    },
+    "WF_LEADERBOARD_TITLE": {
+      "english": "Word Football Leaderboard",
+      "czech": "Slovní fotbal — žebříček"
+    },
+    "WF_LEADERBOARD_EMPTY": {
+      "english": "No statistics yet! Play the game to appear here.",
+      "czech": "Zatím žádné statistiky! Zahraj hru, aby ses zobrazil(a)."
+    },
+    "WF_LEADERBOARD_WORDS": {
+      "english": "words",
+      "czech": "slov"
+    },
+    "WF_LEADERBOARD_BROKEN": {
+      "english": "streaks broken",
+      "czech": "rozbité série"
+    },
+    "DES_WFLEADERBOARD_SHORT": {
+      "english": "Word football leaderboard",
+      "czech": "Žebříček slovního fotbalu"
+    },
+    "DES_WFLEADERBOARD_LONG": {
+      "english": "Shows the word football leaderboard with top players.",
+      "czech": "Zobrazí žebříček slovního fotbalu s nejlepšími hráči."
+    },
   }
 }

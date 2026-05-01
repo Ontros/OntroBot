@@ -1,4 +1,4 @@
-import { ChannelType, Message, SlashCommandBuilder } from "discord.js";
+import { ChannelType, EmbedBuilder, Message, SlashCommandBuilder } from "discord.js";
 import { CommandOptions } from "../../types";
 import language, { languageI } from "../../language";
 import db from "../../database";
@@ -27,7 +27,13 @@ export default {
         if (!channel) return;
 
         setSlovniFotbalChannel.run(interaction.guildId, channel.id);
-        interaction.reply(`${languageI(interaction, 'WF_CHANNEL_SET')} <#${channel.id}>.\n${languageI(interaction, 'WF_RESET')}`);
+
+        const embed = new EmbedBuilder()
+            .setColor(0x0099ff)
+            .setTitle('Slovní fotbal')
+            .setDescription(`${languageI(interaction, 'WF_CHANNEL_SET')} <#${channel.id}>.\n${languageI(interaction, 'WF_RESET')}`);
+
+        await interaction.reply({ embeds: [embed] });
     },
     callback: async (message: Message, args: string[]) => {
         if (!message.guildId) return;
@@ -38,6 +44,12 @@ export default {
         }
 
         setSlovniFotbalChannel.run(message.guildId, channelId);
-        message.reply(`${language(message, 'WF_CHANNEL_SET')} <#${channelId}>.\n${language(message, 'WF_RESET')}`);
+
+        const embed = new EmbedBuilder()
+            .setColor(0x0099ff)
+            .setTitle('Slovní fotbal')
+            .setDescription(`${language(message, 'WF_CHANNEL_SET')} <#${channelId}>.\n${language(message, 'WF_RESET')}`);
+
+        await message.reply({ embeds: [embed] });
     }
 } as CommandOptions;

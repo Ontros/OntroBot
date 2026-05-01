@@ -3,6 +3,7 @@ import { CommandOptions } from "../types";
 import languageDATA from "../languageDATA";
 import serverManager from "../server-manager";
 import language from "../language";
+import { messageHandlers } from "../events/registry";
 
 // const prefix = '_';
 //const serverManager = require('.././server-manager');
@@ -139,7 +140,7 @@ export default async (commandOptions: CommandOptions, file: string) => {
 
 
 
-    global.bot.on('messageCreate', async (message: Message) => {
+    messageHandlers.push(async (message: Message) => {
         const { member, content, guild, channel } = message
         const { bot } = global;
         if (!guild || !message.guild || channel.isDMBased() || message.author.bot) {
