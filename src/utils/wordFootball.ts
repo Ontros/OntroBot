@@ -4,7 +4,7 @@ import language from "../language";
 import { noServer } from "../language";
 import serverManager from "../server-manager";
 
-export const STARS_TO_ADD_WORD = 10;
+export const STARS_TO_ADD_WORD = 4;
 
 const getState = db.prepare(`SELECT * FROM word_football_state WHERE guild_id = ? AND channel_id = ?`);
 const updateState = db.prepare(`
