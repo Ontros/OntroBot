@@ -31,17 +31,35 @@ db.exec(`CREATE TABLE IF NOT EXISTS word_football_state (
     used_words TEXT DEFAULT '[]'
 )`);
 
+try { db.exec(`ALTER TABLE word_football_state ADD COLUMN streak_length INTEGER DEFAULT 0`); } catch {}
+try { db.exec(`ALTER TABLE word_football_state ADD COLUMN best_streak INTEGER DEFAULT 0`); } catch {}
+
 db.exec(`CREATE TABLE IF NOT EXISTS dictionary (
     word TEXT PRIMARY KEY
 )`);
 
 db.exec(`CREATE INDEX IF NOT EXISTS idx_dictionary_word ON dictionary(word COLLATE NOCASE)`);
 
-db.exec(`CREATE TABLE IF NOT EXISTS user_wf_stats (
-    user_id TEXT PRIMARY KEY,
-    successful_words INTEGER DEFAULT 0,
-    total_word_length INTEGER DEFAULT 0,
-    streaks_broken INTEGER DEFAULT 0
-)`);
+const userWfStatsColumns = (db.prepare(`PRAGMA table_info(user_wf_stats)`).all() as any[]).map((c: any) => c.name);
+if (!userWfStatsColumns.includes('guild_id')) {
+    db.exec(`DROP TABLE IF EXISTS user_wf_stats`);
+    db.exec(`CREATE TABLE user_wf_stats (
+        guild_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        successful_words INTEGER DEFAULT 0,
+        total_word_length INTEGER DEFAULT 0,
+        streaks_broken INTEGER DEFAULT 0,
+        PRIMARY KEY (guild_id, user_id)
+    )`);
+} else {
+    db.exec(`CREATE TABLE IF NOT EXISTS user_wf_stats (
+        guild_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        successful_words INTEGER DEFAULT 0,
+        total_word_length INTEGER DEFAULT 0,
+        streaks_broken INTEGER DEFAULT 0,
+        PRIMARY KEY (guild_id, user_id)
+    )`);
+}
 
 export default db;

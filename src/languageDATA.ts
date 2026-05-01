@@ -733,8 +733,8 @@ export default {
       "czech": "Kanál pro slovní fotbal byl nastaven na"
     },
     "WF_STREAK_BROKEN": {
-      "english": "broke the streak! Reason:",
-      "czech": "rozbil(a) streak! Důvod:"
+      "english": "broke the streak",
+      "czech": "rozbil(a) streak"
     },
     "WF_RESET": {
       "english": "The game has been reset. Start with any new word!",
@@ -791,9 +791,21 @@ export default {
       "english": "was added to the global dictionary by community vote!",
       "czech": "bylo přidáno do globálního slovníku hlasováním komunity!"
     },
+    "WF_WARNING_TITLE": {
+      "english": "Word Football",
+      "czech": "Slovní fotbal"
+    },
+    "WF_STREAK_MILESTONE": {
+      "english": "Streak Milestone",
+      "czech": "Milník série"
+    },
+    "WF_STREAK_NEW_RECORD": {
+      "english": "New server record!",
+      "czech": "Nový rekord serveru!"
+    },
     "WF_LEADERBOARD_TITLE": {
       "english": "Word Football Leaderboard",
-      "czech": "Slovní fotbal — žebříček"
+      "czech": "Žebříček slovního fotbalu"
     },
     "WF_LEADERBOARD_EMPTY": {
       "english": "No statistics yet! Play the game to appear here.",
@@ -803,9 +815,17 @@ export default {
       "english": "words",
       "czech": "slov"
     },
-    "WF_LEADERBOARD_BROKEN": {
-      "english": "streaks broken",
-      "czech": "rozbité série"
+    "WF_LEADERBOARD_TOP_WORDS": {
+      "english": "Top Words",
+      "czech": "Nejvíce slov"
+    },
+    "WF_LEADERBOARD_TOP_BROKEN": {
+      "english": "Most Broken",
+      "czech": "Nejvíce rozbití"
+    },
+    "WF_LEADERBOARD_AVG": {
+      "english": "avg",
+      "czech": "prům."
     },
     "DES_WFLEADERBOARD_SHORT": {
       "english": "Word football leaderboard",

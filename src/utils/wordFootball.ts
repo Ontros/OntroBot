@@ -7,13 +7,34 @@ import serverManager from "../server-manager";
 export const STARS_TO_ADD_WORD = 10;
 
 const getState = db.prepare(`SELECT * FROM word_football_state WHERE guild_id = ? AND channel_id = ?`);
-const updateState = db.prepare(`UPDATE word_football_state SET last_word = ?, last_user = ?, used_words = ? WHERE guild_id = ?`);
-const resetState = db.prepare(`UPDATE word_football_state SET last_word = NULL, last_user = NULL, used_words = '[]' WHERE guild_id = ?`);
+const updateState = db.prepare(`
+    UPDATE word_football_state
+    SET last_word = ?, last_user = ?, used_words = ?,
+        streak_length = streak_length + 1,
+        best_streak = MAX(best_streak, streak_length + 1)
+    WHERE guild_id = ?
+`);
+const resetState = db.prepare(`
+    UPDATE word_football_state
+    SET last_word = NULL, last_user = NULL, used_words = '[]', streak_length = 0
+    WHERE guild_id = ?
+`);
 const checkWord = db.prepare(`SELECT 1 FROM dictionary WHERE word = ? COLLATE NOCASE`);
 const addWordToDict = db.prepare(`INSERT OR IGNORE INTO dictionary (word) VALUES (?)`);
 
-const incrementSuccess = db.prepare(`INSERT INTO user_wf_stats (user_id, successful_words, total_word_length) VALUES (?, 1, ?) ON CONFLICT(user_id) DO UPDATE SET successful_words = successful_words + 1, total_word_length = total_word_length + ?`);
-const incrementBroken = db.prepare(`INSERT INTO user_wf_stats (user_id, streaks_broken) VALUES (?, 1) ON CONFLICT(user_id) DO UPDATE SET streaks_broken = streaks_broken + 1`);
+const incrementSuccess = db.prepare(`
+    INSERT INTO user_wf_stats (guild_id, user_id, successful_words, total_word_length)
+    VALUES (?, ?, 1, ?)
+    ON CONFLICT(guild_id, user_id) DO UPDATE SET
+        successful_words = successful_words + 1,
+        total_word_length = total_word_length + ?
+`);
+const incrementBroken = db.prepare(`
+    INSERT INTO user_wf_stats (guild_id, user_id, streaks_broken)
+    VALUES (?, ?, 1)
+    ON CONFLICT(guild_id, user_id) DO UPDATE SET
+        streaks_broken = streaks_broken + 1
+`);
 
 const MAX_HISTORY = 1000;
 const WORD_REGEX = /^[a-záčďéěíňóřšťúůýžäĺľôŕ]+$/i;
@@ -68,7 +89,7 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
     if (words.length > 1) {
         await message.delete().catch(() => { });
         await sendTempWarning(channel, makeEmbed(
-            `${language(message, 'WF_BROKEN_TITLE')}`,
+            language(message, 'WF_WARNING_TITLE'),
             `<@${message.author.id}>, ${language(message, 'WF_ONE_WORD_ONLY')}`,
             0xffa500
         ));
@@ -82,7 +103,7 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
     if (isSingleWord && usedWords.includes(word)) {
         await message.delete().catch(() => { });
         await sendTempWarning(channel, makeEmbed(
-            `${language(message, 'WF_BROKEN_TITLE')}`,
+            language(message, 'WF_WARNING_TITLE'),
             `<@${message.author.id}>, ${language(message, 'WF_REPEAT_WORD')}`,
             0xffa500
         ));
@@ -129,12 +150,27 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
     if (isValid) {
         usedWords.push(word);
         if (usedWords.length > MAX_HISTORY) usedWords.shift();
+
+        const prevStreakLength = state.streak_length ?? 0;
+        const prevBestStreak = state.best_streak ?? 0;
+        const newStreakLength = prevStreakLength + 1;
+
         updateState.run(word, message.author.id, JSON.stringify(usedWords), message.guildId);
-        incrementSuccess.run(message.author.id, word.length, word.length);
+        incrementSuccess.run(message.guildId, message.author.id, word.length, word.length);
         await message.react('✅');
+
+        if (newStreakLength % 25 === 0) {
+            const isRecord = newStreakLength > prevBestStreak;
+            const desc = isRecord
+                ? `**${newStreakLength}** ${language(message, 'WF_LEADERBOARD_WORDS')} — ${language(message, 'WF_STREAK_NEW_RECORD')}`
+                : `**${newStreakLength}** ${language(message, 'WF_LEADERBOARD_WORDS')}`;
+            await channel.send({ embeds: [makeEmbed(language(message, 'WF_STREAK_MILESTONE'), desc, 0x0099ff)] });
+        }
     } else {
+        const streakLength = state.streak_length ?? 0;
+
         resetState.run(message.guildId);
-        incrementBroken.run(message.author.id);
+        incrementBroken.run(message.guildId, message.author.id);
         await message.react('❌');
 
         let timeoutText = "";
@@ -151,17 +187,16 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
             }
         }
 
-        const descLines = [
-            `<@${message.author.id}> ${language(message, 'WF_STREAK_BROKEN')} ${failReason}`,
+        const streakPart = streakLength > 0
+            ? ` (**${streakLength}** ${language(message, 'WF_LEADERBOARD_WORDS')})`
+            : '';
+        const lines = [
+            `<@${message.author.id}> ${language(message, 'WF_STREAK_BROKEN')}${streakPart}. **${failReason}**`,
             timeoutText,
             language(message, 'WF_RESET'),
         ].filter(Boolean);
 
-        await channel.send({
-            embeds: [
-                makeEmbed(`❌ ${language(message, 'WF_BROKEN_TITLE')}`, descLines.join('\n'), 0xff0000)
-            ]
-        });
+        await channel.send({ embeds: [makeEmbed(language(message, 'WF_BROKEN_TITLE'), lines.join('\n'), 0xff0000)] });
     }
 };
 

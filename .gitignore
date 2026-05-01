@@ -8,7 +8,7 @@ ticTacToe.ts
 ticTacToe.js
 .vscode
 oauth2.keys.json
-servers.db
+servers.db*
 data.bak/*
 *.txt
 *.py
