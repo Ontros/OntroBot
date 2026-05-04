@@ -9,3 +9,10 @@ import { registerServerMessageHook } from './index';
 //         await message.delete().catch(() => {});
 //     }
 // });
+
+// Spodina smazani leveled zprav
+registerServerMessageHook('1483929130088005763', async (message) => {
+    if (message.author.id === '172002275412279296' && message.content.includes('leveled')) {
+        await message.delete().catch(() => { });
+    }
+})
