@@ -757,8 +757,8 @@ export default {
       "czech": "Slovo už bylo použito."
     },
     "WF_ERR_DICT": {
-      "english": "Word not in dictionary.",
-      "czech": "Slovo není ve slovníku."
+      "english": "Word not in dictionary. (React with ⭐ 4 times to add to dictionary)",
+      "czech": "Slovo není ve slovníku. (4x reakce ⭐ přidá slovo do slovníku)"
     },
     "WF_TIMEOUT_SUCCESS": {
       "english": "You have been timed out for 1 minute to think about your mistake.",
