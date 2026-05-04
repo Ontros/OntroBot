@@ -13,6 +13,7 @@ import { registerServerMessageHook } from './index';
 // Spodina smazani leveled zprav
 registerServerMessageHook('1483929130088005763', async (message) => {
     if (message.author.id === '172002275412279296' && message.content.includes('leveled')) {
+        console.log('deleting message', message)
         await message.delete().catch(() => { });
     }
 })
