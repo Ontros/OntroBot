@@ -71,7 +71,7 @@ async function sendTempWarning(channel: TextChannel, embed: EmbedBuilder, delayM
 }
 
 export const handleWordFootball = async (message: Message): Promise<void> => {
-    if (!message.guildId || message.author.bot) return;
+    if (!message.guildId || message.author.bot || !message.content) return;
 
     serverManager(message.guildId);
 

@@ -827,6 +827,34 @@ export default {
       "english": "avg",
       "czech": "prům."
     },
+    "WF_LEADERBOARD_CURRENT_STREAK": {
+      "english": "Current streak",
+      "czech": "Aktuální série"
+    },
+    "WF_LEADERBOARD_BEST_STREAK": {
+      "english": "Best streak",
+      "czech": "Nejlepší série"
+    },
+    "WF_USER_STATS_TITLE": {
+      "english": "Word Football Stats",
+      "czech": "Statistiky slovního fotbalu"
+    },
+    "WF_USER_STATS_WORDS": {
+      "english": "Successful words",
+      "czech": "Úspěšná slova"
+    },
+    "WF_USER_STATS_BROKEN": {
+      "english": "Streaks broken",
+      "czech": "Rozbité série"
+    },
+    "WF_USER_STATS_AVG_LEN": {
+      "english": "Avg word length",
+      "czech": "Průměrná délka slova"
+    },
+    "WF_USER_STATS_NONE": {
+      "english": "This user has no stats yet.",
+      "czech": "Tento uživatel zatím nemá žádné statistiky."
+    },
     "DES_WFLEADERBOARD_SHORT": {
       "english": "Word football leaderboard",
       "czech": "Žebříček slovního fotbalu"
