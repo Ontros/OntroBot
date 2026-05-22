@@ -827,6 +827,18 @@ export default {
       "english": "avg",
       "czech": "prům."
     },
+    "WF_NEXT_STARTS_WITH": {
+      "english": "Next word starting with:",
+      "czech": "Pište slovo začínající na:"
+    },
+    "WF_EDITOR_TITLE": {
+      "english": "We have an editor!",
+      "czech": "Máme tu editora!"
+    },
+    "WF_EDITOR_MSG": {
+      "english": "edited the last word,",
+      "czech": "editoval poslední slovo,"
+    },
     "WF_GRACE_TITLE": {
       "english": "Lucky!",
       "czech": "Máte štěstí"

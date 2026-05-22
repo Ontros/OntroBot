@@ -28,9 +28,9 @@ import serverManager, { logVoiceAction } from './server-manager';
 import createEmbed from './utils/createEmbed';
 import language, { languageI } from './language';
 import readAllCommands from './utils/readAllCommands';
-import { handleWordFootball, handleWFReaction } from './utils/wordFootball';
+import { handleWordFootball, handleWFReaction, handleWFMessageUpdate } from './utils/wordFootball';
 import {
-    messageHandlers, reactionAddHandlers, reactionRemoveHandlers, voiceStateHandlers
+    messageHandlers, messageUpdateHandlers, reactionAddHandlers, reactionRemoveHandlers, voiceStateHandlers
 } from './events/registry';
 import { runServerMessageHooks } from './server-hooks/index';
 import './server-hooks/hooks';
@@ -48,6 +48,8 @@ const token = process.env.DJS_TOKEN;
 
 messageHandlers.push(handleWordFootball);
 messageHandlers.push(runServerMessageHooks);
+
+messageUpdateHandlers.push(handleWFMessageUpdate);
 
 reactionAddHandlers.push(handleWFReaction);
 
@@ -274,6 +276,12 @@ bot.on('messageReactionRemove', async (reaction, user) => {
 bot.on('messageCreate', async (message: Message) => {
     for (const handler of messageHandlers) {
         try { await handler(message); } catch (e) { console.error('messageCreate handler error:', e); }
+    }
+});
+
+bot.on('messageUpdate', async (oldMessage, newMessage) => {
+    for (const handler of messageUpdateHandlers) {
+        try { await handler(oldMessage, newMessage); } catch (e) { console.error('messageUpdate handler error:', e); }
     }
 });
 

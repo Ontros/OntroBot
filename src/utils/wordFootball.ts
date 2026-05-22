@@ -1,4 +1,4 @@
-import { EmbedBuilder, Message, MessageReaction, PartialMessageReaction, PartialUser, TextChannel, User } from "discord.js";
+import { EmbedBuilder, Message, MessageReaction, PartialMessage, PartialMessageReaction, PartialUser, TextChannel, User } from "discord.js";
 import db from "../database";
 import language from "../language";
 import { noServer } from "../language";
@@ -9,6 +9,7 @@ export const GRACE_PERIOD_SECONDS = 5;
 
 interface GraceEntry { prevWord: string; timestamp: number; }
 const graceMemory = new Map<string, GraceEntry>();
+const lastWordMessageId = new Map<string, string>();
 
 const getState = db.prepare(`SELECT * FROM word_football_state WHERE guild_id = ? AND channel_id = ?`);
 const updateState = db.prepare(`
@@ -16,6 +17,11 @@ const updateState = db.prepare(`
     SET last_word = ?, last_user = ?, used_words = ?,
         streak_length = streak_length + 1,
         best_streak = MAX(best_streak, streak_length + 1)
+    WHERE guild_id = ?
+`);
+const updateStateGrace = db.prepare(`
+    UPDATE word_football_state
+    SET used_words = ?
     WHERE guild_id = ?
 `);
 const resetState = db.prepare(`
@@ -56,6 +62,11 @@ function lettersMatch(lastLetter: string, firstLetter: string): boolean {
     if (lastLetter === firstLetter) return true;
     const group = VOWEL_GROUPS[lastLetter];
     return group ? group.includes(firstLetter) : false;
+}
+
+function nextWordStartStr(lastWord: string): string {
+    if (lastWord.endsWith('ch')) return "'CH'/'H'";
+    return allowedLettersStr(lastWord.slice(-1));
 }
 
 function wordLetterMatch(prevWord: string, nextWord: string): boolean {
@@ -119,6 +130,16 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
         return;
     }
 
+    if (state.last_user === message.author.id) {
+        await message.delete().catch(() => { });
+        await sendTempWarning(channel, makeEmbed(
+            language(message, 'WF_WARNING_TITLE'),
+            `<@${message.author.id}>, ${language(message, 'WF_ERR_TWICE')}`,
+            0xffa500
+        ));
+        return;
+    }
+
     let isValid = true;
     let letterCheckFailed = false;
     let failReason = "";
@@ -126,9 +147,6 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
     if (!isSingleWord) {
         isValid = false;
         failReason = language(message, 'WF_ERR_SINGLE');
-    } else if (state.last_user === message.author.id) {
-        isValid = false;
-        failReason = language(message, 'WF_ERR_TWICE');
     } else if (state.last_word) {
         if (!wordLetterMatch(state.last_word, word)) {
             isValid = false;
@@ -170,15 +188,21 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
         const prevBestStreak = state.best_streak ?? 0;
         const newStreakLength = prevStreakLength + 1;
 
-        graceMemory.set(graceKey, { prevWord: state.last_word ?? word, timestamp: Math.floor(message.createdTimestamp / 1000) });
-        updateState.run(word, message.author.id, JSON.stringify(usedWords), message.guildId);
+        if (graceActive) {
+            updateStateGrace.run(JSON.stringify(usedWords), message.guildId);
+        } else {
+            graceMemory.set(graceKey, { prevWord: state.last_word ?? word, timestamp: Math.floor(message.createdTimestamp / 1000) });
+            lastWordMessageId.set(graceKey, message.id);
+            updateState.run(word, message.author.id, JSON.stringify(usedWords), message.guildId);
+        }
         incrementSuccess.run(message.guildId, message.author.id, word.length, word.length);
 
         if (graceActive) {
             await message.react('⚠️');
+            const nextLetters = state.last_word ? nextWordStartStr(state.last_word) : '?';
             await channel.send({ embeds: [makeEmbed(
                 language(message, 'WF_GRACE_TITLE'),
-                `<@${message.author.id}> ${language(message, 'WF_GRACE_SAVED')} ${GRACE_PERIOD_SECONDS}s`,
+                `<@${message.author.id}> ${language(message, 'WF_GRACE_SAVED')} ${GRACE_PERIOD_SECONDS}s\n${language(message, 'WF_NEXT_STARTS_WITH')} ${nextLetters}`,
                 0xffa500
             )] });
         } else {
@@ -196,6 +220,7 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
         const streakLength = state.streak_length ?? 0;
 
         graceMemory.delete(graceKey);
+        lastWordMessageId.delete(graceKey);
         resetState.run(message.guildId);
         incrementBroken.run(message.guildId, message.author.id);
         await message.react('❌');
@@ -225,6 +250,33 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
 
         await channel.send({ embeds: [makeEmbed(language(message, 'WF_BROKEN_TITLE'), lines.join('\n'), 0xff0000)] });
     }
+};
+
+export const handleWFMessageUpdate = async (
+    _oldMessage: Message | PartialMessage,
+    newMessage: Message | PartialMessage
+): Promise<void> => {
+    if (!newMessage.guildId) return;
+
+    const graceKey = `${newMessage.guildId}:${newMessage.channelId}`;
+    if (lastWordMessageId.get(graceKey) !== newMessage.id) return;
+
+    const state = getState.get(newMessage.guildId, newMessage.channelId) as any;
+    if (!state) return;
+
+    serverManager(newMessage.guildId);
+    const lang = global.servers[newMessage.guildId]?.language ?? 'english';
+    const nextLetters = state.last_word ? nextWordStartStr(state.last_word) : '?';
+
+    const authorId = newMessage.author?.id ?? (newMessage.partial ? (await newMessage.fetch().catch(() => null))?.author?.id : null);
+    const mention = authorId ? `<@${authorId}>` : 'Někdo';
+
+    const embed = makeEmbed(
+        noServer(lang, 'WF_EDITOR_TITLE'),
+        `${mention} ${noServer(lang, 'WF_EDITOR_MSG')} ${noServer(lang, 'WF_NEXT_STARTS_WITH')} ${nextLetters}`,
+        0xff6600
+    );
+    await (newMessage.channel as TextChannel).send({ embeds: [embed] }).catch(() => { });
 };
 
 export const handleWFReaction = async (
