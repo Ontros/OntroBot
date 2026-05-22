@@ -12,13 +12,14 @@ import { registerServerMessageHook } from './index';
 
 // H_Gnomus mirroring
 registerServerMessageHook('1483929130088005763', async (message) => {
+    if (message.author.bot) return;
     const match = message.content.match(/<:H_Gnomus:(\d+)>/);
     if (!match) return;
     const emojiStr = match[0];
     const emojiId = match[1];
     await Promise.all([
-        message.react(`H_Gnomus:${emojiId}`).catch(() => {}),
-        message.reply(emojiStr).catch(() => {}),
+        message.react(`H_Gnomus:${emojiId}`).catch((e) => console.error('H_Gnomus react error:', e)),
+        message.reply(emojiStr).catch((e) => console.error('H_Gnomus reply error:', e)),
     ]);
 });
 
