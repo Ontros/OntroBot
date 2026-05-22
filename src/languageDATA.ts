@@ -827,6 +827,14 @@ export default {
       "english": "avg",
       "czech": "prům."
     },
+    "WF_GRACE_TITLE": {
+      "english": "Lucky!",
+      "czech": "Máte štěstí"
+    },
+    "WF_GRACE_SAVED": {
+      "english": "was too slow, but made it in",
+      "czech": "byl pomalejší, ale stihl to do"
+    },
     "WF_LEADERBOARD_CURRENT_STREAK": {
       "english": "Current streak",
       "czech": "Aktuální série"

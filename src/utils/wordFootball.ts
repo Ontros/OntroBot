@@ -5,6 +5,10 @@ import { noServer } from "../language";
 import serverManager from "../server-manager";
 
 export const STARS_TO_ADD_WORD = 4;
+export const GRACE_PERIOD_SECONDS = 5;
+
+interface GraceEntry { prevWord: string; timestamp: number; }
+const graceMemory = new Map<string, GraceEntry>();
 
 const getState = db.prepare(`SELECT * FROM word_football_state WHERE guild_id = ? AND channel_id = ?`);
 const updateState = db.prepare(`
@@ -52,6 +56,11 @@ function lettersMatch(lastLetter: string, firstLetter: string): boolean {
     if (lastLetter === firstLetter) return true;
     const group = VOWEL_GROUPS[lastLetter];
     return group ? group.includes(firstLetter) : false;
+}
+
+function wordLetterMatch(prevWord: string, nextWord: string): boolean {
+    if (prevWord.endsWith('ch')) return nextWord.startsWith('ch') || nextWord.startsWith('h');
+    return lettersMatch(prevWord.slice(-1), nextWord.charAt(0));
 }
 
 function allowedLettersStr(lastLetter: string): string {
@@ -111,6 +120,7 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
     }
 
     let isValid = true;
+    let letterCheckFailed = false;
     let failReason = "";
 
     if (!isSingleWord) {
@@ -120,22 +130,11 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
         isValid = false;
         failReason = language(message, 'WF_ERR_TWICE');
     } else if (state.last_word) {
-        const lastIsCh = state.last_word.endsWith('ch');
-        const startsWithCh = word.startsWith('ch');
-        const startsWithH = word.startsWith('h');
-
-        if (lastIsCh) {
-            if (!startsWithCh && !startsWithH) {
-                isValid = false;
-                failReason = `${language(message, 'WF_ERR_START')} 'CH' nebo 'H'.`;
-            }
-        } else {
-            const lastLetter = state.last_word.slice(-1) as string;
-            const firstLetter = word.charAt(0);
-            if (!lettersMatch(lastLetter, firstLetter)) {
-                isValid = false;
-                failReason = `${language(message, 'WF_ERR_START')} ${allowedLettersStr(lastLetter)}.`;
-            }
+        if (!wordLetterMatch(state.last_word, word)) {
+            isValid = false;
+            letterCheckFailed = true;
+            const lastIsCh = state.last_word.endsWith('ch');
+            failReason = `${language(message, 'WF_ERR_START')} ${lastIsCh ? "'CH' nebo 'H'" : allowedLettersStr(state.last_word.slice(-1))}.`;
         }
     }
 
@@ -147,6 +146,22 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
         }
     }
 
+    const graceKey = `${message.guildId}:${message.channel.id}`;
+    let graceActive = false;
+    let graceAgeSeconds = 0;
+
+    if (!isValid && letterCheckFailed) {
+        const grace = graceMemory.get(graceKey);
+        if (grace) {
+            const ageSeconds = Math.floor(message.createdTimestamp / 1000) - grace.timestamp;
+            if (ageSeconds <= GRACE_PERIOD_SECONDS && wordLetterMatch(grace.prevWord, word) && checkWord.get(word)) {
+                isValid = true;
+                graceActive = true;
+                graceAgeSeconds = ageSeconds;
+            }
+        }
+    }
+
     if (isValid) {
         usedWords.push(word);
         if (usedWords.length > MAX_HISTORY) usedWords.shift();
@@ -155,9 +170,20 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
         const prevBestStreak = state.best_streak ?? 0;
         const newStreakLength = prevStreakLength + 1;
 
+        graceMemory.set(graceKey, { prevWord: state.last_word ?? word, timestamp: Math.floor(message.createdTimestamp / 1000) });
         updateState.run(word, message.author.id, JSON.stringify(usedWords), message.guildId);
         incrementSuccess.run(message.guildId, message.author.id, word.length, word.length);
-        await message.react('✅');
+
+        if (graceActive) {
+            await message.react('⚠️');
+            await channel.send({ embeds: [makeEmbed(
+                language(message, 'WF_GRACE_TITLE'),
+                `<@${message.author.id}> ${language(message, 'WF_GRACE_SAVED')} ${GRACE_PERIOD_SECONDS}s`,
+                0xffa500
+            )] });
+        } else {
+            await message.react('✅');
+        }
 
         if (newStreakLength % 25 === 0) {
             const isRecord = newStreakLength > prevBestStreak;
@@ -169,6 +195,7 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
     } else {
         const streakLength = state.streak_length ?? 0;
 
+        graceMemory.delete(graceKey);
         resetState.run(message.guildId);
         incrementBroken.run(message.guildId, message.author.id);
         await message.react('❌');
@@ -212,7 +239,13 @@ export const handleWFReaction = async (
     if (!state) return;
 
     const fullReaction = reaction.partial ? await reaction.fetch().catch(() => null) : reaction;
-    if (!fullReaction || (fullReaction.count ?? 0) < STARS_TO_ADD_WORD) return;
+    if (!fullReaction) return;
+
+    const guild = reaction.message.guild;
+    const member = guild ? await guild.members.fetch(user.id).catch(() => null) : null;
+    const hasManageRoles = member?.permissions.has('ManageRoles') ?? false;
+
+    if (!hasManageRoles && (fullReaction.count ?? 0) < STARS_TO_ADD_WORD) return;
 
     const fullMessage = reaction.message.partial
         ? await reaction.message.fetch().catch(() => null)
