@@ -10,6 +10,18 @@ import { registerServerMessageHook } from './index';
 //     }
 // });
 
+// H_Gnomus mirroring
+registerServerMessageHook('1483929130088005763', async (message) => {
+    const match = message.content.match(/<:H_Gnomus:(\d+)>/);
+    if (!match) return;
+    const emojiStr = match[0];
+    const emojiId = match[1];
+    await Promise.all([
+        message.react(`H_Gnomus:${emojiId}`).catch(() => {}),
+        message.reply(emojiStr).catch(() => {}),
+    ]);
+});
+
 // Spodina smazani leveled zprav
 registerServerMessageHook('1483929130088005763', async (message) => {
     if (message.author.id === '172002275412279296' && message.content.includes('leveled')) {
