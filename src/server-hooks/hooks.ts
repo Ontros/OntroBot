@@ -23,19 +23,6 @@ registerServerMessageHook('1483929130088005763', async (message) => {
     ]);
 });
 
-// X_ mirroring
-registerServerMessageHook('1483929130088005763', async (message) => {
-    if (message.author.bot) return;
-    const match = message.content.match(/<:X_:(\d+)>/);
-    if (!match) return;
-    const emojiStr = match[0];
-    const emojiId = match[1];
-    await Promise.all([
-        message.react(`X_:${emojiId}`).catch((e) => console.error('X_ react error:', e)),
-        message.reply(emojiStr).catch((e) => console.error('X_ reply error:', e)),
-    ]);
-});
-
 // Spodina smazani leveled zprav
 registerServerMessageHook('1483929130088005763', async (message) => {
     if (message.author.id === '172002275412279296' && message.content.includes('leveled')) {
