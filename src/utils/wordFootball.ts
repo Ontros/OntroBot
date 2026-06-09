@@ -10,6 +10,7 @@ export const GRACE_PERIOD_SECONDS = 5;
 interface GraceEntry { prevWord: string; timestamp: number; }
 const graceMemory = new Map<string, GraceEntry>();
 const lastWordMessageId = new Map<string, string>();
+const hintMessages = new Map<string, string>();
 
 const getState = db.prepare(`SELECT * FROM word_football_state WHERE guild_id = ? AND channel_id = ?`);
 const updateState = db.prepare(`
@@ -65,13 +66,24 @@ function lettersMatch(lastLetter: string, firstLetter: string): boolean {
 }
 
 function nextWordStartStr(lastWord: string): string {
-    if (lastWord.endsWith('ch')) return "'CH'/'H'";
-    return allowedLettersStr(lastWord.slice(-1));
+    if (lastWord.endsWith('ch')) return "'CH' nebo 'H'";
+    const lastChar = lastWord.slice(-1).toLowerCase();
+    if (lastChar === 'ď') return "'Ď', 'DI' nebo 'DÍ'";
+    if (lastChar === 'ť') return "'Ť', 'TI' nebo 'TÍ'";
+    if (lastChar === 'ň') return "'Ň', 'NI' nebo 'NÍ'";
+    if (lastChar === 'ĺ' || lastChar === 'ľ') return "'L', 'Ĺ' nebo 'Ľ'";
+    return allowedLettersStr(lastChar);
 }
 
 function wordLetterMatch(prevWord: string, nextWord: string): boolean {
-    if (prevWord.endsWith('ch')) return nextWord.startsWith('ch') || nextWord.startsWith('h');
-    return lettersMatch(prevWord.slice(-1), nextWord.charAt(0));
+    const lastChar = prevWord.slice(-1).toLowerCase();
+    const word = nextWord.toLowerCase();
+    if (prevWord.endsWith('ch')) return word.startsWith('ch') || word.startsWith('h');
+    if (lastChar === 'ď') return word.startsWith('ď') || word.startsWith('di') || word.startsWith('dí');
+    if (lastChar === 'ť') return word.startsWith('ť') || word.startsWith('ti') || word.startsWith('tí');
+    if (lastChar === 'ň') return word.startsWith('ň') || word.startsWith('ni') || word.startsWith('ní');
+    if (lastChar === 'ĺ' || lastChar === 'ľ') return word.startsWith('l') || word.startsWith('ĺ') || word.startsWith('ľ');
+    return lettersMatch(lastChar, word.charAt(0));
 }
 
 function allowedLettersStr(lastLetter: string): string {
@@ -151,8 +163,7 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
         if (!wordLetterMatch(state.last_word, word)) {
             isValid = false;
             letterCheckFailed = true;
-            const lastIsCh = state.last_word.endsWith('ch');
-            failReason = `${language(message, 'WF_ERR_START')} ${lastIsCh ? "'CH' nebo 'H'" : allowedLettersStr(state.last_word.slice(-1))}.`;
+            failReason = `${language(message, 'WF_ERR_START')} ${nextWordStartStr(state.last_word)}.`;
         }
     }
 
@@ -165,6 +176,13 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
     }
 
     const graceKey = `${message.guildId}:${message.channel.id}`;
+
+    const oldHintId = hintMessages.get(graceKey);
+    if (oldHintId) {
+        channel.messages.fetch(oldHintId).then(m => m.delete().catch(() => { })).catch(() => { });
+        hintMessages.delete(graceKey);
+    }
+
     let graceActive = false;
     let graceAgeSeconds = 0;
 
@@ -200,13 +218,32 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
         if (graceActive) {
             await message.react('⚠️');
             const nextLetters = state.last_word ? nextWordStartStr(state.last_word) : '?';
-            await channel.send({ embeds: [makeEmbed(
+            const luckyEmbed = makeEmbed(
                 language(message, 'WF_GRACE_TITLE'),
                 `<@${message.author.id}> ${language(message, 'WF_GRACE_SAVED')} ${GRACE_PERIOD_SECONDS}s\n${language(message, 'WF_NEXT_STARTS_WITH')} ${nextLetters}`,
                 0xffa500
-            )] });
+            );
+            const luckyMsg = await channel.send({ embeds: [luckyEmbed] }).catch(() => null);
+            if (luckyMsg && state.last_word) {
+                const lastChar = state.last_word.slice(-1).toLowerCase();
+                if (state.last_word.endsWith('ch') || ['ď', 'ť', 'ň', 'ĺ', 'ľ'].includes(lastChar)) {
+                    hintMessages.set(graceKey, luckyMsg.id);
+                }
+            }
         } else {
             await message.react('✅');
+            const lastChar = word.slice(-1).toLowerCase();
+            const isSpecial = word.endsWith('ch') || ['ď', 'ť', 'ň', 'ĺ', 'ľ'].includes(lastChar);
+            if (isSpecial) {
+                const nextLetters = nextWordStartStr(word);
+                const hintEmbed = makeEmbed(
+                    language(message, 'WF_WARNING_TITLE'),
+                    `${language(message, 'WF_NEXT_STARTS_WITH')} ${nextLetters}`,
+                    0x3498db
+                );
+                const hintMsg = await channel.send({ embeds: [hintEmbed] }).catch(() => null);
+                if (hintMsg) hintMessages.set(graceKey, hintMsg.id);
+            }
         }
 
         if (newStreakLength % 25 === 0) {
