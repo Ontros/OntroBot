@@ -7,7 +7,7 @@ export default {
     commands: ['test'],
     expectedArgs: '',
     minArgs: 0,
-    maxArgs: 10,
+    maxArgs: 100,
     permissions: [],
     requiredRoles: [],
     isCommand: true,
@@ -18,6 +18,18 @@ export default {
         message.reply("toast")
         if (Arguments[0] == "deploy") {
             deployCommands();
+        }
+        else if (message.author.id == '255345748441432064' && Arguments[0] == "send") {
+            let channelId = Arguments[1];
+            let channel=await global.bot.channels.fetch(channelId)
+            if (!channel  || !channel.isSendable()) {
+                message.reply("Neni channel");
+                return;
+            }
+            else {
+                channel.send(text.replace(` ${channelId}`, '').replace('send',''))
+            }
+
         }
         // let startFrom = Arguments[0]
         // let globalMessages: (Collection<string, Message<true>> | Collection<string, Message<false>>)[] = []
