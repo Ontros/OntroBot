@@ -72,6 +72,16 @@ db.exec(`CREATE TABLE IF NOT EXISTS wf_word_stats (
 
 db.exec(`CREATE INDEX IF NOT EXISTS idx_wf_word_stats_guild_word ON wf_word_stats(guild_id, word)`);
 
+db.exec(`CREATE TABLE IF NOT EXISTS wf_word_first (
+    guild_id TEXT NOT NULL,
+    word     TEXT NOT NULL,
+    user_id  TEXT NOT NULL,
+    first_ts INTEGER,
+    PRIMARY KEY (guild_id, word)
+)`);
+
+db.exec(`CREATE INDEX IF NOT EXISTS idx_wf_word_first_guild_user ON wf_word_first(guild_id, user_id)`);
+
 db.exec(`CREATE TABLE IF NOT EXISTS honeypot (
     guild_id TEXT PRIMARY KEY,
     channel_id TEXT NOT NULL,

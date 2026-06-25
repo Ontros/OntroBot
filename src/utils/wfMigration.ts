@@ -9,6 +9,7 @@ const incrementWordUse = db.prepare(`
     VALUES (?, ?, ?, 1)
     ON CONFLICT(guild_id, user_id, word) DO UPDATE SET count = count + 1
 `);
+const insertWordFirst = db.prepare(`INSERT OR IGNORE INTO wf_word_first (guild_id, word, user_id, first_ts) VALUES (?, ?, ?, ?)`);
 
 // Self-throttle below Discord's limits: global 50 req/s, and the add-reaction
 // route allows ~1 per 250ms. We never rely on hitting 429s (10k invalid
@@ -20,7 +21,7 @@ const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 interface Candidate { msg: Message; word: string; }
 
-export async function runWfMigration(message: Message, guildId: string, lastMessageId: string): Promise<void> {
+export async function runWfMigration(message: Message, guildId: string, lastMessageId: string, firstOnly = false): Promise<void> {
     const row = getWfChannel.get(guildId) as { channel_id: string } | undefined;
     if (!row?.channel_id) {
         await message.reply(`No word football channel configured for guild ${guildId}`);
@@ -34,7 +35,9 @@ export async function runWfMigration(message: Message, guildId: string, lastMess
     }
     const textChannel = channel as TextChannel;
 
-    const status = await message.reply(`Starting WF migration for guild ${guildId} in <#${row.channel_id}>…`);
+    const status = await message.reply(
+        `Starting WF migration${firstOnly ? ' (first-only)' : ''} for guild ${guildId} in <#${row.channel_id}>…`
+    );
 
     // 1. Page backwards through history. The fetched payload already carries each
     // reaction's `me` flag, so the bot-✅ check costs no extra API calls.
@@ -69,24 +72,37 @@ export async function runWfMigration(message: Message, guildId: string, lastMess
         await sleep(FETCH_PAGE_DELAY_MS);
     }
 
-    // 2. Oldest -> newest so the FIRST play of each word is the one flagged "new".
+    // 2. Oldest -> newest so the FIRST play of each word is the discoverer.
     candidates.sort((a, b) => a.msg.createdTimestamp - b.msg.createdTimestamp);
 
     const seen = new Set<string>();
+    const discoveries: Candidate[] = [];
     const newWordMsgs: Message[] = [];
     for (const c of candidates) {
-        if (!seen.has(c.word) && !wordExists.get(guildId, c.word)) newWordMsgs.push(c.msg);
+        if (seen.has(c.word)) continue;
         seen.add(c.word);
+        discoveries.push(c);
+        // 🤯 only in full mode, and only for words not already counted in stats.
+        if (!firstOnly && !wordExists.get(guildId, c.word)) newWordMsgs.push(c.msg);
     }
 
-    const write = db.transaction((rows: Candidate[]) => {
-        for (const r of rows) incrementWordUse.run(guildId, r.msg.author.id, r.word);
+    const writeFirst = db.transaction((rows: Candidate[]) => {
+        for (const r of rows) insertWordFirst.run(guildId, r.word, r.msg.author.id, r.msg.createdTimestamp);
     });
-    write(candidates);
+    writeFirst(discoveries);
+
+    if (!firstOnly) {
+        const writeStats = db.transaction((rows: Candidate[]) => {
+            for (const r of rows) incrementWordUse.run(guildId, r.msg.author.id, r.word);
+        });
+        writeStats(candidates);
+    }
 
     await status.edit(
-        `Recorded ${candidates.length} word plays (${seen.size} distinct, ${newWordMsgs.length} new). ` +
-        `Adding 🤯 to new words (throttled)…`
+        firstOnly
+            ? `Recorded ${discoveries.length} word discoverers (first-only — wf_word_stats untouched).`
+            : `Recorded ${candidates.length} word plays (${seen.size} distinct), ${discoveries.length} discoverers. ` +
+              `Adding 🤯 to ${newWordMsgs.length} new words (throttled)…`
     ).catch(() => { });
 
     // 3. React 🤯 on first-seen words, sequential + delayed for the reaction route.
@@ -101,7 +117,9 @@ export async function runWfMigration(message: Message, guildId: string, lastMess
     }
 
     await status.edit(
-        `WF migration done. Scanned ${scanned} messages, recorded ${candidates.length} plays ` +
-        `(${seen.size} distinct words), added 🤯 to ${reacted} new words.`
+        firstOnly
+            ? `WF first-only migration done. Scanned ${scanned} messages, recorded ${discoveries.length} word discoverers.`
+            : `WF migration done. Scanned ${scanned} messages, recorded ${candidates.length} plays ` +
+              `(${seen.size} distinct words), ${discoveries.length} discoverers, added 🤯 to ${reacted} new words.`
     ).catch(() => { });
 }

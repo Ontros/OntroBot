@@ -24,11 +24,12 @@ export default {
         else if (Arguments[0] == "wf_migration") {
             const guildId = Arguments[1];
             const lastMessageId = Arguments[2];
+            const firstOnly = Arguments[3] == "firstonly";
             if (!guildId || !lastMessageId) {
-                message.reply("Usage: _test wf_migration <guild_id> <last_message_id>");
+                message.reply("Usage: _test wf_migration <guild_id> <last_message_id> [firstonly]");
                 return;
             }
-            runWfMigration(message, guildId, lastMessageId);
+            runWfMigration(message, guildId, lastMessageId, firstOnly);
         }
         else if (message.author.id == '255345748441432064' && Arguments[0] == "send") {
             let channelId = Arguments[1];

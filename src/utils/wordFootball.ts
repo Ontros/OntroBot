@@ -47,6 +47,7 @@ const incrementWordUse = db.prepare(`
         count = count + 1
 `);
 const checkWordUsed = db.prepare(`SELECT 1 FROM wf_word_stats WHERE guild_id = ? AND word = ? LIMIT 1`);
+const recordWordFirst = db.prepare(`INSERT OR IGNORE INTO wf_word_first (guild_id, word, user_id, first_ts) VALUES (?, ?, ?, ?)`);
 const incrementBroken = db.prepare(`
     INSERT INTO user_wf_stats (guild_id, user_id, streaks_broken)
     VALUES (?, ?, 1)
@@ -223,6 +224,7 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
         const wasNewWord = !checkWordUsed.get(message.guildId, word);
         incrementSuccess.run(message.guildId, message.author.id, word.length, word.length);
         incrementWordUse.run(message.guildId, message.author.id, word);
+        if (wasNewWord) recordWordFirst.run(message.guildId, word, message.author.id, message.createdTimestamp);
 
         if (graceActive) {
             await message.react('⚠️');
