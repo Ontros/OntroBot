@@ -62,4 +62,10 @@ if (!userWfStatsColumns.includes('guild_id')) {
     )`);
 }
 
+db.exec(`CREATE TABLE IF NOT EXISTS honeypot (
+    guild_id TEXT PRIMARY KEY,
+    channel_id TEXT NOT NULL,
+    log_channel_id TEXT NOT NULL
+)`);
+
 export default db;

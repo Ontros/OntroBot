@@ -33,6 +33,7 @@ import {
     messageHandlers, messageUpdateHandlers, reactionAddHandlers, reactionRemoveHandlers, voiceStateHandlers
 } from './events/registry';
 import { runServerMessageHooks } from './server-hooks/index';
+import { handleHoneypot } from './server-hooks/hooks';
 import './server-hooks/hooks';
 
 dotenv.config({ path: path.join(__dirname + './../.env') });
@@ -46,6 +47,7 @@ global.slashCommands = new Collection();
 const { bot } = global;
 const token = process.env.DJS_TOKEN;
 
+messageHandlers.push(handleHoneypot);
 messageHandlers.push(handleWordFootball);
 messageHandlers.push(runServerMessageHooks);
 

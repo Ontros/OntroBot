@@ -883,5 +883,41 @@ export default {
       "english": "Shows the word football leaderboard with top players.",
       "czech": "Zobrazí žebříček slovního fotbalu s nejlepšími hráči."
     },
+    "DES_HONEYPOT_SHORT": {
+      "english": "Honeypot channel management",
+      "czech": "Správa honeypot kanálu"
+    },
+    "DES_HONEYPOT_LONG": {
+      "english": "Setup or remove a honeypot channel that bans anyone who types in it.",
+      "czech": "Nastavení nebo odebrání honeypot kanálu, který zabanuje každého kdo v něm napíše."
+    },
+    "DES_SET_SHORT": {
+      "english": "Set honeypot and log channels",
+      "czech": "Nastavit honeypot a log kanály"
+    },
+    "DES_SET_LONG": {
+      "english": "Set honeypot and log channels",
+      "czech": "Nastavit honeypot a log kanály"
+    },
+    "DES_REMOVE_SHORT": {
+      "english": "Remove honeypot from this server",
+      "czech": "Odebrat honeypot z tohoto serveru"
+    },
+    "DES_REMOVE_LONG": {
+      "english": "Remove honeypot from this server",
+      "czech": "Odebrat honeypot z tohoto serveru"
+    },
+    "HONEYPOT_SET": {
+      "english": "Honeypot configured",
+      "czech": "Honeypot nastaven"
+    },
+    "HONEYPOT_REMOVED": {
+      "english": "Honeypot removed.",
+      "czech": "Honeypot odstraněn."
+    },
+    "HONEYPOT_NONE": {
+      "english": "No honeypot is configured for this server.",
+      "czech": "Na tomto serveru není nastaven žádný honeypot."
+    }
   }
 }
