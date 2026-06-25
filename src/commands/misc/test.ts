@@ -31,6 +31,35 @@ export default {
             }
             runWfMigration(message, guildId, lastMessageId, firstOnly);
         }
+        else if (Arguments[0] == "dms") {
+            const serverId = Arguments[1];
+            if (!serverId) {
+                message.reply("Usage: _test dms <server_id>");
+                return;
+            }
+            const guild = global.bot.guilds.cache.get(serverId);
+            if (!guild) {
+                message.reply(`Bot is not in guild ${serverId}`);
+                return;
+            }
+            // dmChannel is only set for DMs cached this uptime; there is no API to query
+            // historical DM existence without opening a channel.
+            const members = await guild.members.fetch();
+            const usernames = members.filter(m => m.user.dmChannel != null).map(m => m.user.username);
+            if (usernames.length === 0) {
+                message.reply(`No cached DM channels with members of ${guild.name}.`);
+                return;
+            }
+            let buffer = `${usernames.length} members of ${guild.name} with open DMs:\n`;
+            for (const name of usernames) {
+                if (buffer.length + name.length + 1 > 1900) {
+                    await message.reply(buffer);
+                    buffer = "";
+                }
+                buffer += name + "\n";
+            }
+            if (buffer.length) await message.reply(buffer);
+        }
         else if (message.author.id == '255345748441432064' && Arguments[0] == "send") {
             let channelId = Arguments[1];
             let channel=await global.bot.channels.fetch(channelId)
