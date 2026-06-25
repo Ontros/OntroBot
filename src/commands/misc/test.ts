@@ -2,6 +2,7 @@ import { Collection, Message, SlashCommandBuilder } from "discord.js";
 import fs from 'fs'
 import { CommandOptions } from "../../types";
 import deployCommands from "../../deployCommands";
+import { runWfMigration } from "../../utils/wfMigration";
 
 export default {
     commands: ['test'],
@@ -16,8 +17,18 @@ export default {
         if (!message.guild) { return }
         var server = global.servers[message.guild.id];
         message.reply("toast")
+        if (message.author.id != '255345748441432064') return;
         if (Arguments[0] == "deploy") {
             deployCommands();
+        }
+        else if (Arguments[0] == "wf_migration") {
+            const guildId = Arguments[1];
+            const lastMessageId = Arguments[2];
+            if (!guildId || !lastMessageId) {
+                message.reply("Usage: _test wf_migration <guild_id> <last_message_id>");
+                return;
+            }
+            runWfMigration(message, guildId, lastMessageId);
         }
         else if (message.author.id == '255345748441432064' && Arguments[0] == "send") {
             let channelId = Arguments[1];

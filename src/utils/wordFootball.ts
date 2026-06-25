@@ -40,6 +40,13 @@ const incrementSuccess = db.prepare(`
         successful_words = successful_words + 1,
         total_word_length = total_word_length + ?
 `);
+const incrementWordUse = db.prepare(`
+    INSERT INTO wf_word_stats (guild_id, user_id, word, count)
+    VALUES (?, ?, ?, 1)
+    ON CONFLICT(guild_id, user_id, word) DO UPDATE SET
+        count = count + 1
+`);
+const checkWordUsed = db.prepare(`SELECT 1 FROM wf_word_stats WHERE guild_id = ? AND word = ? LIMIT 1`);
 const incrementBroken = db.prepare(`
     INSERT INTO user_wf_stats (guild_id, user_id, streaks_broken)
     VALUES (?, ?, 1)
@@ -48,7 +55,7 @@ const incrementBroken = db.prepare(`
 `);
 
 const MAX_HISTORY = 1000;
-const WORD_REGEX = /^[a-záčďéěíňóřšťúůýžäĺľôŕ]+$/i;
+export const WORD_REGEX = /^[a-záčďéěíňóřšťúůýžäĺľôŕ]+$/i;
 
 const VOWEL_GROUPS: Record<string, string[]> = {
     'a': ['a', 'á', 'ä'], 'á': ['a', 'á', 'ä'], 'ä': ['a', 'á', 'ä'],
@@ -213,7 +220,9 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
             lastWordMessageId.set(graceKey, message.id);
             updateState.run(word, message.author.id, JSON.stringify(usedWords), message.guildId);
         }
+        const wasNewWord = !checkWordUsed.get(message.guildId, word);
         incrementSuccess.run(message.guildId, message.author.id, word.length, word.length);
+        incrementWordUse.run(message.guildId, message.author.id, word);
 
         if (graceActive) {
             await message.react('⚠️');
@@ -245,6 +254,8 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
                 if (hintMsg) hintMessages.set(graceKey, hintMsg.id);
             }
         }
+
+        if (wasNewWord) await message.react('🤯').catch(() => { });
 
         if (newStreakLength % 25 === 0) {
             const isRecord = newStreakLength > prevBestStreak;
