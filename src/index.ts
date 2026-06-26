@@ -29,6 +29,7 @@ import createEmbed from './utils/createEmbed';
 import language, { languageI } from './language';
 import readAllCommands from './utils/readAllCommands';
 import { handleWordFootball, handleWFReaction, handleWFMessageUpdate } from './utils/wordFootball';
+import { handleCounting } from './utils/counting';
 import {
     messageHandlers, messageUpdateHandlers, reactionAddHandlers, reactionRemoveHandlers, voiceStateHandlers
 } from './events/registry';
@@ -52,6 +53,7 @@ const token = process.env.DJS_TOKEN;
 
 messageHandlers.push(handleHoneypot);
 messageHandlers.push(handleWordFootball);
+messageHandlers.push(handleCounting);
 messageHandlers.push(runServerMessageHooks);
 
 messageUpdateHandlers.push(handleWFMessageUpdate);

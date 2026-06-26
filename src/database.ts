@@ -82,6 +82,39 @@ db.exec(`CREATE TABLE IF NOT EXISTS wf_word_first (
 
 db.exec(`CREATE INDEX IF NOT EXISTS idx_wf_word_first_guild_user ON wf_word_first(guild_id, user_id)`);
 
+db.exec(`CREATE TABLE IF NOT EXISTS counting_state (
+    guild_id      TEXT PRIMARY KEY,
+    channel_id    TEXT,
+    current_count INTEGER DEFAULT 0,
+    last_user     TEXT,
+    best_count    INTEGER DEFAULT 0,
+    total_counts  INTEGER DEFAULT 0
+)`);
+
+db.exec(`CREATE TABLE IF NOT EXISTS counting_user_stats (
+    guild_id         TEXT NOT NULL,
+    user_id          TEXT NOT NULL,
+    counts_made      INTEGER DEFAULT 0,
+    highest_count    INTEGER DEFAULT 0,
+    mistakes         INTEGER DEFAULT 0,
+    padding_attempts INTEGER DEFAULT 0,
+    PRIMARY KEY (guild_id, user_id)
+)`);
+
+db.exec(`CREATE TABLE IF NOT EXISTS counting_log (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    guild_id    TEXT NOT NULL,
+    user_id     TEXT NOT NULL,
+    count_value INTEGER NOT NULL,
+    expression  TEXT NOT NULL,
+    tokens      INTEGER NOT NULL,
+    message_id  TEXT,
+    created_at  INTEGER
+)`);
+
+db.exec(`CREATE INDEX IF NOT EXISTS idx_counting_log_guild_tokens ON counting_log(guild_id, tokens)`);
+db.exec(`CREATE INDEX IF NOT EXISTS idx_counting_log_guild_user ON counting_log(guild_id, user_id)`);
+
 db.exec(`CREATE TABLE IF NOT EXISTS honeypot (
     guild_id TEXT PRIMARY KEY,
     channel_id TEXT NOT NULL,

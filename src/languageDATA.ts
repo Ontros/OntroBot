@@ -883,6 +883,118 @@ export default {
       "english": "Shows the word football leaderboard with top players.",
       "czech": "Zobrazí žebříček slovního fotbalu s nejlepšími hráči."
     },
+    "DES_COUNTING_SHORT": {
+      "english": "Setup counting channel",
+      "czech": "Nastaví kanál pro počítání"
+    },
+    "DES_COUNTING_LONG": {
+      "english": "Sets up the channel for the counting game where each message must evaluate to the next number.",
+      "czech": "Nastaví kanál pro hru počítání, kde každá zpráva musí dát další číslo v řadě."
+    },
+    "DES_COUNTINGLEADERBOARD_SHORT": {
+      "english": "Counting leaderboard",
+      "czech": "Žebříček počítání"
+    },
+    "DES_COUNTINGLEADERBOARD_LONG": {
+      "english": "Shows the counting leaderboard with the current count and top counters.",
+      "czech": "Zobrazí žebříček počítání s aktuálním číslem a nejlepšími hráči."
+    },
+    "COUNT_CHANNEL_SET": {
+      "english": "Counting channel set to",
+      "czech": "Kanál pro počítání byl nastaven na"
+    },
+    "COUNT_WARNING_TITLE": {
+      "english": "Counting",
+      "czech": "Počítání"
+    },
+    "COUNT_ERR_INVALID": {
+      "english": "that's not a valid number or expression:",
+      "czech": "tohle není platné číslo ani výraz:"
+    },
+    "COUNT_ERR_WRONG": {
+      "english": "wrong number — the next one is",
+      "czech": "špatné číslo — další na řadě je"
+    },
+    "COUNT_ERR_TWICE": {
+      "english": "you can't count twice in a row.",
+      "czech": "nemůžeš počítat dvakrát po sobě."
+    },
+    "COUNT_MILESTONE_TITLE": {
+      "english": "Milestone reached!",
+      "czech": "Milník dosažen!"
+    },
+    "COUNT_MILESTONE": {
+      "english": "reached together!",
+      "czech": "dosaženo společně!"
+    },
+    "COUNT_LB_TITLE": {
+      "english": "Counting leaderboard",
+      "czech": "Žebříček počítání"
+    },
+    "COUNT_LB_CURRENT": {
+      "english": "Current count",
+      "czech": "Aktuální číslo"
+    },
+    "COUNT_LB_BEST": {
+      "english": "Highest reached",
+      "czech": "Nejvyšší dosažené"
+    },
+    "COUNT_LB_TOP": {
+      "english": "Top counters",
+      "czech": "Nejlepší počtáři"
+    },
+    "COUNT_LB_COUNTS": {
+      "english": "counts",
+      "czech": "počtů"
+    },
+    "COUNT_USER_TITLE": {
+      "english": "Counting stats",
+      "czech": "Statistiky počítání"
+    },
+    "COUNT_USER_COUNTS": {
+      "english": "Counts",
+      "czech": "Počtů"
+    },
+    "COUNT_USER_HIGHEST": {
+      "english": "Highest number",
+      "czech": "Nejvyšší číslo"
+    },
+    "COUNT_USER_NONE": {
+      "english": "No counting stats yet.",
+      "czech": "Zatím žádné statistiky počítání."
+    },
+    "COUNT_ERR_LAZY": {
+      "english": "no lazy / padded expressions.",
+      "czech": "žádné líné / nafouknuté výrazy."
+    },
+    "COUNT_LB_TOTAL": {
+      "english": "Total ever",
+      "czech": "Celkem dosaženo"
+    },
+    "COUNT_LB_RECORD": {
+      "english": "Most complex expressions",
+      "czech": "Nejsložitější výrazy"
+    },
+    "COUNT_LB_RECORD_NONE": {
+      "english": "No expressions yet.",
+      "czech": "Zatím žádné výrazy."
+    },
+    "COUNT_USER_TOTAL_TOKENS": {
+      "english": "Total tokens",
+      "czech": "Tokenů celkem"
+    },
+    "COUNT_USER_MAX_TOKENS": {
+      "english": "Most complex",
+      "czech": "Nejsložitější"
+    },
+    "COUNT_USER_ACCURACY": {
+      "english": "Accuracy",
+      "czech": "Přesnost"
+    },
+    "COUNT_USER_PADDING": {
+      "english": "Lazy attempts",
+      "czech": "Líné pokusy"
+    },
     "DES_HONEYPOT_SHORT": {
       "english": "Honeypot channel management",
       "czech": "Správa honeypot kanálu"
