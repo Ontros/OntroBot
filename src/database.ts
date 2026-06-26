@@ -85,7 +85,17 @@ db.exec(`CREATE INDEX IF NOT EXISTS idx_wf_word_first_guild_user ON wf_word_firs
 db.exec(`CREATE TABLE IF NOT EXISTS honeypot (
     guild_id TEXT PRIMARY KEY,
     channel_id TEXT NOT NULL,
-    log_channel_id TEXT NOT NULL
+    log_channel_id TEXT NOT NULL,
+    ban_dm_message TEXT
+)`);
+
+try { db.exec(`ALTER TABLE honeypot ADD COLUMN ban_dm_message TEXT`); } catch {}
+
+db.exec(`CREATE TABLE IF NOT EXISTS honeypot_bans (
+    guild_id TEXT NOT NULL,
+    user_id  TEXT NOT NULL,
+    unban_ts INTEGER NOT NULL,
+    PRIMARY KEY (guild_id, user_id)
 )`);
 
 export default db;

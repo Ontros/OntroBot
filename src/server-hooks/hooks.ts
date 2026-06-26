@@ -4,6 +4,7 @@
 import { EmbedBuilder, TextChannel, Attachment } from 'discord.js';
 import { registerServerMessageHook } from './index';
 import db from '../database';
+import { recordHoneypotBan } from '../utils/honeypotBans';
 
 const getHoneypot = db.prepare(`SELECT * FROM honeypot WHERE guild_id = ?`);
 
@@ -47,7 +48,11 @@ export async function handleHoneypot(message: import('discord.js').Message): Pro
     }
 
     if (member) {
+        if (config.ban_dm_message) {
+            await author.send(config.ban_dm_message).catch(e => console.error('Honeypot DM error:', e));
+        }
         await member.ban({ deleteMessageSeconds: 86400, reason: 'Honeypot channel' })
+            .then(() => recordHoneypotBan(guild.id, author.id))
             .catch(e => console.error('Honeypot ban error:', e));
     }
 }

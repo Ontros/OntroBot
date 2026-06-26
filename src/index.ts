@@ -35,6 +35,7 @@ import {
 import { runServerMessageHooks } from './server-hooks/index';
 import { handleHoneypot } from './server-hooks/hooks';
 import './server-hooks/hooks';
+import { restorePendingHoneypotUnbans } from './utils/honeypotBans';
 
 dotenv.config({ path: path.join(__dirname + './../.env') });
 
@@ -202,6 +203,7 @@ bot.on('clientReady', () => {
     };
 
     readCommands('commands');
+    restorePendingHoneypotUnbans();
     console.log('This bot is online!');
 });
 

@@ -39,8 +39,8 @@ export async function runWfMigration(message: Message, guildId: string, lastMess
         `Starting WF migration${firstOnly ? ' (first-only)' : ''} for guild ${guildId} in <#${row.channel_id}>…`
     );
 
-    // 1. Page backwards through history. The fetched payload already carries each
-    // reaction's `me` flag, so the bot-✅ check costs no extra API calls.
+    // The fetched payload carries each reaction's `me` flag, so the bot-✅ check
+    // needs no extra API calls.
     const candidates: Candidate[] = [];
     let before: string | undefined = lastMessageId;
     let scanned = 0;
@@ -72,7 +72,7 @@ export async function runWfMigration(message: Message, guildId: string, lastMess
         await sleep(FETCH_PAGE_DELAY_MS);
     }
 
-    // 2. Oldest -> newest so the FIRST play of each word is the discoverer.
+    // Oldest first, so the first occurrence of each word is its discoverer.
     candidates.sort((a, b) => a.msg.createdTimestamp - b.msg.createdTimestamp);
 
     const seen = new Set<string>();
@@ -82,7 +82,6 @@ export async function runWfMigration(message: Message, guildId: string, lastMess
         if (seen.has(c.word)) continue;
         seen.add(c.word);
         discoveries.push(c);
-        // 🤯 only in full mode, and only for words not already counted in stats.
         if (!firstOnly && !wordExists.get(guildId, c.word)) newWordMsgs.push(c.msg);
     }
 
@@ -105,7 +104,7 @@ export async function runWfMigration(message: Message, guildId: string, lastMess
               `Adding 🤯 to ${newWordMsgs.length} new words (throttled)…`
     ).catch(() => { });
 
-    // 3. React 🤯 on first-seen words, sequential + delayed for the reaction route.
+    // Sequential + delayed to stay under the add-reaction rate limit.
     let reacted = 0;
     for (const msg of newWordMsgs) {
         await msg.react('🤯').catch(() => { });

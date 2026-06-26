@@ -158,7 +158,6 @@ export default async (commandOptions: CommandOptions, file: string) => {
         // var prefix = "_"
 
         if (!member || !guild.client) {
-            (message.channel as TextChannel).send(language(message, 'USR_ID_NOT'))
             return;
         }
 
