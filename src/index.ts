@@ -36,8 +36,10 @@ import { runServerMessageHooks } from './server-hooks/index';
 import { handleHoneypot } from './server-hooks/hooks';
 import './server-hooks/hooks';
 import { restorePendingHoneypotUnbans } from './utils/honeypotBans';
+import { initErrorReporter, markErrorReporterReady } from './utils/errorReporter';
 
 dotenv.config({ path: path.join(__dirname + './../.env') });
+initErrorReporter();
 
 global.bot = new Discord.Client({ intents: new IntentsBitField(53608447) });
 global.servers = {};
@@ -204,6 +206,7 @@ bot.on('clientReady', () => {
 
     readCommands('commands');
     restorePendingHoneypotUnbans();
+    markErrorReporterReady();
     console.log('This bot is online!');
 });
 
@@ -288,7 +291,5 @@ bot.on('messageUpdate', async (oldMessage, newMessage) => {
         try { await handler(oldMessage, newMessage); } catch (e) { console.error('messageUpdate handler error:', e); }
     }
 });
-
-process.on("unhandledRejection", (e) => { console.log(e, "unhandled promise rejection"); });
 
 bot.login(token);
