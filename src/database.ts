@@ -86,10 +86,12 @@ db.exec(`CREATE TABLE IF NOT EXISTS honeypot (
     guild_id TEXT PRIMARY KEY,
     channel_id TEXT NOT NULL,
     log_channel_id TEXT NOT NULL,
-    ban_dm_message TEXT
+    ban_dm_message TEXT,
+    voice_channel_id TEXT
 )`);
 
 try { db.exec(`ALTER TABLE honeypot ADD COLUMN ban_dm_message TEXT`); } catch {}
+try { db.exec(`ALTER TABLE honeypot ADD COLUMN voice_channel_id TEXT`); } catch {}
 
 db.exec(`CREATE TABLE IF NOT EXISTS honeypot_bans (
     guild_id TEXT NOT NULL,

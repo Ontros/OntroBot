@@ -3,11 +3,11 @@ import { CommandOptions } from "../../../types";
 import language, { languageI } from "../../../language";
 import db from "../../../database";
 
-const upsertHoneypot = db.prepare(`INSERT OR REPLACE INTO honeypot (guild_id, channel_id, log_channel_id, ban_dm_message) VALUES (?, ?, ?, ?)`);
+const upsertHoneypot = db.prepare(`INSERT OR REPLACE INTO honeypot (guild_id, channel_id, log_channel_id, ban_dm_message, voice_channel_id) VALUES (?, ?, ?, ?, ?)`);
 
 export default {
     commands: ['honeypotset'],
-    expectedArgs: '<honeypotChannel> <logChannel> [banDmMessage]',
+    expectedArgs: '<honeypotChannel> [voiceChannel] <logChannel> [banDmMessage]',
     minArgs: 2,
     maxArgs: 100,
     permissions: ["ADMINISTRATOR"],
@@ -21,6 +21,14 @@ export default {
             .setNameLocalizations({ "cs": "kanal" })
             .setDescription("Honeypot channel (anyone who types here gets banned)")
             .setDescriptionLocalizations({ "cs": "Honeypot kanál (kdokoliv sem napíše bude zabanován)" })
+        )
+        .addChannelOption(option => option
+            .addChannelTypes(ChannelType.GuildVoice)
+            .setRequired(false)
+            .setName("voice")
+            .setNameLocalizations({ "cs": "hlasovy" })
+            .setDescription("Honeypot voice channel (anyone who types in its chat gets banned)")
+            .setDescriptionLocalizations({ "cs": "Honeypot hlasový kanál (kdokoliv napíše do jeho chatu bude zabanován)" })
         )
         .addChannelOption(option => option
             .addChannelTypes(ChannelType.GuildText)
@@ -41,27 +49,40 @@ export default {
     execute: async (interaction) => {
         if (!interaction.guildId) return;
         const channel = interaction.options.getChannel("channel", true);
+        const voiceChannel = interaction.options.getChannel("voice");
         const logChannel = interaction.options.getChannel("log", true);
         const dmMessage = interaction.options.getString("dm");
-        upsertHoneypot.run(interaction.guildId, channel.id, logChannel.id, dmMessage);
-        await interaction.reply(languageI(interaction, 'HONEYPOT_SET') + `: <#${channel.id}> → <#${logChannel.id}>`);
+        upsertHoneypot.run(interaction.guildId, channel.id, logChannel.id, dmMessage, voiceChannel?.id ?? null);
+        const voicePart = voiceChannel ? ` + <#${voiceChannel.id}>` : '';
+        await interaction.reply(languageI(interaction, 'HONEYPOT_SET') + `: <#${channel.id}>${voicePart} → <#${logChannel.id}>`);
     },
     callback: async (message: Message, args: string[], text: string) => {
         if (!message.guild) return;
         const honeypotId = args[0].replace(/[<#>]/g, '');
-        const logId = args[1].replace(/[<#>]/g, '');
-        const dmMessage = args.slice(2).join(' ') || null;
         const honeypotChannel = message.guild.channels.cache.get(honeypotId);
-        const logChannel = message.guild.channels.cache.get(logId);
         if (!honeypotChannel || !honeypotChannel.isTextBased()) {
             await (message.channel as TextChannel).send(language(message, 'CHAN_ID_NOT'));
             return;
         }
+
+        let voiceId: string | null = null;
+        let logIndex = 1;
+        const maybeVoiceId = (args[1] ?? '').replace(/[<#>]/g, '');
+        const maybeVoiceChannel = maybeVoiceId ? message.guild.channels.cache.get(maybeVoiceId) : undefined;
+        if (maybeVoiceChannel && maybeVoiceChannel.type === ChannelType.GuildVoice) {
+            voiceId = maybeVoiceId;
+            logIndex = 2;
+        }
+
+        const logId = (args[logIndex] ?? '').replace(/[<#>]/g, '');
+        const dmMessage = args.slice(logIndex + 1).join(' ') || null;
+        const logChannel = message.guild.channels.cache.get(logId);
         if (!logChannel || !logChannel.isTextBased()) {
             await (message.channel as TextChannel).send(language(message, 'CHAN_ID_NOT'));
             return;
         }
-        upsertHoneypot.run(message.guild.id, honeypotId, logId, dmMessage);
-        await (message.channel as TextChannel).send(language(message, 'HONEYPOT_SET') + `: <#${honeypotId}> → <#${logId}>`);
+        upsertHoneypot.run(message.guild.id, honeypotId, logId, dmMessage, voiceId);
+        const voicePart = voiceId ? ` + <#${voiceId}>` : '';
+        await (message.channel as TextChannel).send(language(message, 'HONEYPOT_SET') + `: <#${honeypotId}>${voicePart} → <#${logId}>`);
     }
 } as CommandOptions

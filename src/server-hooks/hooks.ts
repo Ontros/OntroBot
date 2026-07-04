@@ -12,7 +12,8 @@ export async function handleHoneypot(message: import('discord.js').Message): Pro
     if (!message.guildId || message.author.bot) return;
 
     const config = getHoneypot.get(message.guildId) as any;
-    if (!config || config.channel_id !== message.channelId) return;
+    if (!config) return;
+    if (config.channel_id !== message.channelId && config.voice_channel_id !== message.channelId) return;
 
     const guild = message.guild;
     if (!guild) return;
