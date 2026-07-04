@@ -823,6 +823,10 @@ export default {
       "english": "Most Broken",
       "czech": "Nejvíce rozbití"
     },
+    "WF_LEADERBOARD_TOP_UNIQUE": {
+      "english": "Most Unique Words",
+      "czech": "Nejvíce unikátních slov"
+    },
     "WF_LEADERBOARD_AVG": {
       "english": "avg",
       "czech": "prům."
@@ -870,6 +874,10 @@ export default {
     "WF_USER_STATS_AVG_LEN": {
       "english": "Avg word length",
       "czech": "Průměrná délka slova"
+    },
+    "WF_USER_STATS_UNIQUE": {
+      "english": "Unique words",
+      "czech": "Unikátní slova"
     },
     "WF_USER_STATS_NONE": {
       "english": "This user has no stats yet.",

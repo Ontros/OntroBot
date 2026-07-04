@@ -20,6 +20,15 @@ const getTopBroken = db.prepare(`
     LIMIT 5
 `);
 
+const getTopUniqueWords = db.prepare(`
+    SELECT user_id, COUNT(*) as unique_words
+    FROM wf_word_first
+    WHERE guild_id = ?
+    GROUP BY user_id
+    ORDER BY unique_words DESC
+    LIMIT 5
+`);
+
 const getStreakState = db.prepare(`
     SELECT streak_length, best_streak
     FROM word_football_state
@@ -29,6 +38,12 @@ const getStreakState = db.prepare(`
 const getUserStats = db.prepare(`
     SELECT successful_words, total_word_length, streaks_broken
     FROM user_wf_stats
+    WHERE guild_id = ? AND user_id = ?
+`);
+
+const getUserUniqueWords = db.prepare(`
+    SELECT COUNT(*) as unique_words
+    FROM wf_word_first
     WHERE guild_id = ? AND user_id = ?
 `);
 
@@ -54,9 +69,12 @@ function buildUserStatsEmbed(
     wordsLabel: string,
     brokenLabel: string,
     avgLabel: string,
+    uniqueLabel: string,
     noneLabel: string,
 ): EmbedBuilder {
     const row = getUserStats.get(guildId, userId) as any;
+    const uniqueRow = getUserUniqueWords.get(guildId, userId) as any;
+    const uniqueWords = uniqueRow?.unique_words ?? 0;
     if (!row) {
         return new EmbedBuilder().setColor(0x0099ff).setTitle(`${title} — ${username}`).setDescription(noneLabel);
     }
@@ -70,6 +88,7 @@ function buildUserStatsEmbed(
             { name: wordsLabel, value: `**${row.successful_words}**`, inline: true },
             { name: brokenLabel, value: `**${row.streaks_broken}**`, inline: true },
             { name: avgLabel, value: `**${avg}**`, inline: true },
+            { name: uniqueLabel, value: `**${uniqueWords}**`, inline: true },
         );
 }
 
@@ -80,6 +99,17 @@ async function buildTopBrokenField(guildId: string, client: any): Promise<string
         const user = await client.users.fetch(row.user_id).catch(() => null);
         const name = user ? user.username : `<@${row.user_id}>`;
         return `${i + 1}. ${name} — **${row.streaks_broken}**`;
+    }));
+    return lines.join('\n');
+}
+
+async function buildTopUniqueWordsField(guildId: string, client: any): Promise<string> {
+    const rows = getTopUniqueWords.all(guildId) as any[];
+    if (rows.length === 0) return '-';
+    const lines = await Promise.all(rows.map(async (row, i) => {
+        const user = await client.users.fetch(row.user_id).catch(() => null);
+        const name = user ? user.username : `<@${row.user_id}>`;
+        return `${i + 1}. ${name} — **${row.unique_words}**`;
     }));
     return lines.join('\n');
 }
@@ -113,6 +143,7 @@ export default {
                 languageI(interaction, 'WF_USER_STATS_WORDS'),
                 languageI(interaction, 'WF_USER_STATS_BROKEN'),
                 languageI(interaction, 'WF_USER_STATS_AVG_LEN'),
+                languageI(interaction, 'WF_USER_STATS_UNIQUE'),
                 languageI(interaction, 'WF_USER_STATS_NONE'),
             );
             await interaction.reply({ embeds: [embed] });
@@ -122,9 +153,10 @@ export default {
         const wordsLabel = languageI(interaction, 'WF_LEADERBOARD_WORDS');
         const avgLabel = languageI(interaction, 'WF_LEADERBOARD_AVG');
 
-        const [topWordsValue, topBrokenValue] = await Promise.all([
+        const [topWordsValue, topBrokenValue, topUniqueValue] = await Promise.all([
             buildTopWordsField(interaction.guildId, interaction.client, wordsLabel, avgLabel),
             buildTopBrokenField(interaction.guildId, interaction.client),
+            buildTopUniqueWordsField(interaction.guildId, interaction.client),
         ]);
 
         const streakRow = getStreakState.get(interaction.guildId) as any;
@@ -139,6 +171,7 @@ export default {
                 { name: languageI(interaction, 'WF_LEADERBOARD_BEST_STREAK'), value: `**${bestStreak}**`, inline: true },
                 { name: languageI(interaction, 'WF_LEADERBOARD_TOP_WORDS'), value: topWordsValue, inline: false },
                 { name: languageI(interaction, 'WF_LEADERBOARD_TOP_BROKEN'), value: topBrokenValue, inline: false },
+                { name: languageI(interaction, 'WF_LEADERBOARD_TOP_UNIQUE'), value: topUniqueValue, inline: false },
             );
 
         await interaction.reply({ embeds: [embed] });
@@ -161,6 +194,7 @@ export default {
                 language(message, 'WF_USER_STATS_WORDS'),
                 language(message, 'WF_USER_STATS_BROKEN'),
                 language(message, 'WF_USER_STATS_AVG_LEN'),
+                language(message, 'WF_USER_STATS_UNIQUE'),
                 language(message, 'WF_USER_STATS_NONE'),
             );
             await (message.channel as TextChannel).send({ embeds: [embed] });
@@ -170,9 +204,10 @@ export default {
         const wordsLabel = language(message, 'WF_LEADERBOARD_WORDS');
         const avgLabel = language(message, 'WF_LEADERBOARD_AVG');
 
-        const [topWordsValue, topBrokenValue] = await Promise.all([
+        const [topWordsValue, topBrokenValue, topUniqueValue] = await Promise.all([
             buildTopWordsField(message.guildId, message.client, wordsLabel, avgLabel),
             buildTopBrokenField(message.guildId, message.client),
+            buildTopUniqueWordsField(message.guildId, message.client),
         ]);
 
         const streakRow = getStreakState.get(message.guildId) as any;
@@ -187,6 +222,7 @@ export default {
                 { name: language(message, 'WF_LEADERBOARD_BEST_STREAK'), value: `**${bestStreak}**`, inline: true },
                 { name: language(message, 'WF_LEADERBOARD_TOP_WORDS'), value: topWordsValue, inline: false },
                 { name: language(message, 'WF_LEADERBOARD_TOP_BROKEN'), value: topBrokenValue, inline: false },
+                { name: language(message, 'WF_LEADERBOARD_TOP_UNIQUE'), value: topUniqueValue, inline: false },
             );
 
         await (message.channel as TextChannel).send({ embeds: [embed] });
