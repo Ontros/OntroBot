@@ -263,15 +263,11 @@ export default {
       "english": "Commands that don´t fit any other category",
       "czech": "Příkazy, které nejsou součástí žádné jiné kategorie"
     },
-    "MUSIC_DES": {
-      "english": "Commands for playing music",
-      "czech": "Příkazy na pouštění hudby"
-    },
     "RANDOM_DES": {
       "english": "Commands for getting random output",
       "czech": "Příkazy pro získání náhodných odpovědí"
     },
-    "SERVERMANAGMENT_DES": {
+    "SERVERMANAGEMENT_DES": {
       "english": "Commands for configuring OntroBot",
       "czech": "Příkazy na nastavení OntroBota"
     },

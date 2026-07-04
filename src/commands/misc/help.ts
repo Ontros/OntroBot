@@ -28,7 +28,7 @@ export default {
         }
         for (const categoryName in global.commands) {
             const category = global.commands[categoryName]
-            if (categoryName.toLocaleLowerCase() === camelize(text).toLocaleLowerCase() || category.name === args[0].toLowerCase()) {
+            if (matchesCategory(text, categoryName, category.name)) {
                 //Commands list
                 const embed = new EmbedBuilder()
                 embed.setColor('#0099ff')
@@ -95,7 +95,7 @@ export default {
         }
         for (const categoryName in global.commands) {
             const category = global.commands[categoryName]
-            if (categoryName.toLocaleLowerCase() === camelize(name).toLocaleLowerCase() || category.name === name.toLowerCase()) {
+            if (matchesCategory(name, categoryName, category.name)) {
                 //Commands list
                 const embed = new EmbedBuilder()
                 embed.setColor('#0099ff')
@@ -139,4 +139,17 @@ function camelize(str: string) {
         if (+match === 0) return "";
         return index === 0 ? match.toLowerCase() : match.toUpperCase();
     });
+}
+
+function normalizeCategoryQuery(str: string): string {
+    return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function matchesCategory(input: string, categoryKey: string, displayName: string): boolean {
+    const normalizedInput = normalizeCategoryQuery(input);
+    if (!normalizedInput) return false;
+    const normalizedKey = normalizeCategoryQuery(categoryKey);
+    const normalizedDisplay = normalizeCategoryQuery(displayName);
+    if (normalizedInput === normalizedKey || normalizedInput === normalizedDisplay) return true;
+    return normalizedInput.length >= 3 && (normalizedKey.includes(normalizedInput) || normalizedDisplay.includes(normalizedInput));
 }

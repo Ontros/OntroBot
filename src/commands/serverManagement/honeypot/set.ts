@@ -23,20 +23,20 @@ export default {
             .setDescriptionLocalizations({ "cs": "Honeypot kanál (kdokoliv sem napíše bude zabanován)" })
         )
         .addChannelOption(option => option
-            .addChannelTypes(ChannelType.GuildVoice)
-            .setRequired(false)
-            .setName("voice")
-            .setNameLocalizations({ "cs": "hlasovy" })
-            .setDescription("Honeypot voice channel (anyone who types in its chat gets banned)")
-            .setDescriptionLocalizations({ "cs": "Honeypot hlasový kanál (kdokoliv napíše do jeho chatu bude zabanován)" })
-        )
-        .addChannelOption(option => option
             .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
             .setName("log")
             .setNameLocalizations({ "cs": "log" })
             .setDescription("Channel where honeypot catches are logged")
             .setDescriptionLocalizations({ "cs": "Kanál kam se logují honeypot záznamy" })
+        )
+        .addChannelOption(option => option
+            .addChannelTypes(ChannelType.GuildVoice)
+            .setRequired(false)
+            .setName("voice")
+            .setNameLocalizations({ "cs": "hlasovy" })
+            .setDescription("Honeypot voice channel (anyone who types in its chat gets banned)")
+            .setDescriptionLocalizations({ "cs": "Honeypot hlasový kanál (kdokoliv napíše do jeho chatu bude zabanován)" })
         )
         .addStringOption(option => option
             .setRequired(false)
