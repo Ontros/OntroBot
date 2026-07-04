@@ -251,6 +251,10 @@ export default {
       "english": "Commands used to configure cekarna",
       "czech": "Příkazy na nastavení čekárny"
     },
+    "HONEYPOT_DES": {
+      "english": "Honeypot is a trap channel that instantly bans anyone who writes in it, used to catch bots.",
+      "czech": "Honeypot je kanál, který okamžitě zabanuje kohokoliv, kdo do něj napíše, a slouží k odhalení botů."
+    },
     "FUN_DES": {
       "english": "Commands used for fun",
       "czech": "Příkazy pro zábavu"
