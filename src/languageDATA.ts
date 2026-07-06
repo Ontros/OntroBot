@@ -995,6 +995,22 @@ export default {
       "english": "Lazy attempts",
       "czech": "Líné pokusy"
     },
+    "DES_COUNTINGRESET_SHORT": {
+      "english": "Reset the counting run",
+      "czech": "Resetuje počítání"
+    },
+    "DES_COUNTINGRESET_LONG": {
+      "english": "Resets the current count to 0 but keeps the highest record, totals and all stats.",
+      "czech": "Vynuluje aktuální počítání, ale zachová rekord, součty a všechny statistiky."
+    },
+    "COUNT_RESET_DONE": {
+      "english": "Counting reset to 0. Records and stats were kept.",
+      "czech": "Počítání vynulováno. Rekordy a statistiky zůstaly zachovány."
+    },
+    "COUNT_RESET_NONE": {
+      "english": "No counting channel is configured for this server.",
+      "czech": "Na tomto serveru není nastaven kanál pro počítání."
+    },
     "DES_HONEYPOT_SHORT": {
       "english": "Honeypot channel management",
       "czech": "Správa honeypot kanálu"
