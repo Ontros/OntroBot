@@ -8,6 +8,42 @@ import { recordHoneypotBan } from '../utils/honeypotBans';
 
 const getHoneypot = db.prepare(`SELECT * FROM honeypot WHERE guild_id = ?`);
 
+async function logHoneypotEvent(message: import('discord.js').Message, title: string): Promise<void> {
+    const guild = message.guild;
+    if (!guild) return;
+
+    const config = getHoneypot.get(guild.id) as any;
+    if (!config) return;
+
+    const logChannel = guild.channels.cache.get(config.log_channel_id) as TextChannel | undefined;
+    if (!logChannel) return;
+
+    const author = message.author;
+    const embed = new EmbedBuilder()
+        .setColor(0xff0000)
+        .setTitle(title)
+        .addFields(
+            { name: 'User', value: `${author.tag} (<@${author.id}>)`, inline: true },
+            { name: 'User ID', value: author.id, inline: true },
+            { name: 'Message', value: message.content || '*no text*' }
+        )
+        .setTimestamp(message.createdAt);
+
+    if (author.avatarURL()) embed.setThumbnail(author.avatarURL());
+
+    const attachmentUrls = message.attachments.map((a: Attachment) => a.url);
+    if (attachmentUrls.length > 0) {
+        embed.addFields({ name: 'Attachments', value: attachmentUrls.join('\n') });
+    }
+
+    const files = message.attachments.map((a: Attachment) => ({
+        attachment: a.url,
+        name: a.name ?? 'attachment'
+    }));
+
+    await logChannel.send({ embeds: [embed], files }).catch(e => console.error('Honeypot log error:', e));
+}
+
 export async function handleHoneypot(message: import('discord.js').Message): Promise<void> {
     if (!message.guildId || message.author.bot) return;
 
@@ -20,32 +56,7 @@ export async function handleHoneypot(message: import('discord.js').Message): Pro
     const author = message.author;
     const member = message.member;
 
-    const logChannel = guild.channels.cache.get(config.log_channel_id) as TextChannel | undefined;
-    if (logChannel) {
-        const embed = new EmbedBuilder()
-            .setColor(0xff0000)
-            .setTitle('Honeypot triggered')
-            .addFields(
-                { name: 'User', value: `${author.tag} (<@${author.id}>)`, inline: true },
-                { name: 'User ID', value: author.id, inline: true },
-                { name: 'Message', value: message.content || '*no text*' }
-            )
-            .setTimestamp(message.createdAt);
-
-        if (author.avatarURL()) embed.setThumbnail(author.avatarURL());
-
-        const attachmentUrls = message.attachments.map((a: Attachment) => a.url);
-        if (attachmentUrls.length > 0) {
-            embed.addFields({ name: 'Attachments', value: attachmentUrls.join('\n') });
-        }
-
-        const files = message.attachments.map((a: Attachment) => ({
-            attachment: a.url,
-            name: a.name ?? 'attachment'
-        }));
-
-        await logChannel.send({ embeds: [embed], files }).catch(e => console.error('Honeypot log error:', e));
-    }
+    await logHoneypotEvent(message, 'Honeypot triggered');
 
     if (member) {
         if (config.ban_dm_message) {
@@ -89,6 +100,7 @@ registerServerMessageHook('1483929130088005763', async (message) => {
 registerServerMessageHook('1483929130088005763', async (message) => {
     if (message.author.id === '172002275412279296' && message.content.includes('leveled')) {
         console.log('deleting message', message)
+        await logHoneypotEvent(message, 'Leveled message deleted');
         await message.delete().catch(() => { });
     }
 })
