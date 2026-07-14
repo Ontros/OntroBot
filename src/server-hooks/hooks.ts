@@ -107,6 +107,7 @@ registerServerMessageHook('1483929130088005763', async (message) => {
 })
 
 export async function deletionMentionLogging(message: OmitPartialGroupDMChannel<Message<boolean> | PartialMessage<boolean>>): Promise<void> {
+    console.log(message)
     if (message.guildId !== '172002275412279296') return;
     if (message.mentions.users.hasAny() || message.mentions.roles.hasAny()) {
         await logHoneypotEvent(message, "Smazana mention zprava");

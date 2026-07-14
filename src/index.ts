@@ -1,7 +1,8 @@
 import Discord, {
     Collection, Guild, MessageFlags, Message, MessageReaction,
     PartialMessageReaction, PartialUser, TextChannel, User,
-    VoiceBasedChannel, VoiceState, IntentsBitField, Client
+    VoiceBasedChannel, VoiceState, IntentsBitField, Client,
+    Partials
 } from 'discord.js';
 import { CommandOptions, Commands, Server } from "./types";
 
@@ -42,7 +43,8 @@ import { initErrorReporter, markErrorReporterReady } from './utils/errorReporter
 dotenv.config({ path: path.join(__dirname + './../.env') });
 initErrorReporter();
 
-global.bot = new Discord.Client({ intents: new IntentsBitField(53608447) });
+global.bot = new Discord.Client({ intents: new IntentsBitField(53608447),
+  partials: [Partials.Message, Partials.Channel] });
 global.servers = {};
 global.userBalance = {};
 global.commands = {};
@@ -297,6 +299,7 @@ bot.on('messageUpdate', async (oldMessage, newMessage) => {
 
 bot.on('messageDelete', async (message) => {
     for (const handler of messageDeleteHandlers) {
+        console.log(handler)
         try {await handler(message);} catch (e) {console.error('message delete handler error', e);}
     }
 })
