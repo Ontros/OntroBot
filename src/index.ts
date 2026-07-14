@@ -30,10 +30,11 @@ import language, { languageI } from './language';
 import readAllCommands from './utils/readAllCommands';
 import { handleWordFootball, handleWFReaction, handleWFMessageUpdate } from './utils/wordFootball';
 import {
+    messageDeleteHandlers,
     messageHandlers, messageUpdateHandlers, reactionAddHandlers, reactionRemoveHandlers, voiceStateHandlers
 } from './events/registry';
 import { runServerMessageHooks } from './server-hooks/index';
-import { handleHoneypot } from './server-hooks/hooks';
+import { deletionMentionLogging, handleHoneypot } from './server-hooks/hooks';
 import './server-hooks/hooks';
 import { restorePendingHoneypotUnbans } from './utils/honeypotBans';
 import { initErrorReporter, markErrorReporterReady } from './utils/errorReporter';
@@ -55,6 +56,8 @@ messageHandlers.push(handleWordFootball);
 messageHandlers.push(runServerMessageHooks);
 
 messageUpdateHandlers.push(handleWFMessageUpdate);
+
+messageDeleteHandlers.push(deletionMentionLogging);
 
 reactionAddHandlers.push(handleWFReaction);
 
@@ -291,5 +294,11 @@ bot.on('messageUpdate', async (oldMessage, newMessage) => {
         try { await handler(oldMessage, newMessage); } catch (e) { console.error('messageUpdate handler error:', e); }
     }
 });
+
+bot.on('messageDelete', async (message) => {
+    for (const handler of messageDeleteHandlers) {
+        try {await handler(message);} catch (e) {console.error('message delete handler error', e);}
+    }
+})
 
 bot.login(token);

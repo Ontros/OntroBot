@@ -1,14 +1,14 @@
 // Server-specific message hooks.
 // Call registerServerMessageHook(guildId, async (message) => { ... }) to add behavior for a specific server.
 // Each hook receives every non-bot message from that guild.
-import { EmbedBuilder, TextChannel, Attachment } from 'discord.js';
+import { EmbedBuilder, TextChannel, Attachment, OmitPartialGroupDMChannel, PartialMessage, Message } from 'discord.js';
 import { registerServerMessageHook } from './index';
 import db from '../database';
 import { recordHoneypotBan } from '../utils/honeypotBans';
 
 const getHoneypot = db.prepare(`SELECT * FROM honeypot WHERE guild_id = ?`);
 
-async function logHoneypotEvent(message: import('discord.js').Message, title: string): Promise<void> {
+async function logHoneypotEvent(message: import('discord.js').Message | OmitPartialGroupDMChannel<Message<boolean> | PartialMessage<boolean>>, title: string): Promise<void> {
     const guild = message.guild;
     if (!guild) return;
 
@@ -23,13 +23,13 @@ async function logHoneypotEvent(message: import('discord.js').Message, title: st
         .setColor(0xff0000)
         .setTitle(title)
         .addFields(
-            { name: 'User', value: `${author.tag} (<@${author.id}>)`, inline: true },
-            { name: 'User ID', value: author.id, inline: true },
+            { name: 'User', value: `${author?.tag ?? "No user"} (<@${author?.id ?? ""}>)`, inline: true },
+            { name: 'User ID', value: author?.id ?? "", inline: true },
             { name: 'Message', value: message.content || '*no text*' }
         )
         .setTimestamp(message.createdAt);
 
-    if (author.avatarURL()) embed.setThumbnail(author.avatarURL());
+    if (author && author.avatarURL()) embed.setThumbnail(author.avatarURL());
 
     const attachmentUrls = message.attachments.map((a: Attachment) => a.url);
     if (attachmentUrls.length > 0) {
@@ -44,7 +44,7 @@ async function logHoneypotEvent(message: import('discord.js').Message, title: st
     await logChannel.send({ embeds: [embed], files }).catch(e => console.error('Honeypot log error:', e));
 }
 
-export async function handleHoneypot(message: import('discord.js').Message): Promise<void> {
+export async function handleHoneypot(message: Message): Promise<void> {
     if (!message.guildId || message.author.bot) return;
 
     const config = getHoneypot.get(message.guildId) as any;
@@ -105,3 +105,10 @@ registerServerMessageHook('1483929130088005763', async (message) => {
         await message.delete().catch(() => { });
     }
 })
+
+export async function deletionMentionLogging(message: OmitPartialGroupDMChannel<Message<boolean> | PartialMessage<boolean>>): Promise<void> {
+    if (message.guildId !== '172002275412279296') return;
+    if (message.mentions.users.hasAny() || message.mentions.roles.hasAny()) {
+        await logHoneypotEvent(message, "Smazana mention zprava");
+    }
+}

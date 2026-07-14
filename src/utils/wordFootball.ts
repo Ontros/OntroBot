@@ -1,4 +1,4 @@
-import { EmbedBuilder, Message, MessageReaction, PartialMessage, PartialMessageReaction, PartialUser, TextChannel, User } from "discord.js";
+import { EmbedBuilder, Message, MessageReaction, OmitPartialGroupDMChannel, PartialMessage, PartialMessageReaction, PartialUser, TextChannel, User } from "discord.js";
 import db from "../database";
 import language from "../language";
 import { noServer } from "../language";
@@ -327,6 +327,30 @@ export const handleWFMessageUpdate = async (
         0xff6600
     );
     await (newMessage.channel as TextChannel).send({ embeds: [embed] }).catch(() => { });
+};
+
+export const handleWFMessageDelete = async (message: OmitPartialGroupDMChannel<Message<boolean> | PartialMessage<boolean>>): Promise<void> => {
+    if (!message.guildId) return;
+
+    const graceKey = `${message.guildId}:${message.channelId}`;
+    if (lastWordMessageId.get(graceKey) !== message.id) return;
+
+    const state = getState.get(message.guildId, message.channelId) as any;
+    if (!state) return;
+
+    serverManager(message.guildId);
+    const lang = global.servers[message.guildId]?.language ?? 'english';
+    const nextLetters = state.last_word ? nextWordStartStr(state.last_word) : '?';
+
+    const authorId = message.author?.id ?? (message.partial ? (await message.fetch().catch(() => null))?.author?.id : null);
+    const mention = authorId ? `<@${authorId}>` : 'Někdo';
+
+    const embed = makeEmbed(
+        noServer(lang, 'WF_EDITOR_TITLE'),
+        `${mention} ${noServer(lang, 'WF_EDITOR_MSG')} ${noServer(lang, 'WF_NEXT_STARTS_WITH')} ${nextLetters}`,
+        0xff6600
+    );
+    await (message.channel as TextChannel).send({ embeds: [embed] }).catch(() => { });
 };
 
 export const handleWFReaction = async (
