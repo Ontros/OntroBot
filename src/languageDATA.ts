@@ -579,6 +579,46 @@ export default {
       "czech": "Nedělej to!",
       "dev": "uwu gamba"
     },
+    "DES_PIVO_SHORT": {
+      "english": "Calculates how much beer you can buy",
+      "czech": "Spočítá, kolik piva si můžeš koupit"
+    },
+    "DES_PIVO_LONG": {
+      "english": "Calculates how much Braník or Radegast you can buy for an amount in Czech crowns",
+      "czech": "Spočítá, kolik Braníku nebo Radegastu si můžeš koupit za zadanou částku"
+    },
+    "PIVO_REPLY": {
+      "english": "That would be enough for {count} {unit} of {beer}.",
+      "czech": "To by stačilo na {count} {unit} {beer}."
+    },
+    "PIVO_INVALID_AMOUNT": {
+      "english": "Enter a valid amount, for example 600, 6k, 6 kilo, or 6 litrů.",
+      "czech": "Zadej platnou částku, například 600, 6k, 6 kilo nebo 6 litrů."
+    },
+    "PIVO_UNIT_SIXPACK": {
+      "english": "six-pack|six-packs|six-packs",
+      "czech": "sixpack|sixpacky|sixpacků"
+    },
+    "PIVO_UNIT_PETKA": {
+      "english": "2-litre PET bottle|2-litre PET bottles|2-litre PET bottles",
+      "czech": "dvoulitrovou PETku|dvoulitrové PETky|dvoulitrových PETek"
+    },
+    "PIVO_UNIT_BASA": {
+      "english": "crate|crates|crates",
+      "czech": "basu|basy|bas"
+    },
+    "PIVO_UNIT_FLASKA": {
+      "english": "bottle|bottles|bottles",
+      "czech": "flašku|flašky|flašek"
+    },
+    "PIVO_BEER_BRANIK": {
+      "english": "Braník",
+      "czech": "Braníku"
+    },
+    "PIVO_BEER_RADEGAST": {
+      "english": "Radegast",
+      "czech": "Radegastu"
+    },
     "DES_PREFIX_SHORT": {
       "english": "Change the prefix",
       "czech": "Změň předponu"
