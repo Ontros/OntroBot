@@ -48,6 +48,16 @@ const incrementWordUse = db.prepare(`
 `);
 const checkWordUsed = db.prepare(`SELECT 1 FROM wf_word_stats WHERE guild_id = ? AND word = ? LIMIT 1`);
 const recordWordFirst = db.prepare(`INSERT OR IGNORE INTO wf_word_first (guild_id, word, user_id, first_ts) VALUES (?, ?, ?, ?)`);
+const getServerTotalWords = db.prepare(`
+    SELECT COALESCE(SUM(successful_words), 0) as total_words
+    FROM user_wf_stats
+    WHERE guild_id = ?
+`);
+const getServerUniqueWords = db.prepare(`
+    SELECT COUNT(*) as unique_words
+    FROM wf_word_first
+    WHERE guild_id = ?
+`);
 const incrementBroken = db.prepare(`
     INSERT INTO user_wf_stats (guild_id, user_id, streaks_broken)
     VALUES (?, ?, 1)
@@ -226,6 +236,26 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
         incrementWordUse.run(message.guildId, message.author.id, word);
         if (wasNewWord) recordWordFirst.run(message.guildId, word, message.author.id, message.createdTimestamp);
 
+        const totalWordsRow = getServerTotalWords.get(message.guildId) as { total_words: number };
+        const totalWords = totalWordsRow.total_words;
+        const milestoneLines: string[] = [];
+
+        if (totalWords > 0 && totalWords % 1000 === 0) {
+            milestoneLines.push(
+                `${language(message, 'WF_SERVER_MILESTONE_PREFIX')} **${totalWords / 1000}k** ${language(message, 'WF_SERVER_TOTAL_MILESTONE')}`
+            );
+        }
+
+        if (wasNewWord) {
+            const uniqueWordsRow = getServerUniqueWords.get(message.guildId) as { unique_words: number };
+            const uniqueWords = uniqueWordsRow.unique_words;
+            if (uniqueWords > 0 && uniqueWords % 1000 === 0) {
+                milestoneLines.push(
+                    `${language(message, 'WF_SERVER_MILESTONE_PREFIX')} **${uniqueWords / 1000}k** ${language(message, 'WF_SERVER_UNIQUE_MILESTONE')}`
+                );
+            }
+        }
+
         if (graceActive) {
             await message.react('⚠️');
             const nextLetters = state.last_word ? nextWordStartStr(state.last_word) : '?';
@@ -258,6 +288,16 @@ export const handleWordFootball = async (message: Message): Promise<void> => {
         }
 
         if (wasNewWord) await message.react('🤯').catch(() => { });
+
+        if (milestoneLines.length > 0) {
+            await channel.send({
+                embeds: [makeEmbed(
+                    language(message, 'WF_SERVER_MILESTONE_TITLE'),
+                    milestoneLines.join('\n'),
+                    0xffd700
+                )]
+            });
+        }
 
         if (newStreakLength % 25 === 0) {
             const isRecord = newStreakLength > prevBestStreak;

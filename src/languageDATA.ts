@@ -803,6 +803,22 @@ export default {
       "english": "New server record!",
       "czech": "Nový rekord serveru!"
     },
+    "WF_SERVER_MILESTONE_TITLE": {
+      "english": "Server Milestone!",
+      "czech": "Serverový milník!"
+    },
+    "WF_SERVER_MILESTONE_PREFIX": {
+      "english": "Congratulations on reaching",
+      "czech": "Gratuluji k dosažení"
+    },
+    "WF_SERVER_TOTAL_MILESTONE": {
+      "english": "total words typed!",
+      "czech": "celkem napsaných slov!"
+    },
+    "WF_SERVER_UNIQUE_MILESTONE": {
+      "english": "unique words typed!",
+      "czech": "unikátních napsaných slov!"
+    },
     "WF_LEADERBOARD_TITLE": {
       "english": "Word Football Leaderboard",
       "czech": "Žebříček slovního fotbalu"
